@@ -81,7 +81,13 @@ export class KitBuf {
     else for (let t = 0; t < ix.length; t++) this.idx[this.ni++] = b + ix[t];
     this.n += nv; this.tris += ix.length / 3;
   }
-  pack() { const n = this.n; return { n, ni: this.ni, pos: this.pos.slice(0, n * 3), nrm: this.nrm.slice(0, n * 3), uv: this.uv.slice(0, n * 2), col: this.col.slice(0, n * 3), idx: this.idx.slice(0, this.ni) }; }
+  // (perf r3) bb = the vertices' bounding box, computed here in the build worker (the main thread did this pass per kit
+  // cell when a NEAR tile was applied: up to ~40 ms for a dense tile)
+  pack() {
+    const n = this.n, P = this.pos; let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+    for (let i = 0; i < n * 3; i += 3) { const x = P[i], y = P[i + 1], z = P[i + 2]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; if (z < z0) z0 = z; if (z > z1) z1 = z; }
+    return { n, ni: this.ni, pos: P.slice(0, n * 3), nrm: this.nrm.slice(0, n * 3), uv: this.uv.slice(0, n * 2), col: this.col.slice(0, n * 3), idx: this.idx.slice(0, this.ni), bb: [x0, y0, z0, x1, y1, z1] };
+  }
   // piece in a facade frame F: local (x, y, z) -> (u + x*sx, v + y*sy, d + z*sz)
   wall(name, F, u, v, d, sx, sy, sz, tint) {
     const k = KIT && KIT[name]; if (!k) return;

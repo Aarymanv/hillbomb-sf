@@ -12,6 +12,7 @@
 // API: registerBuildingsV2(stream, { data, terrain, scene, root?, night, renderer? })
 //   -> { group, count, plan, hideBuilding(i), showBuilding(i), isHidden(i), find(x, z, r), buildingAt(x, z), info(i), stats, update() }
 import * as THREE from 'three';
+import { PERF } from '../../render/perfflags.js';
 import { createFacadeTextures } from './texgen.js';
 import { makeFacadeMaterials, patchKitMaterial, lampUniforms, HW, NOV4 } from './material.js';
 import { leafify, LEAF_DECODE } from './kitleaf.js';
@@ -342,7 +343,8 @@ export function registerBuildingsV2(stream, { data, terrain, scene, root = null,
       // (the xz extent too: pieces of a long building reach well past its cell, and a sphere of the cell + 8 m frustum-
       // culled them at some view angles: walls blinking in and out as the camera turned)
       { const P = k.pos; let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, z0 = Infinity, z1 = -Infinity;
-        for (let i = 0; i < P.length; i += 3) { const x = P[i], y = P[i + 1], z = P[i + 2]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; if (z < z0) z0 = z; if (z > z1) z1 = z; }
+        if (k.bb) [x0, y0, z0, x1, y1, z1] = k.bb;      // (perf r3) from the worker (v2detail.js pack)
+        else for (let i = 0; i < P.length; i += 3) { const x = P[i], y = P[i + 1], z = P[i + 2]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; if (z < z0) z0 = z; if (z > z1) z1 = z; }
         if (y0 <= y1) { g.boundingBox = new THREE.Box3(new THREE.Vector3(x0, y0, z0), new THREE.Vector3(x1, y1, z1)); g.boundingSphere = g.boundingBox.getBoundingSphere(new THREE.Sphere()); }
         else g.computeBoundingSphere(); }
       freeAfterUpload(g);
@@ -604,29 +606,49 @@ export function registerBuildingsV2(stream, { data, terrain, scene, root = null,
     for (const r of rects) { const q = shrink(r); if (q) emit(q, 0); }
   }
   const colTmp = { lx: new Float32Array(64), lz: new Float32Array(64) };
+  // (perf r3) a tile's building colliders (+ its yard fences) are added over a few frames, <= COL_MS each (?nostreamslice:
+  // all in the load, 5-11 ms). The range is 600 m, so they are complete long before the car gets there.
+  const colPend = new Set(), COL_MS = 1.2;
+  function colWork(h, ms) {
+    const cx = stream.ctx, t0 = performance.now();
+    // colliders of unloaded tiles still waiting in the trash go first (a quick reload of this tile would otherwise stack
+    // a second copy of every box on the old one until the 1 ms/frame drain reached it)
+    while (colTrash.length) { cx.colliders.remove(colTrash.pop()); if ((colTrash.length & 31) === 0 && performance.now() - t0 > ms) return false; }
+    for (; h.next < h.end; h.next++) {
+      const i = h.next;
+      if ((why[i] & 2) || h.by.has(i)) continue;
+      const l = []; colsFor(i, l);
+      if (l.length) { h.by.set(i, l); for (const q of l) cx.colliders.add(q); st.cols += l.length; }
+      if ((i & 15) === 0 && performance.now() - t0 > ms) { h.next++; return false; }
+    }
+    yardColsOn(h);
+    colPend.delete(h);
+    return true;
+  }
   stream.register({
     name: 'bld-col', range: 600, priority: 0,
-    load(tile, cx) {
+    load(tile) {
       const [f, c] = B.inTile(tile.tx, tile.tz);
       if (!c) return null;
-      // colliders of unloaded tiles still waiting in the trash: drop them now (a quick reload of this tile would otherwise
-      // stack a second copy of every box on the old one until the 1 ms/frame drain reached it)
-      while (colTrash.length) cx.colliders.remove(colTrash.pop());
-      const h = { tile, by: new Map() };
-      for (let i = f; i < f + c; i++) {
-        if (why[i] & 2) continue;
-        const l = []; colsFor(i, l);
-        if (l.length) { h.by.set(i, l); for (const q of l) cx.colliders.add(q); st.cols += l.length; }
-      }
+      const h = { tile, by: new Map(), next: f, end: f + c };
       colH.set(tile.key, h);
-      yardColsOn(h);
+      if (PERF.streamslice && stream.budgetMs !== Infinity) colPend.add(h); else colWork(h, Infinity);
       return h;
     },
     unload(h) {
       if (!h) return;
+      colPend.delete(h);
       colH.delete(h.tile.key);
       for (const l of h.by.values()) { for (const q of l) colTrash.push(q); st.cols -= l.length; }
       yardColsOff(h, false);
+    },
+    update() {
+      if (!colPend.size) return;
+      if (stream.budgetMs === Infinity) { for (const h of [...colPend]) colWork(h, Infinity); return; }
+      // nearest pending tile first
+      const f = stream.focus; let best = null, bd = Infinity;
+      for (const h of colPend) { const d = stream.dist(h.tile, f.x, f.z); if (d < bd) { bd = d; best = h; } }
+      colWork(best, COL_MS);
     },
   });
 

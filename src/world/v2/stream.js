@@ -12,6 +12,7 @@
 //   tile = { tx, tz, key, x0, z0, x1, z1, cx, cz }
 //   ctx  = { data, terrain, graph, scene, colliders, stream }
 // Colliders: add with ctx.colliders.add(c) / addAll(list), remove with ctx.colliders.remove(c) in unload.
+import { PERF } from '../../render/perfflags.js';
 export class TileStreamer {
   constructor({ data, terrain, graph, scene, colliders }) {
     const m = data.meta;
@@ -127,11 +128,22 @@ export class TileStreamer {
     this._tick = (this._tick || 0) + 1;
     if (!this._queue || this._tick % 10 === 0 || !this._queue.length) this._queue = this._plan();
     if (this._tick % 900 === 0) for (const [k, t] of this._dropped) if (this._clock - t > 60) this._dropped.delete(k);
-    while (this._queue.length && performance.now() - t0 < this.budgetMs) {
-      const job = this._queue.shift();
+    // (perf r3) ?streamslice: a 2.5 ms budget, and a job only starts when its provider's typical cost (EMA of its measured
+    // loads / unloads) still fits; the first job of a frame always runs. The 6 ms budget used to start a 5-8 ms load at
+    // 5.9 ms (11-14 ms of streaming in one frame).
+    const slice = PERF.streamslice && this.budgetMs !== Infinity, budget = slice ? Math.min(this.budgetMs, 2.5) : this.budgetMs;
+    const cost = this._cost || (this._cost = new Map());
+    let ran = 0;
+    while (this._queue.length && performance.now() - t0 < budget) {
+      const job = this._queue[0];
       const L = this.loaded.get(job.p.name);
-      if (job.unload ? !L.has(job.key) : L.has(job.key)) continue;
-      this._run(job);
+      if (job.unload ? !L.has(job.key) : L.has(job.key)) { this._queue.shift(); continue; }
+      const ck = (job.unload ? 'u:' : 'l:') + job.p.name, est = cost.get(ck) ?? 1;
+      if (slice && ran && performance.now() - t0 + est > budget) break;
+      this._queue.shift();
+      const tj = performance.now();
+      this._run(job); ran++;
+      const d = performance.now() - tj; cost.set(ck, cost.has(ck) ? cost.get(ck) * 0.7 + d * 0.3 : d);
     }
     this.stats.pending = this._queue.length;
     for (const p of this.providers) p.update?.(dt, env, this.ctx);
