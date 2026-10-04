@@ -26,7 +26,7 @@ const LAYERS = [
 ];
 const GRASS_FAR = 90;
 
-export function createGrass({ scene, env, terrain, ground = [], blocked = [], renderer = env?.renderer }) {
+export function createGrass({ scene, env, terrain, ground = [], blocked = [], renderer = env?.renderer, lot = null }) {
   if (!renderer || !terrain) return null;
   const qName = env?.quality?.name || 'high';
   const densMul = qName === 'low' ? 0.45 : qName === 'medium' ? 0.7 : 1;
@@ -35,11 +35,12 @@ export function createGrass({ scene, env, terrain, ground = [], blocked = [], re
   const heightAt = (x, z) => terrain.heightAt(x, z);
 
   const cap = new GroundCapture(renderer, { ground, blocked });
-  const bio = new BioWindow({ grid, cls: clsAt, height: heightAt });
+  const bio = new BioWindow({ grid, cls: clsAt, height: heightAt, lot });
   TERRAIN_BIO.tBio.value = bio.tex; TERRAIN_BIO.tBioXf.value = bio.xf;   // terrain grass layer follows the blade colours
+  TERRAIN_BIO.tLot.value = bio.lotTex;                                   // yard lots: same patchwork on the terrain and the blades
   const flat = Array.from({ length: 12 }, () => new THREE.Vector4());
   const U = {
-    uCap: { value: cap.rt.texture }, uCapXf: { value: cap.xf }, uBio: { value: bio.tex }, uBioXf: { value: bio.xf },
+    uCap: { value: cap.rt.texture }, uCapXf: { value: cap.xf }, uBio: { value: bio.tex }, uBioXf: { value: bio.xf }, uLot: { value: bio.lotTex },
     uTime: { value: 0 }, uWind: { value: new THREE.Vector4(0.94, 0.34, 0.4, 0) }, uFlat: { value: flat },
     uCam: { value: new THREE.Vector3() }, uDensMul: { value: densMul }, uNight: { value: 0 },
   };

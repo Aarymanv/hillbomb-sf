@@ -33,7 +33,7 @@ export function registerTerrain(stream, { data, terrain, root }) {
     const st = LOD_STEP[lod], n = CPT / st + 1;
     const i0 = Math.round((tile.x0 - data.meta.extent.x0) / data.meta.cell), j0 = Math.round((tile.z0 - data.meta.extent.z0) / data.meta.cell);
     const nv = n * n + 4 * n;                              // grid + skirt ring
-    const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), uv = new Float32Array(nv * 2), col = new Float32Array(nv * 3), spl = new Float32Array(nv * 4);
+    const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), uv = new Float32Array(nv * 2), col = new Float32Array(nv * 3), spl = new Float32Array(nv * 4), yrd = new Float32Array(nv);
     const hAt = (i, j) => { i = i < 0 ? 0 : i >= NX ? NX - 1 : i; j = j < 0 ? 0 : j >= NZ ? NZ - 1 : j; return H[j * NX + i] * 0.01; };
     let minY = Infinity, maxY = -Infinity;
     const put = (v, i, j, dy) => {
@@ -44,15 +44,17 @@ export function registerTerrain(stream, { data, terrain, root }) {
       const l = Math.hypot(gx, 1, gz); nor[v * 3] = -gx / l; nor[v * 3 + 1] = 1 / l; nor[v * 3 + 2] = -gz / l;
       uv[v * 2] = x / 64; uv[v * 2 + 1] = z / 64;
       // splat: average the surface classes of the cells this vertex stands for (softer far LODs)
-      let a = 0, b = 0, c = 0, d = 0, r = 0, g = 0, bl = 0, cnt = 0;
+      let a = 0, b = 0, c = 0, d = 0, r = 0, g = 0, bl = 0, cnt = 0, yd = 0;
       const s0 = st > 1 ? -(st >> 1) : 0, s1 = st > 1 ? st >> 1 : 0, ss = Math.max(1, st >> 1);
       for (let jj = s0; jj <= s1; jj += ss) for (let ii = s0; ii <= s1; ii += ss) {
         const ci = Math.min(NX - 1, Math.max(0, i + ii)), cj = Math.min(NZ - 1, Math.max(0, j + jj));
-        const k = SPLAT[S[cj * NX + ci]] || SPLAT[3];
+        const sc = S[cj * NX + ci], k = SPLAT[sc] || SPLAT[3];
+        if (sc === 9) yd++;
         a += k[0]; b += k[1]; c += k[2]; d += k[3]; r += k[4]; g += k[5]; bl += k[6]; cnt++;
       }
       spl[v * 4] = a / cnt; spl[v * 4 + 1] = b / cnt; spl[v * 4 + 2] = c / cnt; spl[v * 4 + 3] = d / cnt;
       col[v * 3] = r / cnt; col[v * 3 + 1] = g / cnt; col[v * 3 + 2] = bl / cnt;
+      yrd[v] = yd / cnt;                                   // residential yard share (terrainmat.js yard patchwork)
     };
     let v = 0;
     for (let jj = 0; jj < n; jj++) for (let ii = 0; ii < n; ii++) put(v++, i0 + ii * st, j0 + jj * st, 0);
@@ -80,6 +82,7 @@ export function registerTerrain(stream, { data, terrain, root }) {
     g.setAttribute('uv', new THREE.BufferAttribute(uv.subarray(0, v * 2), 2));
     g.setAttribute('color', new THREE.BufferAttribute(col.subarray(0, v * 3), 3));
     g.setAttribute('aSplat', new THREE.BufferAttribute(spl.subarray(0, v * 4), 4));
+    g.setAttribute('aYard', new THREE.BufferAttribute(yrd.subarray(0, v), 1));
     g.setIndex(v > 65535 ? new THREE.Uint32BufferAttribute(idx, 1) : new THREE.Uint16BufferAttribute(idx, 1));
     g.computeBoundingSphere(); g.computeBoundingBox();
     g.userData = { minY, maxY };
@@ -155,7 +158,7 @@ export function registerTerrain(stream, { data, terrain, root }) {
 function mergeGeos(geos) {
   let nv = 0, ni = 0;
   for (const g of geos) { nv += g.attributes.position.count; ni += g.index.count; }
-  const names = ['position', 'normal', 'uv', 'color', 'aSplat'], out = {};
+  const names = ['position', 'normal', 'uv', 'color', 'aSplat', 'aYard'], out = {};
   for (const n of names) out[n] = new Float32Array(nv * geos[0].attributes[n].itemSize);
   const idx = nv > 65535 ? new Uint32Array(ni) : new Uint16Array(ni);
   let vo = 0, io = 0;

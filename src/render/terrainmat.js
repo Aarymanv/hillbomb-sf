@@ -4,6 +4,7 @@
 // rain ripples (HB_PUDDLES), the road adds curb-gutter puddles (HB_GUTTER), and the beach sand darkens in a swash band.
 import * as THREE from 'three';
 import { PBR } from '../world/assets.js';
+import { YARD_GLSL, NOYARDG } from '../world/grass/yard_glsl.js';
 import { ROAD_VERT_PARS, ROAD_VERT, ROAD_FRAG_PARS, ROAD_FRAG, ROAD_ROUGH, ROAD_METAL, ROAD_NORMAL, CURB_VERT_PARS, CURB_VERT, CURB_FRAG_PARS, CURB_FRAG, MARK_FRAG_PARS, MARK_FRAG } from './roadwear.js';
 
 const CLIFF_TILE = 9;
@@ -11,7 +12,10 @@ const CLIFF_TILE = 9;
 // terrain's grass layer takes the same golden / green colour as the blades on top of it (no colour step where they end)
 const bioBlank = new THREE.DataTexture(new Uint8Array([3, 128, 0, 255]), 1, 1);
 bioBlank.needsUpdate = true;
-export const TERRAIN_BIO = { tBio: { value: bioBlank }, tBioXf: { value: new THREE.Vector4(1e9, 1e9, 1, 1) } };
+const lotBlank = new THREE.DataTexture(new Float32Array(4), 1, 1, THREE.RGBAFormat, THREE.FloatType);
+lotBlank.needsUpdate = true;
+// tLot: per-cell lot frame of yard cells (capture.js BioWindow.lotTex) for the yard patchwork (grass/yard_glsl.js)
+export const TERRAIN_BIO = { tBio: { value: bioBlank }, tBioXf: { value: new THREE.Vector4(1e9, 1e9, 1, 1) }, tLot: { value: lotBlank } };
 // terrain: attribute aSplat = (grass, forest, sand, rock) weights; vertex colour still tints (dry grass, wet sand)
 export function makeTerrainMaterial() {
   const G = PBR.tex('grass'), F = PBR.tex('forest_floor'), S = PBR.tex('sand');
@@ -28,14 +32,15 @@ export function makeTerrainMaterial() {
       kG: { value: 1 / PBR.TILE.grass }, kF: { value: 1 / PBR.TILE.forest_floor }, kS: { value: 1 / PBR.TILE.sand }, kR: { value: kRock },
     });
     sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nattribute vec4 aSplat; varying vec4 vSplat; varying vec3 vTW;')
-      .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvSplat = aSplat; vTW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+      .replace('#include <common>', '#include <common>\nattribute vec4 aSplat; varying vec4 vSplat; varying vec3 vTW; attribute float aYard; varying float vYard;')
+      .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvSplat = aSplat; vTW = (modelMatrix * vec4(transformed, 1.0)).xyz; vYard = aYard;');
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
 uniform sampler2D tG, tF, tS, tR, nG, nF, nS, nR; uniform float kG, kF, kS, kR;
-varying vec4 vSplat; varying vec3 vTW;
-uniform sampler2D tBio; uniform vec4 tBioXf;
-float tWetSand = 0.0;
+varying vec4 vSplat; varying vec3 vTW; varying float vYard;
+uniform sampler2D tBio; uniform vec4 tBioXf; uniform sampler2D tLot;
+float tWetSand = 0.0, tYardHard = 0.0;
+${NOYARDG ? '' : YARD_GLSL}
 // grass palette + noise: the same maths as src/world/grass/glsl.js (hash12 / vnoise / fbm / dryness / grassCol)
 float gH(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 float gN(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(gH(i), gH(i + vec2(1.0, 0.0)), f.x), mix(gH(i + vec2(0.0, 1.0)), gH(i + vec2(1.0, 1.0)), f.x), f.y); }
@@ -99,6 +104,20 @@ vec3 grassA;
 }
 vec3 alb = grassA * wts.x + tri(tF, vTW.xz, kF) * wts.y + tri(tS, vTW.xz, kS) * wts.z + rockA * wts.w;
 float macro = mix(0.82 + 0.36 * vn(vTW.xz * 0.012), 1.0, wts.x * 0.6);
+${NOYARDG ? '' : `// residential yards (class 9): a lot patchwork of dry / watered lawn, dirt, paving, mulch, gravel (grass/yard_glsl.js)
+float yW = smoothstep(0.3, 0.7, vYard);
+if (yW > 0.001) {
+  float aa = length(fwidth(vTW.xz));
+  vec4 yc = yardCell(tLot, tBioXf, vTW.xz);
+  float hk, dk; vec3 ya = yardAlb(yc, vTW.xz, aa, hk, dk);
+  vec3 dt, da;   // photo detail (luminance) of the matching ground: grass / forest floor / sand
+  if (dk < 0.5) { dt = tri(tG, vTW.xz, kG); da = textureLod(tG, vec2(0.5), 12.0).rgb; }
+  else if (dk < 1.5) { dt = tri(tF, vTW.xz, kF); da = textureLod(tF, vec2(0.5), 12.0).rgb; }
+  else { dt = tri(tS, vTW.xz, kS); da = textureLod(tS, vec2(0.5), 12.0).rgb; }
+  float dl = clamp(dot(dt, vec3(0.3, 0.59, 0.11)) / max(0.02, dot(da, vec3(0.3, 0.59, 0.11))), 0.45, 1.7);
+  ya *= mix(dl, 1.0, smoothstep(0.3, 1.5, aa) * 0.7);
+  alb = mix(alb, ya, yW); macro = mix(macro, 1.0, yW * 0.7); tYardHard = hk * yW;
+}`}
 diffuseColor.rgb *= alb * macro;
 // beach swash: the sand just above the waterline is dark and glossy, the edge creeps up and down
 {
@@ -117,6 +136,7 @@ diffuseColor.rgb *= alb * macro;
   vec3 nm = texture2D(nG, vTW.xz * kG).xyz * wts.x + texture2D(nF, vTW.xz * kF).xyz * wts.y + texture2D(nS, vTW.xz * kS).xyz * wts.z + texture2D(nR, vTW.xz * kR).xyz * wts.w;
   nm = nm * 2.0 - 1.0; nm.xy *= 0.9;
   nm.xy *= 1.0 - tWetSand * 0.7;
+  nm.xy *= 1.0 - tYardHard * 0.8;
   // world-space ground: tangent = +X, bitangent = -Z (uv v runs along +Z), normal = geometry normal
   vec3 Nw = normalize((vec4(normal, 0.0) * viewMatrix).xyz);
   vec3 T = normalize(vec3(1.0, 0.0, 0.0) - Nw * Nw.x), B = cross(Nw, T);
@@ -124,7 +144,7 @@ diffuseColor.rgb *= alb * macro;
   normal = normalize((viewMatrix * vec4(nw, 0.0)).xyz);
 }`);
   };
-  mat.customProgramCacheKey = () => 'terrain-splat-v3';
+  mat.customProgramCacheKey = () => 'terrain-splat-v4' + (NOYARDG ? 'n' : '');
   return mat;
 }
 

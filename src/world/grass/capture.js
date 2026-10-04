@@ -3,7 +3,9 @@
 //    (R = ground height, G = blocked (road / sidewalk / building / deck), B = ground present). 0.5 m texels, 384 m window.
 //    Blocked meshes are lifted a little in depth so they win ties with the terrain at road edges.
 //  BioWindow: the 4 m surface raster around the camera as RGBA8 (R = class, G = lushness, B = slope, A = 255), built
-//    per 256 m tile (cached, one tile per frame) into a 3x3-tile window.
+//    per 256 m tile (cached, one tile per frame) into a 3x3-tile window. With a lot(x, z) callback (1:1 map) a second
+//    float texture `lotTex` holds, for every yard cell (class 9), its block's lot frame (origin x, z, angle, 1): the
+//    yard ground patchwork (grass/yard_glsl.js) splits yards into real 25 ft lots with it.
 import * as THREE from 'three';
 import { ll } from '../latlon.js';
 
@@ -76,12 +78,15 @@ const TILE = 64, WIN = 3;
 const PARK_BOX = [[37.7655, -122.5110, 37.7745, -122.4575], [37.7715, -122.4580, 37.7735, -122.4527]];   // Golden Gate Park + Panhandle
 const PARK_CIRCLE = [[37.7596, -122.4269, 170], [37.7764, -122.4346, 120], [37.8030, -122.4480, 250], [37.8005, -122.4585, 250], [37.7920, -122.4270, 110], [37.7855, -122.4555, 120]];
 export class BioWindow {
-  constructor({ grid, cls, height }) {
-    this.grid = grid; this.cls = cls; this.height = height;
+  constructor({ grid, cls, height, lot = null }) {
+    this.grid = grid; this.cls = cls; this.height = height; this.lot = lot;
     const R = TILE * WIN; this.R = R;
     this.data = new Uint8Array(R * R * 4);
     this.tex = new THREE.DataTexture(this.data, R, R, THREE.RGBAFormat, THREE.UnsignedByteType);
     this.tex.minFilter = this.tex.magFilter = THREE.NearestFilter; this.tex.generateMipmaps = false; this.tex.needsUpdate = true;
+    this.lotData = new Float32Array(R * R * 4);
+    this.lotTex = new THREE.DataTexture(this.lotData, R, R, THREE.RGBAFormat, THREE.FloatType);
+    this.lotTex.minFilter = this.lotTex.magFilter = THREE.NearestFilter; this.lotTex.generateMipmaps = false; this.lotTex.needsUpdate = true;
     this.xf = new THREE.Vector4(1e9, 1e9, 1 / (R * grid.cell), R);
     this.tiles = new Map(); this.want = null; this.cur = null;
     this.parkBoxes = PARK_BOX.map(([a, b, c, d]) => { const p = ll(a, b), q = ll(c, d); return [Math.min(p[0], q[0]), Math.min(p[1], q[1]), Math.max(p[0], q[0]), Math.max(p[1], q[1])]; });
@@ -107,6 +112,10 @@ export class BioWindow {
       } else if (c === 8) lush = 0.08; else if (c === 7) lush = 0.8; else if (c === 5) lush = 0.25; else if (c === 4) lush = 0.35; else if (c === 6) lush = 0.2;
       const o = (b * TILE + a) * 4;
       out[o] = c; out[o + 1] = Math.round(lush * 255); out[o + 2] = Math.min(255, Math.round(sl / 1.5 * 255)); out[o + 3] = 255;
+      if (c === 9 && this.lot) {
+        const f = this.lot(x, z);
+        if (f) { const L = out.lot || (out.lot = new Float32Array(TILE * TILE * 4)); L[o] = f[0]; L[o + 1] = f[1]; L[o + 2] = f[2]; L[o + 3] = 1; }
+      }
     }
     return out;
   }
@@ -126,8 +135,13 @@ export class BioWindow {
     for (let j = 0; j < WIN; j++) for (let i = 0; i < WIN; i++) {
       const t = this.tiles.get((bi + i) + ',' + (bj + j));
       for (let b = 0; b < TILE; b++) this.data.set(t.subarray(b * TILE * 4, (b + 1) * TILE * 4), ((j * TILE + b) * R + i * TILE) * 4);
+      if (this.lot) for (let b = 0; b < TILE; b++) {
+        const o = ((j * TILE + b) * R + i * TILE) * 4;
+        if (t.lot) this.lotData.set(t.lot.subarray(b * TILE * 4, (b + 1) * TILE * 4), o); else this.lotData.fill(0, o, o + TILE * 4);
+      }
     }
     this.tex.needsUpdate = true;
+    if (this.lot) this.lotTex.needsUpdate = true;
     this.xf.set(x0 + bi * TILE * cell - cell / 2, z0 + bj * TILE * cell - cell / 2, 1 / (R * cell), R);
     this.cur = key;
     if (this.tiles.size > 80) for (const k of this.tiles.keys()) { this.tiles.delete(k); if (this.tiles.size <= 40) break; }

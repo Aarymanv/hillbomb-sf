@@ -12,6 +12,8 @@ import { createWater } from '../../render/water.js';
 import { DISTRICTS2 } from './districts2.js';
 import { createGoogleTiles } from './googletiles.js';
 import { createGrass } from '../grass/index.js';
+import { makeLotFrame } from './lotframe.js';
+import { NOYARDG } from '../grass/yard_glsl.js';
 
 const BLD_MOD = import.meta.glob('../buildings.js', { eager: true })['../buildings.js'] || null;
 const LM_MOD = import.meta.glob('../landmarks.js', { eager: true })['../landmarks.js'] || null;
@@ -96,7 +98,7 @@ export async function buildWorld2({ scene, env, camera = null, renderer = null, 
   }
   // ground cover (src/world/grass): ground = terrain, never on roads / buildings / landmarks
   let grass = null;
-  try { grass = createGrass({ scene, env, terrain, renderer: renderer || env.renderer, ground: [terrRoot], blocked: [roadRoot, bldRoot, lmRoot] }); } catch (err) { console.error('[world2] grass', err); }
+  try { grass = createGrass({ scene, env, terrain, renderer: renderer || env.renderer, ground: [terrRoot], blocked: [roadRoot, bldRoot, lmRoot], lot: NOYARDG ? null : makeLotFrame(graph, terrain) }); } catch (err) { console.error('[world2] grass', err); }
   const world = {
     v2: true, grass, gtiles, spawn: sp, data, terrain, graph, blocks: [], colliders, stream, landmarks, buildings, props, water, ll,
     heightAt: (x, z) => terrain.heightAt(x, z),

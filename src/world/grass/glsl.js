@@ -2,11 +2,14 @@
 // vertex shader from (chunk, object index): a hashed position inside the chunk, the ground capture (height, blocked mask,
 // ground present; 0.5 m texels, see capture.js) and the biome window (surface class, lushness, slope; 4 m cells, see bio.js).
 
+import { YARD_GLSL, NOYARDG } from './yard_glsl.js';
+
 export const COMMON_V = /* glsl */`
 attribute vec4 aChunk;   // chunk x0, z0, size, salt
 attribute float aIdx;    // object index inside the chunk
 uniform sampler2D uCap; uniform vec4 uCapXf;   // origin x, origin z, 1/size, texels
 uniform sampler2D uBio; uniform vec4 uBioXf;
+uniform sampler2D uLot;  // lot frames of yard cells (capture.js BioWindow.lotTex)
 uniform float uTime;
 uniform vec4 uWind;      // dir x, dir z, strength, wetness
 uniform vec4 uFlat[12];  // flatteners: x, z, radius, strength
@@ -89,6 +92,7 @@ float iceAt(int c, vec3 p) {
   return 0.0;
 }
 const vec3 FL_POPPY = vec3(0.95, 0.28, 0.015), FL_LUPINE = vec3(0.3, 0.17, 0.66), FL_YELLOW = vec3(0.95, 0.72, 0.04), FL_WHITE = vec3(0.85, 0.85, 0.8);
+${NOYARDG ? '#define HB_NOYARD' : YARD_GLSL}
 `;
 
 // ------------------------------------------------------------------ per-layer vertex bodies: void coverMain(out P, out N, out kill)
@@ -100,13 +104,18 @@ void coverMain(out vec3 P, out vec3 N, out bool kill) {
   float t = position.y, side = position.x;
   uint s = S.s;
   float icef = iceAt(S.cls, S.p);
-  float target0 = min(110.0, 110.0 * pow(8.5 / max(S.d, 0.5), 1.8)) * max(grassDens(S.cls), icef * 1.6) * uDensMul;   // (ice plant: closed mats)
+  // residential yards: blades only on the lots whose ground is lawn (grass/yard_glsl.js, same patchwork as the terrain)
+  float yk = 1.0; vec4 yc = vec4(0.0);
+#ifndef HB_NOYARD
+  if (S.cls == 9) { yc = yardCell(uLot, uBioXf, S.p.xz); yk = yardGrassK(yc); }
+#endif
+  float target0 = min(110.0, 110.0 * pow(8.5 / max(S.d, 0.5), 1.8)) * max(grassDens(S.cls) * yk, icef * 1.6) * uDensMul;   // (ice plant: closed mats)
   if (!S.ok || S.rank * uLayer.z >= target0 || S.d < uLayer.x || S.d >= uLayer.y) { kill = true; P = vec3(0.0); N = vec3(0.0, 1.0, 0.0); vGC = vec3(0.0); vCov = vec4(0.0); return; }
   float r1 = rnd(s), r2 = rnd(s), r3 = rnd(s), r4 = rnd(s), r5 = rnd(s), r6 = rnd(s), r7 = rnd(s);
   float patchN = fbm(S.p.xz * 0.03 + 11.0), n1 = vnoise(S.p.xz * 0.13);
   float dry = dryness(S.bio, patchN, S.p.xz);
   int c = S.cls;
-  float dens = max(grassDens(c), icef * 1.6);
+  float dens = max(grassDens(c) * yk, icef * 1.6);
   bool ice = r7 < icef * 0.97;
   bool lawn = c == 9 || (c == 3 && S.bio.g > 0.6 && patchN < 0.6);
   bool forest = c == 7;
@@ -115,7 +124,7 @@ void coverMain(out vec3 P, out vec3 N, out bool kill) {
   float iceFl = ice ? smoothstep(0.5, 0.68, fbm(S.p.xz * 0.09 + 9.0)) : 0.0;
   bool iceFlower = ice && r6 > 1.0 - 0.07 * iceFl - 0.006;
   if (ice) { H = mix(0.09, 0.17, r1) + (iceFlower ? 0.03 : 0.0); W = iceFlower ? 0.11 : 0.072; stiff = 4.0; }
-  else if (lawn) { H = mix(0.06, 0.16, r1); W = 0.028; stiff = 2.2; }
+  else if (lawn) { H = c == 9 && yc.x > 0.5 ? mix(0.08, 0.26, r1) : mix(0.06, 0.16, r1); W = 0.028; stiff = 2.2; }   // (dry yard lawns: unmown, gone to seed)
   else if (forest) { H = mix(0.1, 0.3, r1 * r1); W = 0.02; }
   else {
     H = mix(0.3, 0.95, pow(r1, 0.8)) * mix(0.75, 1.2, n1) * (r6 < 0.4 ? 0.5 : 1.0); W = mix(0.016, 0.03, r2);
@@ -159,6 +168,9 @@ void coverMain(out vec3 P, out vec3 N, out bool kill) {
   vec3 col = grassCol(dry, n1, r4);
   if (forest) col = mix(vec3(0.16, 0.25, 0.06), vec3(0.26, 0.33, 0.1), n1);
   if (lawn) col = mix(col, vec3(0.07, 0.19, 0.025), 0.55);
+#ifndef HB_NOYARD
+  if (c == 9) { float yd = yc.x < 1.5 ? yardLawnDry(yc, S.p.xz) : 0.9; dry = yd; col = yardLawnCol(yd, n1) * (1.0 + 0.25 * r4); }
+#endif
   if (ice) {   // Carpobrotus: fleshy yellow-green to blue-green mats, red-tinged (stressed) leaves and whole bronze-red mats
     float m = fbm(S.p.xz * 0.05 + 3.0), bg = vnoise(S.p.xz * 0.07 + 2.0);
     col = mix(vec3(0.17, 0.43, 0.09), vec3(0.3, 0.55, 0.13), n1);
@@ -190,6 +202,9 @@ BODY.flower = /* glsl */`
 void coverMain(out vec3 P, out vec3 N, out bool kill) {
   Site S = site();
   if (!S.ok || (S.cls != 3 && S.cls != 8 && S.cls != 9) || S.d < uLayer.x || S.d >= uLayer.y || S.rank * uLayer.z >= 4.0 * min(1.0, pow(12.0 / max(S.d, 0.5), 1.3))) { kill = true; P = vec3(0.0); N = vec3(0.0, 1.0, 0.0); vGC = vec3(0.0); vCov = vec4(0.0); return; }
+#ifndef HB_NOYARD
+  if (S.cls == 9 && yardGrassK(yardCell(uLot, uBioXf, S.p.xz)) < 0.5) { kill = true; P = vec3(0.0); N = vec3(0.0, 1.0, 0.0); vGC = vec3(0.0); vCov = vec4(0.0); return; }
+#endif
   uint s = S.s;
   float r1 = rnd(s), r2 = rnd(s), r3 = rnd(s), r4 = rnd(s);
   float patchN = fbm(S.p.xz * 0.03 + 11.0);
