@@ -488,6 +488,8 @@ def build(cid, res, samples):
         sys.path.insert(0, HERE)
         import car_hero
         car_hero.detail(parts, D, log=print)
+        import car_body
+        car_body.aero(cid, parts, D, log=print)
         res = max(res, 2048)
     wheel = soup_mesh('L0_wheel', B['wheel'])
     custom = meta['custom']

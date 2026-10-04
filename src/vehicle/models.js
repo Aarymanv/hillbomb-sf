@@ -793,22 +793,60 @@ function tube(ctx, path, prof, fin, o = {}) {
 function endRound(d, r) { if (d >= r.z) return 0; const s = 1 - Math.max(d, 0) / r.z; return 1 - Math.sqrt(Math.max(0, 1 - s * s)); }
 
 /** lower-body cross-section parameters at z */
+const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+// end rounding with optional separate lengths for plan (zx), top (zt) and bottom (zb): a long top + short bottom = raked fascia
+const endR = (d, r, k) => endRound(d, r[k] ? { z: r[k] } : r);
 function section(P, z) {
   let yb = P.yb(z), yt = P.yt(z), yh = P.yh(z), w = P.w(z);
-  const eF = endRound(z - P.zF, P.rndF), eR = endRound(P.zR - z, P.rndR);
-  w -= eF * P.rndF.x + eR * P.rndR.x;
-  const dt = eF * P.rndF.t + eR * P.rndR.t;
+  const dF = z - P.zF, dR = P.zR - z, rF = P.rndF, rR = P.rndR;
+  w -= endR(dF, rF, 'zx') * rF.x + endR(dR, rR, 'zx') * rR.x;
+  const dt = endR(dF, rF, 'zt') * rF.t + endR(dR, rR, 'zt') * rR.t;
   yt -= dt; yh -= dt;
-  yb += eF * P.rndF.b + eR * P.rndR.b;
+  yb += endR(dF, rF, 'zb') * rF.b + endR(dR, rR, 'zb') * rR.b;
   // very rounded tips (bug, buggy) can pinch the section shut: keep a sliver of height so the side stays finite
   if (yh < yb + 0.03) { const m = (yh + yb) / 2; yb = m - 0.015; yh = m + 0.015; if (yt < yh) yt = yh; }
+  // body pass 3 sculpt (P.sculpt): the whole section pulled in (base + waist between the arches) so the flared arches end
+  // at the profile-table width; S.w stays the table width (getModelSpec / physics box unchanged)
+  const SC = P.sculpt, ws = SC ? w - SC._base - SC.waist * sculptBetween(P, z) : w;
   const yw = yb + P.kw * (yh - yb);
   const r = Math.min(P.sr, (yh - yw) * 0.6);
-  const xc = w - P.tumble;
+  const xc = ws - P.tumble;
   const tum = P.tumble, tuck = P.tuck, tp = P.tuckPow;
-  const sideX = (y) => (y >= yw ? w - tum * sq((y - yw) / Math.max(1e-6, yh - yw)) : w - tuck * Math.pow(clamp((yw - y) / Math.max(1e-6, yw - yb), 0, 1), tp));
-  const topY = (x) => yt - (yt - yh) * sq(Math.min(x, xc) / xc);
+  const sideX0 = (y) => (y >= yw ? ws - tum * sq((y - yw) / Math.max(1e-6, yh - yw)) : ws - tuck * Math.pow(clamp((yw - y) / Math.max(1e-6, yw - yb), 0, 1), tp));
+  const topY0 = (x) => yt - (yt - yh) * sq(Math.min(x, xc) / xc);
+  const sideX = SC ? (y) => sideX0(y) + sculptSide(P, SC, z, y, yb, yh) : sideX0;
+  const topY = SC ? (x) => topY0(x) + sculptTop(P, SC, z, x, ws) : topY0;
   return { z, yb, yt, yh, w, yw, r, xc, sideX, topY };
+}
+
+// ---------------------------------------------------------------- body pass 3 sculpt terms (hero / top-traffic cars)
+function sculptBetween(P, z) {
+  const A0 = P.arches[0], A1 = P.arches[1];
+  if (!A0 || !A1) return 0;
+  return sstep(A0.z + A0.ra * 0.6, A0.z + A0.ra * 1.7, z) * (1 - sstep(A1.z - A1.ra * 1.7, A1.z - A1.ra * 0.6, z));
+}
+/** side offset at (z, y): arch flares / haunches (an elliptic band around each arch that runs down to the sill and rolls
+ *  into the shoulder), a raised shoulder under the belt, a concave lower-door cove and a tucked rocker */
+function sculptSide(P, SC, z, y, yb, yh) {
+  const h = (y - yb) / Math.max(0.05, yh - yb);
+  let o = 0;
+  P.arches.forEach((A, i) => {
+    const F = i ? SC.flR : SC.flF; if (!F) return;
+    const rn = Math.hypot((z - A.z) / A.ra, Math.max(0, y - A.cy) / A.rh), k = SC.flW / A.ra;
+    o += F * sstep(0.93, 1.03, rn) * (1 - sstep(1.03 + k * 0.3, 1.03 + k, rn)) * (1 - sstep(0.82, 1.0, h));
+  });
+  const btw = sculptBetween(P, z);
+  o += SC.shoulder * Math.exp(-sq((h - 0.8) / 0.09)) * (1 - sstep(0.9, 1.0, h)) - SC.cove * btw * Math.exp(-sq((h - 0.4) / 0.15)) - SC.rocker * (1 - sstep(0.0, 0.25, h));
+  return o;
+}
+/** bonnet: centre power dome + raised fender crowns with valleys between, faded out at the nose and the scuttle */
+function sculptTop(P, SC, z, x, w) {
+  if (!SC.dome && !SC.crown) return 0;
+  const zE = P.gh ? P.gh.z0 : P.zF + 1.1;
+  const along = sstep(P.zF + 0.1, P.zF + 0.45, z) * (1 - sstep(zE - 0.3, zE - 0.04, z));
+  if (along <= 0) return 0;
+  const u = x / w;
+  return along * (SC.dome * Math.exp(-sq(u / 0.3)) + SC.crown * Math.exp(-sq((u - 0.8) / 0.12)) - 0.45 * SC.crown * Math.exp(-sq((u - 0.56) / 0.11)));
 }
 
 function archTop(P, z) {
@@ -981,10 +1019,15 @@ function ghMat(P, q) {
     return G.roofFin || FIN.paint;
   }
   if (q.tag === 'corner') {
+    // body pass 3: slim A-pillars, the side half of the roof-edge arc along the windscreen is glass (glass wraps the pillar)
+    if (P.sculpt && inR(z, G.ws) && Math.abs(q.x) > G.wt(z) - G.rc * 0.5) return FIN.glass;
     if (inR(z, G.ws) || inR(z, G.rear)) return G.aFin || FIN.paint;
     return G.railFin || FIN.paint;
   }
   if (inAny(z, G.side)) return FIN.glass;
+  // body pass 3: the A-pillar's side face ahead of the front door glass is a fixed quarter light (the old black-gloss
+  // triangle filled a third of the in-car view); only the rounded roof-edge strip stays a pillar
+  if (P.sculpt && q.tag === 'side' && G.ws && G.side && G.side.length && z > G.ws[0] + 0.035 && z < G.side[0][0] - 0.012) return FIN.glass;
   if (G.pillarFin) return typeof G.pillarFin === 'function' ? G.pillarFin(z) : G.pillarFin;
   return FIN.paint;
 }
@@ -4858,6 +4901,26 @@ function buildWheel(P, lod) {
 // roster models that do not have their own body yet borrow the closest existing one
 const STANDIN = { piccina: 'hatch', nipper: 'hatch', petard: 'hatch', gauner: 'hatch', tora: 'hatch', brawler: 'muscle', vandal: 'muscle', stallion18: 'muscle', hellion: 'muscle', corsair: 'coupe', rz7: 'coupe', kaminari: 'coupe', raiden: 'sedan', senkou: 'super', hachi: 'hatch', sora: 'coupe', classic9: 'coupe', coupeGT: 'coupe', k5: 'sedan', k3: 'sedan', sovereign: 'muscle', vanguard: 'coupe', sport1: 'rally', aspro: 'rally', rallye6: 'sedan', saetta: 'super', seiun: 'sedan', contessa: 'super', tempesta: 'super', stradale: 'coupe', funo: 'super', aska: 'super', celerite: 'super', munja: 'super', elektra: 'ev', trophy: 'pickup', buggy: 'rally', trekker: 'suv', kodiak: 'suv', baja: 'pickup', kugel: 'hatch', picknick: 'van', comet: 'muscle', kestrel: 'rally' };
 const PDEF = new Map();
+// body pass 3 (tools/blender/car_body.py notes): sculpt amounts for the hero / top-traffic bodies, metres. fl* arch flares /
+// haunches (flW band width), waist = coke-bottle pinch between the arches, shoulder / cove / rocker = side section, dome /
+// crown = bonnet, ghIn = extra greenhouse tumblehome, ghTaper = cabin plan taper towards the C-pillar; rndF / rndR override
+// the end rounding lengths (zt top, zx plan, zb bottom: long top + short bottom = raked fascia, chin forward).
+const SCULPT_SEDAN = { flF: 0.028, flR: 0.03, waist: 0.012, shoulder: 0.008, cove: 0.01, rocker: 0.014, dome: 0.01, crown: 0.012, ghIn: 0.03, ghTaper: 0.03, rndF: { zt: 0.52, t: 0.15, zx: 0.45, x: 0.19, zb: 0.1, b: 0.05 }, rndR: { zt: 0.34, t: 0.08, zx: 0.3, x: 0.13, zb: 0.1 } };
+const SCULPT = {
+  sedan: SCULPT_SEDAN, taxi: SCULPT_SEDAN,
+  hatch: { flF: 0.03, flR: 0.034, waist: 0.012, shoulder: 0.008, cove: 0.01, rocker: 0.014, dome: 0.008, crown: 0.012, ghIn: 0.03, ghTaper: 0.03, rndF: { zt: 0.48, t: 0.14, zx: 0.42, x: 0.17, zb: 0.1, b: 0.05 }, rndR: { zt: 0.16, zx: 0.18, x: 0.08 } },
+  ev: { flF: 0.022, flR: 0.026, waist: 0.008, shoulder: 0.006, cove: 0.008, rocker: 0.012, dome: 0.006, crown: 0.01, ghIn: 0.04, ghTaper: 0.04, rndF: { zt: 0.6, t: 0.16, zx: 0.5, x: 0.22, zb: 0.14, b: 0.06 }, rndR: { zt: 0.36, t: 0.07, zx: 0.32, x: 0.14 } },
+  suv: { flF: 0.035, flR: 0.035, flW: 0.24, waist: 0.01, shoulder: 0.008, cove: 0.014, rocker: 0.02, dome: 0.012, crown: 0.014, ghIn: 0.03, ghTaper: 0.025, rndF: { zt: 0.45, t: 0.12, zx: 0.36, x: 0.14, zb: 0.14, b: 0.08 }, rndR: { zt: 0.2, zx: 0.22, x: 0.1 } },
+  pickup: { flF: 0.04, flR: 0.04, flW: 0.24, waist: 0.008, shoulder: 0.006, cove: 0.012, rocker: 0.02, dome: 0.016, crown: 0.012, ghIn: 0.025, rndF: { zt: 0.36, t: 0.1, zx: 0.28, x: 0.13, zb: 0.12, b: 0.07 } },
+  tora: { flF: 0.045, flR: 0.042, waist: 0.016, shoulder: 0.008, cove: 0.016, rocker: 0.018, dome: 0.008, crown: 0.016, ghIn: 0.04, ghTaper: 0.04, rndF: { zt: 0.45, t: 0.12, zx: 0.38, x: 0.15, zb: 0.07, b: 0.03 }, rndR: { zt: 0.2, zx: 0.2, x: 0.09 } },
+  rallye6: { flF: 0.05, flR: 0.05, flW: 0.22, waist: 0.014, shoulder: 0.006, cove: 0.012, rocker: 0.016, dome: 0.012, crown: 0.012, ghIn: 0.03, ghTaper: 0.03, rndF: { zt: 0.38, t: 0.1, zx: 0.3, x: 0.12, zb: 0.08 }, rndR: { zt: 0.22, zx: 0.2, x: 0.08 } },
+  stallion18: { flF: 0.03, flR: 0.05, flW: 0.26, waist: 0.016, shoulder: 0.012, cove: 0.012, rocker: 0.016, dome: 0.018, crown: 0.01, ghIn: 0.04, ghTaper: 0.06, rndF: { zt: 0.3, t: 0.08, zx: 0.4, x: 0.16, zb: 0.16, b: 0.08 }, rndR: { zt: 0.22, zx: 0.26, x: 0.1 } },
+  coupe: { flF: 0.045, flR: 0.07, flW: 0.28, waist: 0.016, shoulder: 0.004, cove: 0.008, rocker: 0.012, crown: 0.022, ghIn: 0.045, ghTaper: 0.07, rndF: { zt: 0.6, t: 0.14, zx: 0.5, x: 0.22, zb: 0.12 }, rndR: { zt: 0.5, t: 0.1, zx: 0.4, x: 0.17 } },
+  super: { flF: 0.035, flR: 0.065, flW: 0.28, waist: 0.02, shoulder: 0.004, cove: 0.01, rocker: 0.012, crown: 0.016, ghIn: 0.03, ghTaper: 0.06, rndF: { zx: 0.3, x: 0.14, zt: 0.22, zb: 0.06 }, rndR: { zt: 0.14, zx: 0.2, x: 0.08 } },
+  muscle: { flF: 0.02, flR: 0.05, flW: 0.3, waist: 0.014, shoulder: 0.012, cove: 0.01, rocker: 0.014, dome: 0.02, crown: 0.008, ghIn: 0.035, ghTaper: 0.06, rndF: { zx: 0.22, x: 0.09 }, rndR: { zx: 0.18, x: 0.07 } },
+  k5: { flF: 0.035, flR: 0.042, waist: 0.014, shoulder: 0.012, cove: 0.014, rocker: 0.016, dome: 0.016, crown: 0.014, ghIn: 0.035, ghTaper: 0.03, rndF: { zt: 0.5, t: 0.13, zx: 0.42, x: 0.17, zb: 0.1, b: 0.05 }, rndR: { zt: 0.3, t: 0.07, zx: 0.28, x: 0.12, zb: 0.1 } },
+};
+
 function getP(id) {
   if (PDEF.has(id)) return PDEF.get(id);
   const mk = DEFS[id] || DEFS[STANDIN[id]];
@@ -4879,11 +4942,27 @@ function getP(id) {
       sr: b.sr ?? 0.06, crease: b.crease ?? 38, lodSpacing: b.lodSpacing, charY: b.charY != null ? F(b.charY) : null, charD: b.charD ?? 0.006, levels: b.levels || null, lodLevels: b.lodLevels || null, levelsOnly: !!b.levelsOnly, archN: b.archN, bedY: b.bedY || null, spacing: b.spacing,
       rndF: Object.assign({ z: 0.15, x: 0.1, t: 0.05, b: 0.04 }, b.rndF), rndR: Object.assign({ z: 0.12, x: 0.08, t: 0.04, b: 0.04 }, b.rndR),
     });
+    const S0 = !raw.noArches && !(typeof location !== 'undefined' && /[?&]sculpt=0/.test(location.search)) && SCULPT[id];
+    if (S0) {
+      const SC = Object.assign({ flF: 0, flR: 0, flW: 0.2, waist: 0, shoulder: 0, cove: 0, rocker: 0, dome: 0, crown: 0, ghIn: 0, ghTaper: 0 }, S0);
+      SC._base = Math.max(0, Math.max(SC.flF, SC.flR) - 0.008);
+      if (S0.rndF) Object.assign(P.rndF, S0.rndF);
+      if (S0.rndR) Object.assign(P.rndR, S0.rndR);
+      P.sculpt = SC;
+    }
   }
   if (raw.gh) {
     const g = raw.gh;
     P.gh = Object.assign({}, g, { roof: F(g.roof), wb: F(g.wb), wt: F(g.wt), rc: g.rc ?? 0.07, crown: g.crown ?? 0.03, bulge: g.bulge ?? 0.012 });
     const G = P.gh;
+    if (P.sculpt) {
+      // greenhouse follows the pulled-in body (most of the base + waist), leans in more (tumblehome) and tapers in plan
+      // towards the C-pillar
+      const SC = P.sculpt, wb0 = G.wb, wt0 = G.wt, rearT = (z) => sstep(G.z0 + (G.z1 - G.z0) * 0.45, G.z1, z);
+      const shift = (z) => 0.75 * (SC._base + SC.waist * sculptBetween(P, z)) + SC.ghTaper * rearT(z);
+      G.wb = (z) => wb0(z) - shift(z);
+      G.wt = (z) => wt0(z) - shift(z) - SC.ghIn;
+    }
     P.topIn = (z) => G.wb(z) - 0.015;
     if (P.bed) { const bz = P.bed.z0; P.topIn = (z) => (z < bz - 0.05 ? G.wb(z) - 0.015 : 0.925); }
     const above = (z) => G.roof(z) - G.crown - section(P, z).topY(G.wb(z));
@@ -5286,7 +5365,7 @@ export function parkedCarGeometry(id, level) {
     if (level === 1 && A.caliper) put(A.caliper, mx, [0.09, 0.09, 0.1], [0.2, 0.4]);
   }
   const g = mergeGeometries(parts, false);
-  g.computeBoundingSphere(); g.name = 'parked:' + id + ':L' + level;
+  g.computeBoundingSphere(); g.computeBoundingBox(); g.name = 'parked:' + id + ':L' + level;
   A.parked[level] = g;
   return g;
 }
