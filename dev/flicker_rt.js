@@ -5,8 +5,13 @@
 //   window.__flickTag = { name: fn }    -> extra per-frame tags (e.g. count IBL bakes) reported for the worst jumps
 // Reports frame-to-frame jumps of the whole-screen mean and of 12 x 6 screen regions (0..255 luminance), and the frames
 // where they happen with their tags (bake = the environment re-baked the IBL that frame).
-window.__flickRT = async (secs = 20, { paused = false } = {}) => {
+// still: traffic + pedestrians cleared (a car passing / bumping the parked player car was most of the 'rain flicker' in the
+// concept framing: regionMax 38-180 outliers); noRain: the rain streak + splash particles hidden (their thin lines crossing lit
+// tower windows are the remaining region jumps); rows: [r0, r1] limits the region stats to those rows of the 12 x 6 grid
+window.__flickRT = async (secs = 20, { paused = false, still = false, noRain = false, rows = [0, 5] } = {}) => {
   const W = window, E = W.__env, pm = E._dbg?.pmrem;
+  if (still) { const G = W.__G; G.traffic.clear(); G.traffic.density = 0; G.traffic.enabled = false; G.peds.enabled = false; G.peds.density = 0; }
+  if (noRain) for (const n of ['weather:rain', 'weather:splash']) { const o = W.__scene.getObjectByName(n); if (o) o.material.visible = false; }
   let bakes = 0;
   if (pm && !pm.__hbWrapped) { const f = pm.fromEquirectangular.bind(pm); pm.fromEquirectangular = (...a) => { W.__hbBakes = (W.__hbBakes || 0) + 1; return f(...a); }; pm.__hbWrapped = true; }
   if (!paused) E.state.paused = false;
@@ -21,7 +26,7 @@ window.__flickRT = async (secs = 20, { paused = false } = {}) => {
     const R = W.__regions(W.__rb()); let s = 0; for (const v of R) s += v; const g = s / 72;
     const baked = (W.__hbBakes || 0) - b0; bakes += baked;
     if (prev) {
-      let worst = 0, wk = 0; for (let k = 0; k < 72; k++) { const d = Math.abs(R[k] - prev[k]); if (d > reg[k]) reg[k] = d; if (d > worst) { worst = d; wk = k; } }
+      let worst = 0, wk = 0; for (let k = rows[0] * 12; k < (rows[1] + 1) * 12; k++) { const d = Math.abs(R[k] - prev[k]); if (d > reg[k]) reg[k] = d; if (d > worst) { worst = d; wk = k; } }
       const gj = Math.abs(g - prevG);
       if (worst > 2 || gj > 1) ev.push({ f: n, t: +((now - t0) / 1000).toFixed(2), g: +gj.toFixed(2), r: +worst.toFixed(1), at: [wk % 12, Math.floor(wk / 12)], bake: baked, ...(W.__flickTag ? Object.fromEntries(Object.entries(W.__flickTag).map(([k, f]) => [k, f()])) : {}) });
     }
