@@ -14,6 +14,9 @@ export const LOT_W = 7.62;                // 25 ft
 // (a live binding: the build workers have no page URL, v2worker.js sets it from the plan's nov5 on init)
 export let NOV5 = typeof location !== 'undefined' && /[?&]nov5\b/.test(location.search || '');
 export function setNOV5(v) { NOV5 = !!v; }
+// ?nov6 = A/B switch for the v6 pass (district bay / roof / window frequencies, neighbour paint, back yards, roof decks)
+export let NOV6 = NOV5 || (typeof location !== 'undefined' && /[?&]nov6\b/.test(location.search || ''));
+export function setNOV6(v) { NOV6 = !!v; }
 const PROBE = [2.5, 5, 8, 12, 17];
 function h01(i, s) { let h = Math.imul(i ^ (s * 0x9e3779b1), 2654435761); h ^= h >>> 15; h = Math.imul(h, 2246822519); h ^= h >>> 13; return (h >>> 0) / 4294967296; }
 

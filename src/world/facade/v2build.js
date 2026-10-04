@@ -12,11 +12,12 @@ import { v3Eligible, v3Wall, FSTRIDE } from './v3front.js';
 import { bayCells, V3LOD, KitCells, kitReady, towerInfo, setTower, chamfer, rim, rimH, hasRim, roofY, midFront, gable, crown, clutterPlan, clutterMid, clutterKit, nearKitWall, falseFrontH, falseFront, solar, hasSaw, sawtooth } from './v2detail.js';
 import { buildDressTile } from './v2dressgeo.js';
 import { cornerPlan, turret, mansardOf, mansard, balconyPlan, balconies, crestOf, crest } from './v5mass.js';
+import { yard, roofDeck } from './v6yard.js';
 
 // arrays that cross the worker boundary
 export const B_KEYS = ['verts', 'v0', 'nv', 'tileOf', 'tileFirst', 'tileCount', 'base', 'h', 'minH'];
 export const P_KEYS = ['cx', 'cz', 'area', 'minX', 'minZ', 'maxX', 'maxZ', 'ox', 'oz', 'ohx', 'ohz', 'oyaw', 'fill', 'y0', 'yb', 'yEave', 'yTop',
-  'style', 'zone', 'pitched', 'edge', 'roofC', 'roofL', 'flags', 'pc', 'corr', 'swd', 'lotF', 'lotN', 'N0', 'par', 'eg', 'v3', 'nov5'];
+  'style', 'zone', 'pitched', 'edge', 'roofC', 'roofL', 'flags', 'pc', 'corr', 'swd', 'lotF', 'lotN', 'N0', 'par', 'eg', 'v3', 'nov5', 'nov6', 'yg', 'yd', 'ys'];
 
 
 
@@ -80,7 +81,7 @@ export function emitFar({ B, P }, buf, i) {
       const nb = noWin ? 0 : grid(len, margin, bay, g);
       wall(buf, A[0], A[1], Bq[0], Bq[1], nx, nz, y0, yb, ye, front ? mainM : otherM, g[0], nb);
     }
-    if (pt > 0 && pt < 8) pitchedRoof(buf, P, i, pt, wallCOf(P, i), prm(P, i, 9, 2));
+    if (pt > 0 && pt < 8) pitchedRoof(buf, P, i, pt, wallCOf(P, i), prm(P, i, 9, 2), true);
     else {
       const q = [cr(hx, -hz), cr(hx, hz), cr(-hx, hz), cr(-hx, -hz)];
       ring.length = 8; for (let k = 0; k < 4; k++) { ring[k * 2] = q[k][0]; ring[k * 2 + 1] = q[k][1]; }
@@ -102,7 +103,7 @@ export function emitFar({ B, P }, buf, i) {
     const nb = noWin ? 0 : grid(len, margin, bay, g);
     wall(buf, ax, az, bx, bz, sgn * ez / len, -sgn * ex / len, y0, yb, ye, front ? mainM : otherM, g[0], nb);
   }
-  if (pt > 0 && pt < 8) pitchedRoof(buf, P, i, pt, wallCOf(P, i), prm(P, i, 9, 2));
+  if (pt > 0 && pt < 8) pitchedRoof(buf, P, i, pt, wallCOf(P, i), prm(P, i, 9, 2), true);
   else { flatRoof(buf, ring, idx, ye, P.roofL[i], roofOf(P, i)); if (pt >= 8) pitchedRoof(buf, P, i, pt); else { const tw = towerInfo(P, i); if (tw.crown) { setTower(tw); crown(buf, P, i, ye, P.ohx[i], P.ohz[i]); } } }
 }
 const Q4 = [0, 1, 2, 3];
@@ -133,7 +134,7 @@ export function buildMidTile({ B, P, R }, tile, hidden) {
   eachIn(P, f, c, hidden, (i) => emitMid(P, B, R, buf, i, fronts, rnd));
   return { buf, fronts: packFronts(fronts) };
 }
-const EX = [], EZ = [], EF = [], EG = [], FW = [], PL = [];
+const EX = [], EZ = [], EF = [], EG = [], FW = [], PL = [], EP = [];
 function emitMid(P, B, R, buf, i, fronts, rnd) {
   B.ring(i, ring);
   const n = ring.length / 2; if (n < 3) return;
@@ -162,7 +163,7 @@ function emitMid(P, B, R, buf, i, fronts, rnd) {
   // false front: side / back walls stop below the street wall, which rises as a parapet front (v2plan flag 64)
   const ff = (P.flags[i] & 64) && !P.pitched[i] && !tw.ySet ? falseFrontH(P, i) : 0;
   let best = -1, bestL = 0;
-  FW.length = 0;
+  FW.length = 0; EP.length = k; EP.fill(1);
   for (let q = 0; q < k; q++) {
     const qq = (q + 1) % k;
     let ax = EX[q], az = EZ[q], bx = EX[qq], bz = EZ[qq];
@@ -176,6 +177,7 @@ function emitMid(P, B, R, buf, i, fronts, rnd) {
       if (id && id - 1 !== i) { hits++; ntop = Math.max(ntop, P.yEave[id - 1]); if (pi >= 0 && P.par[id - 1] === pi) sib++; }
     }
     const party = hits >= 2 || (len < 3 && hits >= 1);
+    EP[q] = party || front ? 1 : 0;
     const ywE = ff && !EF[q] ? yw - ff : yw;
     if (party && ntop >= ywE - 2.5) { if (ntop < ywE - 0.05 || sib < 3) wall(buf, ax, az, bx, bz, nx, nz, y0, yb, ywE, M.BACK, 1, 0); continue; }
     let ylo = yb;
@@ -208,6 +210,8 @@ function emitMid(P, B, R, buf, i, fronts, rnd) {
     if (bp.length) balconies(buf, P, i, fa, fz, fb, fc, fl, bp, nb5, cw5);
   }
   if (cp && cp.kind === 'turret') turret(buf, P, i, cp);
+  // (v6) back yard: lot-line fences, deck / patio / beds / shed (v6yard.js)
+  if (P.yg && P.yg[i] > -1e3) yard(buf, P, R, i, EX, EZ, EP, sgn);
   const pt = P.pitched[i];
   // roofs: flat roofs sit below a coped parapet rim; pitched / domes as before; tower setback + crown
   const roofPoly = () => { ring.length = k * 2; idx.length = k; for (let q = 0; q < k; q++) { ring[q * 2] = EX[q]; ring[q * 2 + 1] = EZ[q]; idx[q] = q; } };
@@ -246,7 +250,7 @@ function emitMid(P, B, R, buf, i, fronts, rnd) {
     }
   }
   if (pt < 8) { B.ring(i, ring); clutterPlan(P, i, ring, PL); if (PL.length) clutterMid(buf, P, i, PL, pt ? P.yEave[i] : roofY(P, i)); }
-  if (!pt) { B.ring(i, ring); solar(buf, P, i, ring, roofY(P, i)); }
+  if (!pt) { B.ring(i, ring); solar(buf, P, i, ring, roofY(P, i)); if (!tw.ySet) roofDeck(buf, P, i, ring, roofY(P, i)); }
 }
 function orientXZ(X, Zs) { let a = 0; const n = X.length; for (let k = 0; k < n; k++) { const kk = (k + 1) % n; a += X[k] * Zs[kk] - X[kk] * Zs[k]; } return a < 0 ? -1 : 1; }
 function packFronts(a) { return new Float32Array(a); }

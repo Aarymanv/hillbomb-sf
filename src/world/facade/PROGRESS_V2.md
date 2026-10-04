@@ -1,5 +1,44 @@
 # Buildings v2 (1:1 OSM city): design + progress
 
+## 2026-10-03 (v6): district frequencies, neighbour paint, back yards + roof decks (aerial "boxy" fix)
+- Variety (v2plan / v5mass / v2detail; ?nov6 = A/B, also inside the workers via plan.nov6 + v2lots setNOV6): Sunset /
+  Richmond / Marina stucco get box-bay oriels over the garage (Avenues 50 %, Marina 32 %, Bayview 25 %; bayCells STUCCO =
+  the picture-window cell, bayForm 'squareS' 0.38-0.7 m, v3 builds the same bay, its tile-pent oriel is skipped there) and
+  Mediterranean arched windows (Marina 42 %, Avenues 15 %); inner / central Richmond is now Edwardian-heavy (stucco 50 /
+  Edwardian 36 / Victorian 14 %); separately traced houses with no OSM roof shape get the district's hip / gable share
+  (houseRoof: Avenues stucco 27 %, Bayview / Excelsior 44 %, Edwardian 32 %, Victorian 12 %); no two neighbours in the same
+  paint (repaintNeighbours: a house within 4 % of a neighbour's wall colour, centroids < 13 m, is repainted with the
+  farthest palette pick, 6,991 houses); downtown mid-rise (30-55 m) offices / stone blocks get a 1-2 storey setback under the
+  crown (35-45 %), commercial / downtown cornice depth + height vary per building; Mission / SoMa side-wall murals cut to
+  9-10 % (rainbow rectangles read as glitches from above). Census (whole plan): bay share Avenues 15 -> 59 %, Bayview 37 ->
+  53 %, Marina 33 -> 52 %, Victorian zone 88 -> 92 %; pitched Avenues 10 -> 28 %, Bayview 8 -> 32 %.
+- Back yards (v6yard.js new, MID geometry, every distance): plan P.yg / P.yd / P.ys = ground behind the house, the yard
+  direction (opposite the main front; rear additions carry their lot's yard) and the slope. The worker finds the rear wall
+  (non-party, facing the yard) and probes the party raster (margin RM 8 -> 20 m) for the next building: depth = half the gap
+  (back-to-back yards meet at the rear fence), 6-18 m. Per yard: wood fences on both lot lines + the rear line (tops follow
+  the slope), decks (elevated at the living floor with posts, rails, stair; or low), patios / fully paved yards with planter
+  strips, ground cover patchwork (dry lawn / bark / decomposed granite / the terrain lawn), flower borders, raised beds,
+  garden sheds. 76-92 % of houses in the residential zones have a yard record; ~65 % emit one (no rear edge on some
+  corner lots, < 2.2 m gaps). Roof decks on 7-17 % of flat house roofs (rails, some with a stair penthouse); +1 skylight
+  share. props/v2.js: back-garden trees 6 -> 9-15 % per 8 m yard cell by district (?nov6 / ?noyardtrees).
+- FAR: pitched roofs without soffits / fascia (lite) -> FAR 2.72 M tris -> 2.52 M despite the extra pitched roofs.
+- Cost: MID tile tris +19-38 % over the loaded tiles (Mission spot 3.72 -> 4.44 M; ~35 tris per yard); in view +0.15-0.3 M
+  tris, +0-80 calls. FAR 2.72 -> 2.52 M. GPU (headless, RTX 5070 Ti shared with other agents' runs: identical reps spread
+  16.5-25 ms, so nothing below ~2 ms resolves): 60 m/s Mission drive GPU p50 over 6 v6 reps median 19.5 ms vs nov6 20.5 /
+  noyardtrees 19.0; CPU p50 14-21 ms both. VRAM (?memtrack, same session pairs) 3.01-3.03 -> 3.05-3.08 GB (+30-60 MB).
+  Flicker RT (12 s, static cam): street views same event counts as nov6 (mission 83 vs 89, day 102 vs 94); aerial 15 vs 5
+  small events (regionMax 3.7 vs 2.4: swaying yard trees); frame parity __altStat at 3 aerials d1 ~= d2, equal to nov6 (no
+  shimmer from the thin fences). Regress views reg_*_bld6.jpg match reg_*_after.
+- Shots: shots/bld6_<twinpeaks|drone_mission|drone_pacheights|drone_sunset|drone_coit|street_haight|street_richmond>_<before|
+  after>.jpg (before = ?nov6, same build), close views bld6_drone_low / low2 / top_after.jpg, bld5_closeup_noon_v6stucco_after.
+  Headless harness (no browser pane; hidden panes throttle timers to 1/min and Google tiles never settle):
+  node dev/car3cdp.mjs "http://127.0.0.1:5191/?mute&prologue=0[&nov6][&views=a,b]" dev/bld6_run.js; bld6_perf.js (perf +
+  VRAM, add &memtrack), bld6_gpu.js, bld6_reg.js (regress views as reg_*_bld6 + flicker), bld6_stats.js (census).
+- GOTCHA: the :5191 watch build can leave the v2worker bundle stale after a facade edit (the worker chunk kept an older
+  v2geom); touch v2worker.js and check the newest dist-dev/assets/v2worker-*.js before measuring.
+- Next: lawn colour of the terrain yard class (terrainmesh.js) is still a uniform bright green where no cover is drawn;
+  rear-edge detection misses some corner lots; yard items have no colliders (walk-in on foot passes through fences).
+
 ## 2026-10-01 (v5): massing variety, near sun shadows, cross-fade pop fix
 - Massing (v5mass.js new, MID geometry so near and far agree; ?nov5 = A/B, now also inside the build workers via the
   plan's nov5 + v2lots setNOV5 live binding): per-lot front setbacks (v2lots, 22-40 % of lots, 0.35-2.1 m); bay forms

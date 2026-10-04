@@ -71,6 +71,7 @@ Look-dev pass 9/29 (whole-image cohesion, shots/look_*_{before,after}.jpg, look_
   (11 cm texels, ~18 cm normal bias), not 4096. Measure on an idle machine, then default it on if < 1 ms.
   the ref; Hyde St camera does not frame Alcatraz; sidewalks read pale at night.
 
+Buildings v6 pass 10/3 (district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs): see src/world/facade/PROGRESS_V2.md top; ?nov6 = A/B; shots/bld6_*; headless harness dev/bld6_run.js via dev/car3cdp.mjs.
 Buildings v5 pass 10/1 (massing variety: setbacks / bays / turrets / chamfers / mansards / balconies / eaves / crests; near sun-shadow cascade on by default; dithered cross-fades for v3 / kit / yards / near tiles): see src/world/facade/PROGRESS_V2.md top; ?nov5 ?nofade ?nonearshadow = A/B; shots/bld5_*.
 Buildings v4 pass 9/29 (grounding / bounce / lamp-map night / front yards / murals / tree wells / residential poles): see src/world/facade/PROGRESS_V2.md top; ?nov4 = A/B; shots/bld4_*.
 

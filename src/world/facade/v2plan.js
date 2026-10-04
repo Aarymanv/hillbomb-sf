@@ -8,7 +8,7 @@ import { NP, PW } from './material.js';
 import { L } from './layers.js';
 import { S, GT, WT, IT } from './plan.js';
 import { lin } from './emit.js';
-import { splitRows, NOV5 } from './v2lots.js';
+import { splitRows, NOV5, NOV6 } from './v2lots.js';
 
 // ------------------------------------------------------------------ neighbourhoods (real centres, radius m)
 export const Z = { DOWNTOWN: 0, SOMA: 1, INDUSTRIAL: 2, CHINATOWN: 3, NORTHBEACH: 4, WHARF: 5, NOBHILL: 6, TENDERLOIN: 7,
@@ -91,7 +91,7 @@ DIMS[S.COMMERCIAL] = [4.3, 3.3, 1.2, 0.35, 3.0]; DIMS[S.APARTMENT] = [4.0, 3.0, 
 DIMS[S.LOFT] = [5.0, 4.2, 1.5, 0.6, 3.8]; DIMS[S.WAREHOUSE] = [6.0, 4.5, 1.2, 0.8, 5.5]; DIMS[S.TOWER_GLASS] = [6.5, 3.8, 2.2, 0.8, 1.6];
 DIMS[S.TOWER_STONE] = [6.0, 3.7, 2.4, 1.0, 2.6]; DIMS[S.OFFICE] = [5.0, 3.8, 1.2, 0.8, 3.2];
 
-function chooseStyle(zone, hA, kind, area, r) {
+function chooseStyle(zone, hA, kind, area, r, rich = false) {
   if (hA >= 45) {
     if (zone === Z.DOWNTOWN) return r < 0.62 ? S.TOWER_GLASS : S.TOWER_STONE;
     if (zone === Z.SOMA) return r < 0.75 ? S.TOWER_GLASS : S.TOWER_STONE;
@@ -127,7 +127,9 @@ function chooseStyle(zone, hA, kind, area, r) {
     case Z.MARINA: return comm ? S.COMMERCIAL : area > 400 ? S.APARTMENT : r < 0.62 ? S.STUCCO : r < 0.86 ? S.EDWARDIAN : S.APARTMENT;
     case Z.PRESIDIO: return r < 0.65 ? S.APARTMENT : S.EDWARDIAN;
     case Z.BAYVIEW: return area > 900 ? S.WAREHOUSE : comm ? S.COMMERCIAL : r < 0.62 ? S.STUCCO : r < 0.86 ? S.EDWARDIAN : S.VICTORIAN;
-    default: return comm ? S.COMMERCIAL : area > 500 ? S.APARTMENT : r < 0.85 ? S.STUCCO : r < 0.95 ? S.EDWARDIAN : S.VICTORIAN;
+    // (v6) inner / central Richmond: Edwardian flats + Doelger-era stucco side by side (the Sunset stays mostly stucco)
+    default: return comm ? S.COMMERCIAL : area > 500 ? S.APARTMENT : rich ? (r < 0.5 ? S.STUCCO : r < 0.86 ? S.EDWARDIAN : S.VICTORIAN)
+      : r < 0.85 ? S.STUCCO : r < 0.95 ? S.EDWARDIAN : S.VICTORIAN;
   }
 }
 
@@ -200,7 +202,7 @@ export function planCity(data, terrain) {
   const SP = splitRows(data.buildings, terrain);
   const B = SP.B, N = SP.N, N0 = SP.N0;
   const P = {
-    N, N0, bx: B, lotF: SP.lotF, lotN: SP.lotN, par: SP.par, lots: SP.stats, lotMs: SP.ms, cx: new Float32Array(N), cz: new Float32Array(N), area: new Float32Array(N),
+    N, N0, bx: B, lotF: SP.lotF, lotN: SP.lotN, par: SP.par, twinOf: SP.twin, lots: SP.stats, lotMs: SP.ms, cx: new Float32Array(N), cz: new Float32Array(N), area: new Float32Array(N),
     minX: new Float32Array(N), minZ: new Float32Array(N), maxX: new Float32Array(N), maxZ: new Float32Array(N),
     ox: new Float32Array(N), oz: new Float32Array(N), ohx: new Float32Array(N), ohz: new Float32Array(N), oyaw: new Float32Array(N), fill: new Float32Array(N),
     y0: new Float32Array(N), yb: new Float32Array(N), yEave: new Float32Array(N), yTop: new Float32Array(N),
@@ -209,6 +211,8 @@ export function planCity(data, terrain) {
     roofC: new Float32Array(N * 3), roofL: new Uint8Array(N), flags: new Uint8Array(N),
     corr: new Uint8Array(N), swd: new Uint8Array(N),   // corridor district id; street distance of the first asphalt probe (dm)
     eg: new Int16Array(B.verts.length / 2).fill(-32768),   // per ring vertex on a street wall: ground 1.2 m out (5 cm units, absolute; v3 NEAR stoops / garages)
+    // (v6) back yard: ground height behind the house (-1e4 = no yard) + the yard direction (opposite the main street front, x127)
+    yg: new Float32Array(N).fill(-1e4), yd: new Int8Array(N * 2), ys: new Float32Array(N),   // ys = ground slope along the yard (m / m)
   };
   const CRr = corridorRaster(data, B.X0, B.Z0, B.TC * 512, B.TR * 512);
   const rows = Math.ceil(N * NP / PW) + 1;
@@ -239,6 +243,8 @@ export function planCity(data, terrain) {
     const area = Math.abs(A);
     P.cx[i] = cx; P.cz[i] = cz; P.area[i] = area;
     const zone = zoneAt(cx, cz), r = hash(i, 1);
+    let rich = false;
+    if (!NOV6 && zone === Z.AVENUES) { const [la, lo] = toLatLon(cx, cz); rich = la > 37.7735 && la < 37.7885 && lo > -122.5105 && lo < -122.4570; }
     // oriented bounding box: minimum area over (up to 48 longest-ish) edge directions
     let bestA = Infinity, bux = 1, buz = 0, bu0 = 0, bu1 = 0, bv0 = 0, bv1 = 0;
     const step = n > 48 ? Math.ceil(n / 48) : 1;
@@ -262,7 +268,7 @@ export function planCity(data, terrain) {
     P.fill[i] = area / Math.max(bestA, 1e-3);
     // street-facing walls: outward probe on the road raster (asphalt) 2.5 .. 17 m out
     const base = B.base[i];
-    let gMax = -1e9, gMin = 1e9, anyF = false;
+    let gMax = -1e9, gMin = 1e9, anyF = false, mfx = 0, mfz = 0, mfl = 0;
     for (let k = 0; k < n; k++) {
       const kk = (k + 1) % n, ax = ring[k * 2], az = ring[k * 2 + 1], ex = ring[kk * 2] - ax, ez = ring[kk * 2 + 1] - az, l = Math.hypot(ex, ez);
       if (l < 1.5) continue;
@@ -273,6 +279,7 @@ export function planCity(data, terrain) {
       if (CRr && l >= 3) { const c = CRr.at(mx + nx * fd, mz + nz * fd); if (c && !P.corr[i]) P.corr[i] = c; }
       if (!P.swd[i] || fd * 10 < P.swd[i]) P.swd[i] = Math.min(255, fd * 10);
       P.edge[v0 + k] |= FRONT; anyF = true; fronts++;
+      if (l > mfl) { mfl = l; mfx = nx; mfz = nz; }
       const ga = terrain.heightAt(ax + nx * 1.2, az + nz * 1.2), gb = terrain.heightAt(ax + ex + nx * 1.2, az + ez + nz * 1.2);
       P.eg[v0 + k] = Math.round(ga * 20); if (P.eg[v0 + kk] === -32768) P.eg[v0 + kk] = Math.round(gb * 20);
       gMax = Math.max(gMax, ga, gb); gMin = Math.min(gMin, ga, gb);
@@ -288,9 +295,14 @@ export function planCity(data, terrain) {
       if (tw >= 0) { lotStyle = P.style[tw]; roofShape = 0; }
       else {
         const yT = base + hAll, yy0 = Math.min(anyF ? Math.min(gMax, gMin + 3.5) + 0.05 : base, yT - 2.5);
-        lotStyle = chooseStyle(zone, yT - yy0, kind, area, r);
+        lotStyle = chooseStyle(zone, yT - yy0, kind, area, r, rich);
         roofShape = lotRoof(lotStyle, zone, roofShape, hash(i, 5));
       }
+    } else if (!NOV6 && roofShape === 0 && !(roofH > 0) && kind <= 2 && hAll < 14 && !(B.minH[i] > 0) && area < 400) {
+      // (v6) separately traced houses (most of the Sunset / Richmond / Excelsior / Bayview) with no OSM roof shape: the
+      // district's share of hipped / gabled roofs, so a block is not all flat parapet boxes from above
+      const yT = base + hAll, yy0 = Math.min(anyF ? Math.min(gMax, gMin + 3.5) + 0.05 : base, yT - 2.5);
+      roofShape = houseRoof(chooseStyle(zone, yT - yy0, kind, area, r, rich), zone, hash(i, 605));
     }
     // pitched roofs only on compact footprints (OBB fill) of modest size; flat otherwise
     let pitched = roofShape >= 1 && roofShape <= 5 && roofShape !== 4 && P.fill[i] > 0.72 && area < 2500 && hAll < 40 ? roofShape : 0;
@@ -308,13 +320,29 @@ export function planCity(data, terrain) {
     // ------------------------------------------------------------ style + look
     P.zone[i] = zone; P.rnd[i] = r;
     const hA = yEave - y0;
-    const style = lotStyle >= 0 ? lotStyle : chooseStyle(zone, hA, kind, area, r);
+    const style = lotStyle >= 0 ? lotStyle : chooseStyle(zone, hA, kind, area, r, rich);
     P.style[i] = style;
     writeParams(params, i, style, zone, hA, B, P, kind);
     if (i >= N0 && SP.twin[i] >= 0) copyLook(params, P, SP.twin[i], i);
+    // (v6) back yard behind houses / small flats (MID v6yard.js: fences on the lot lines, decks, patios, sheds, beds)
+    if (!NOV6 && (style === S.VICTORIAN || style === S.EDWARDIAN || style === S.STUCCO || (style === S.APARTMENT && area < 500)) && area < 700 && hA < 16 && kind <= 2 && !(P.flags[i] & 32)) {
+      let dx = 0, dz = 0;
+      const tw = i >= N0 ? SP.twin[i] : -1;
+      if (tw >= 0) { dx = P.yd[tw * 2] / 127; dz = P.yd[tw * 2 + 1] / 127; P.yg[tw] = -1e4; }   // the rear addition carries the lot's yard
+      else if (mfl > 0) { dx = -mfx; dz = -mfz; }
+      if (dx || dz) {
+        let dm = 0;
+        for (let k = 0; k < n; k++) dm = Math.max(dm, (ring[k * 2] - cx) * dx + (ring[k * 2 + 1] - cz) * dz);
+        P.yg[i] = terrain.heightAt(cx + dx * (dm + 3), cz + dz * (dm + 3));
+        P.ys[i] = Math.max(-0.6, Math.min(0.6, (terrain.heightAt(cx + dx * (dm + 11), cz + dz * (dm + 11)) - P.yg[i]) / 8));
+        P.yd[i * 2] = Math.round(dx * 127); P.yd[i * 2 + 1] = Math.round(dz * 127);
+      }
+    }
   }
+  if (!NOV6) repaintNeighbours(P, params);
   P.fronts = fronts;
   P.nov5 = NOV5 ? 1 : 0;
+  P.nov6 = NOV6 ? 1 : 0;
   P.v3 = typeof location !== 'undefined' && /[?&]nov3(&|$)/.test(location.search) ? 0 : 1;   // A/B switch for the v3 NEAR street facades
   P.pc = packCompact(P);
   P.ms = performance.now() - t0;
@@ -333,6 +361,54 @@ function lotRoof(st, zone, parent, q) {
   if (st === S.EDWARDIAN) return q < 0.3 ? 2 : q < 0.4 ? 1 : 0;
   if (st === S.STUCCO) return q < 0.14 ? 2 : q < 0.22 ? 1 : 0;
   return 0;
+}
+// (v6) roofline of a separately traced house without an OSM roof shape (district shares, see planCity)
+function houseRoof(st, zone, q) {
+  if (st === S.VICTORIAN) return q < 0.12 ? 1 : 0;
+  if (st === S.EDWARDIAN) return q < 0.24 ? 2 : q < 0.32 ? 1 : 0;
+  if (st === S.STUCCO) {
+    if (zone === Z.BAYVIEW || zone === Z.INDUSTRIAL) return q < 0.3 ? 2 : q < 0.44 ? 1 : 0;
+    if (zone === Z.MARINA) return q < 0.14 ? 2 : 0;
+    return q < 0.17 ? 2 : q < 0.27 ? 1 : 0;
+  }
+  return 0;
+}
+// (v6) no two neighbouring houses in the same paint: a house whose wall colour is within a few % of a neighbour's (centroids
+// < 13 m apart, earlier index) is repainted from its style's palette (the pick farthest from every neighbour)
+function repaintNeighbours(P, D) {
+  const N = P.N, B = P.bx, CELL = 13, grid = new Map(), key = (x, z) => Math.floor(x / CELL) * 100003 + Math.floor(z / CELL);
+  const pals = { [S.VICTORIAN]: [PAL.vicBody, PAL.whites], [S.EDWARDIAN]: [PAL.edwBody], [S.STUCCO]: [PAL.stucco, PAL.whites] };
+  const twin = P.twinOf;
+  const col = (i) => { const o = i * NP * 4 + 12; return [D[o], D[o + 1], D[o + 2]]; };
+  const diff = (a, b) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]), Math.abs(a[2] - b[2]));
+  let changed = 0;
+  for (let i = 0; i < N; i++) {
+    if (i < P.N0 && P.lotN[i]) continue;
+    const st = P.style[i], k = key(P.cx[i], P.cz[i]);
+    const pl = pals[st];
+    if (pl && !B.color[i] && !(twin && twin[i] >= 0)) {
+      const nb = [];
+      for (let gz = -1; gz <= 1; gz++) for (let gx = -1; gx <= 1; gx++) {
+        const a = grid.get(k + gx * 100003 + gz); if (!a) continue;
+        for (const j of a) if (Math.hypot(P.cx[j] - P.cx[i], P.cz[j] - P.cz[i]) < CELL) nb.push(col(j));
+      }
+      const c0 = col(i);
+      if (nb.some(c => diff(c, c0) < 0.04)) {
+        let best = c0, bs = -1;
+        for (let t = 0; t < 6; t++) {
+          const arr = pl.length > 1 && hash(i, 710 + t) > 0.8 ? pl[1] : pl[0];
+          const c = lift(pick(arr, hash(i, 700 + t)), st === S.VICTORIAN ? 0.1 : 0.26);
+          let m = 9; for (const q of nb) m = Math.min(m, diff(q, c));
+          if (m > bs) { bs = m; best = c; }
+        }
+        const o = i * NP * 4 + 12; D[o] = best[0]; D[o + 1] = best[1]; D[o + 2] = best[2]; changed++;
+      }
+    }
+    let a = grid.get(k); if (!a) grid.set(k, a = []); a.push(i);
+  }
+  // rear additions follow their (maybe repainted) front lot
+  if (twin) for (let i = P.N0; i < N; i++) if (twin[i] >= 0) { const a = twin[i] * NP * 4 + 12, b = i * NP * 4 + 12; D[b] = D[a]; D[b + 1] = D[a + 1]; D[b + 2] = D[a + 2]; }
+  P.repainted = changed;
 }
 // rear addition: same paint / trim / wall material as its front lot
 function copyLook(D, P, a, b) {
@@ -383,6 +459,11 @@ function writeParams(D, i, style, zone, hA, B, P, kind) {
       wallLayer = L.STUCCO; wallC = pick((zone === Z.AVENUES || zone === Z.MARINA) && hash(i, 62) < 0.3 ? PAL.whites : PAL.stucco, r()); trimC = pick(PAL.stuccoTrim, r()); accC = pick(PAL.commAcc, r());
       winType = WT.PICTURE; groundType = GT.HOUSE; winW = 1.5; winH = 1.7; sillH = 0.85; recess = 0.12; age = 0.35; gCell = r() < 0.5 ? 0 : 1;
       if (r() < 0.5) flags |= 2;  // clay-tile eave
+      if (!NOV6) {
+        // (v6) Doelger / Marina box bays (oriels) over the garage; Mediterranean-revival arched windows (Marina, some Sunset)
+        if (hash(i, 601) < (zone === Z.AVENUES ? 0.5 : zone === Z.MARINA ? 0.32 : zone === Z.BAYVIEW ? 0.25 : 0.35)) flags |= 1;
+        if (hash(i, 602) < (zone === Z.MARINA ? 0.42 : zone === Z.AVENUES ? 0.15 : 0.1)) winType = WT.ARCH;
+      }
       break;
     case S.COMMERCIAL: {
       const rr = r();
@@ -475,7 +556,7 @@ function writeParams(D, i, style, zone, hA, B, P, kind) {
   let decor = 0;
   const brickW = wallLayer === L.BRICK || wallLayer === L.BRICK_DARK || wallLayer === L.BRICK_PAINT;
   if (hA < 30 && style !== S.TOWER_GLASS && style !== S.TOWER_STONE && style !== S.OFFICE
-    && hash(i, 131) < (zone === Z.MISSION ? 0.22 : zone === Z.SOMA || zone === Z.INDUSTRIAL ? 0.16 : 0)) decor |= 1;
+    && hash(i, 131) < (zone === Z.MISSION ? (NOV6 ? 0.22 : 0.09) : zone === Z.SOMA || zone === Z.INDUSTRIAL ? (NOV6 ? 0.16 : 0.1) : 0)) decor |= 1;   // (v6) fewer: from above they read as glitches
   if ((style === S.VICTORIAN || (style === S.EDWARDIAN && wallLayer === L.SIDING)) && hash(i, 132) < (zone === Z.MISSION ? 0.4 : 0.26)) decor |= 2;
   if ((style === S.LOFT || style === S.WAREHOUSE || (flags & 4) || (brickW && style === S.APARTMENT)) && hash(i, 133) < 0.6) decor |= 4;
   if ((style === S.STUCCO && hash(i, 134) < (zone === Z.AVENUES || zone === Z.MARINA || zone === Z.BAYVIEW ? 0.5 : 0.3))

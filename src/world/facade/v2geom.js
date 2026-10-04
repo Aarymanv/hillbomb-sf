@@ -9,7 +9,7 @@ import { L, TILE } from './layers.js';
 import { procRect } from './far.js';
 import { S, GT } from './plan.js';
 import { prm, FRONT, Z } from './v2plan.js';
-import { NOV5 } from './v2lots.js';
+import { NOV5, NOV6 } from './v2lots.js';
 import { bayCells, corniceKind, towerInfo } from './v2detail.js';
 
 // ------------------------------------------------------------------ closed Douglas-Peucker (returns kept vertex indices, in order)
@@ -100,7 +100,7 @@ function triW(Bf, p, q, r, wx, wy, wz, inv, uax, uaz) {
 function quadW(Bf, p, q, r, s, wx, wy, wz, inv, uax, uaz) { triW(Bf, p, q, r, wx, wy, wz, inv, uax, uaz); triW(Bf, p, r, s, wx, wy, wz, inv, uax, uaz); }
 
 // pitched roof on the oriented box (gabled 1, hipped 2, pyramidal 3, skillion 5) or a dome (>= 8)
-export function pitchedRoof(Bf, P, i, shape, wallC, wallLayer) {
+export function pitchedRoof(Bf, P, i, shape, wallC, wallLayer, lite = false) {
   const cy = Math.cos(P.oyaw[i]), sy = Math.sin(P.oyaw[i]);
   // local X = (cy, -sy), local Z = (sy, cy)
   let ax = cy, az = -sy, bx = sy, bz = cy, a = P.ohx[i], b = P.ohz[i];
@@ -150,7 +150,7 @@ export function pitchedRoof(Bf, P, i, shape, wallC, wallLayer) {
     if (pts.length === 4) quadW(Bf, pts[0], pts[1], pts[2], pts[3], hx, 1, hz, inv, ax, az);
     else triW(Bf, pts[0], pts[1], pts[2], hx, 1, hz, inv, bx, bz);
   }
-  if (!NOV5) {
+  if (!NOV5 && !(lite && !NOV6)) {   // (v6) FAR (lite): no soffits / fascia (a third of the FAR roof triangles)
     // soffits: the planes flipped and lowered (only the overhang band is ever seen from below)
     surf(Bf, L.TRIM, [tcol[0] * 0.92, tcol[1] * 0.92, tcol[2] * 0.92]);
     const ti = 1 / TILE[L.TRIM], dn = (p) => [p[0], p[1] - TH, p[2]];
@@ -223,7 +223,7 @@ export function roofClutter(Bf, P, i, rnd) {
 }
 
 // ------------------------------------------------------------------ party-wall raster (1 m, one tile + margin)
-export const RC = 1.0, RM = 8;
+export const RC = 1.0, RM = 20;   // (v6) 20 m margin: the back-yard probes (v6yard.js) look up to 40 m behind a house
 export class Raster {
   constructor(T = 512) { this.n = Math.ceil((T + 2 * RM) / RC); this.a = new Int32Array(this.n * this.n); this.xs = []; }
   begin(x0, z0) { this.x0 = x0 - RM; this.z0 = z0 - RM; this.a.fill(0); }

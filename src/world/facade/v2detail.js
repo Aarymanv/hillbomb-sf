@@ -14,7 +14,7 @@ import { Frame, MeshBuf } from './emit.js';
 import { S, GT } from './plan.js';
 import { prm, Z } from './v2plan.js';
 import { bayPts, offsetPts, mansardOf } from './v5mass.js';
-import { NOV5 } from './v2lots.js';
+import { NOV5, NOV6 } from './v2lots.js';
 
 export const KITLOD = 8192, V3LOD = 32768;
 export function h01(i, s) { let h = Math.imul(i ^ (s * 0x9e3779b1), 2654435761); h ^= h >>> 15; h = Math.imul(h, 2246822519); h ^= h >>> 13; return (h >>> 0) / 4294967296; }
@@ -201,6 +201,10 @@ export function towerInfo(P, i) {
   const short = Math.min(P.ohx[i], P.ohz[i]);
   if (hA >= 55 && P.fill[i] > 0.78 && short > 9 && h01(i, 43) < (st === S.TOWER_STONE ? 0.6 : 0.4)) {
     out.ySet = P.y0[i] + hA * (0.7 + 0.14 * h01(i, 44)); out.inset = Math.min(4.5, short * 0.2);
+  } else if (!NOV6 && hA >= 30 && P.fill[i] > 0.8 && short > 8 && h01(i, 46) < (st === S.TOWER_STONE ? 0.45 : 0.35)) {
+    // (v6) mid-rise downtown blocks: a one-or-two-storey setback (penthouse floors / zoning setback) under the crown
+    const fh = prm(P, i, 0, 0) || 3.6, nset = h01(i, 47) < 0.6 ? 1 : 2;
+    out.ySet = P.yEave[i] - nset * fh; out.inset = Math.min(3.2, short * (0.12 + 0.08 * h01(i, 48)));
   }
   out.crown = hA >= 35 && short > 6 ? 1 + (st === S.TOWER_STONE && h01(i, 45) < 0.45 ? 1 : 0) : 0;
   return out;
@@ -330,6 +334,7 @@ export function bayCells(P, i, nb, Lw) {
   if (!(fl & 1) || floors < 1 || Lw < 5.2 || nb < 1 || isTower(st)) return out;
   if (st === S.VICTORIAN) out.push(Math.min(gCell, nb - 1));
   else if (st === S.EDWARDIAN) { if (nb >= 3) out.push(0, nb - 1); else out.push(Math.min(gCell, nb - 1)); }
+  else if (st === S.STUCCO) { if (!NOV6) out.push(Math.min(gCell, nb - 1)); }      // (v6) one box bay / oriel over the garage
   else if (st === S.APARTMENT || st === S.COMMERCIAL) for (let c = 0; c < nb; c += 2) out.push(c);
   return out;
 }
@@ -358,7 +363,12 @@ export function corniceKind(P, i) {
   if (st === S.OFFICE) return 3;
   return 1;
 }
-const cornDims = (P, i) => { const st = P.style[i], corn = prm(P, i, 6, 3); return [st === S.VICTORIAN ? 0.55 : st === S.LOFT ? 0.45 : 0.4, Math.min(0.6, corn * 0.8)]; };
+const cornDims = (P, i) => {
+  const st = P.style[i], corn = prm(P, i, 6, 3);
+  // (v6) downtown / commercial blocks: cornice depth + height vary per building (shallow bands to deep overhanging cornices)
+  const k = NOV6 || isHouse(st) ? 1 : 0.65 + 0.8 * h01(i, 49), kh = NOV6 || isHouse(st) ? 1 : 0.75 + 0.6 * h01(i, 50);
+  return [(st === S.VICTORIAN ? 0.55 : st === S.LOFT ? 0.45 : 0.4) * k, Math.min(0.6 * kh, corn * 0.8 * kh)];
+};
 
 // ------------------------------------------------------------------ MID: street-front detail of one wall (a..b along the shader tangent)
 export function midFront(Bf, P, i, ax, az, bx, bz, Lw, kl = 0) {
@@ -483,7 +493,8 @@ export function clutterPlan(P, i, ring, out = []) {
       if (long) add(5, t, pt ? 0 : w, 0, sy); else add(5, pt ? 0 : w, t, Math.PI / 2, sy);
     }
     if (!pt) {
-      if (area > 60 && r() < 0.28) add(4, (r() - 0.5) * a, (r() - 0.5) * b, 0);
+      if (area > 60 && r() < (NOV6 ? 0.28 : 0.45)) add(4, (r() - 0.5) * a, (r() - 0.5) * b, 0);
+      if (!NOV6 && area > 90 && r() < 0.3) add(4, (r() - 0.5) * a, (r() - 0.5) * b, Math.PI / 2);
       if (r() < 0.35) add(6, (r() - 0.5) * a * 1.2, (r() - 0.5) * b * 1.2, r() * 6.28);
       if (r() < 0.14) add(8, (r() - 0.5) * a * 1.4, (r() - 0.5) * b * 1.4, r() * 6.28);
     }

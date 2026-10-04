@@ -30,6 +30,9 @@ const NO_TREES = HERO_SITES.flatMap(s => (s.noTrees || []).map(r => {
   for (const [x, z] of r) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); z0 = Math.min(z0, z); z1 = Math.max(z1, z); }
   return { r, x0, x1, z0, z1 };
 }));
+// (buildings v6) back-yard tree share per 8 m yard cell by district (Mission / Noe / Victorian back gardens are leafy)
+const NOV6P = typeof location !== 'undefined' && /[?&](nov[56]|noyardtrees)/.test(location.search || '');   // ?nov6 / ?noyardtrees = A/B
+const YARD_TREES = { victorian: 0.14, mission: 0.12, castro: 0.15, marina: 0.11, avenues: 0.09, nobhill: 0.07, northbeach: 0.07, hills: 0.13 };
 function heroNoTree(x, z) {
   for (const q of NO_TREES) {
     if (x < q.x0 || x > q.x1 || z < q.z0 || z > q.z1) continue;
@@ -384,7 +387,11 @@ export function registerV2(stream, { data, terrain, graph, scene, root, night, F
         if (zoneAtV2(gx, gz) === 'park') { const g = ss(0.56, 0.66, n); p = 0.02 + 0.6 * g; list = g > 0.3 ? woodsAt(gx, gz, n2) : LAWN; } else p *= n * n * 3;
       }
       else if (surf === 8) { p = 0.3 + 0.25 * n; list = gx < -6500 ? SCRUB_COAST : SCRUB_INLAND; }
-      else { p = 0.06; list = STREET_TREES_V2[zoneAtV2(gx, gz)] || STREET_TREES_V2.victorian; }
+      else {
+        // (buildings v6) back gardens: mid-block trees so a residential block reads green-hearted from above (was 6 %)
+        const zn = zoneAtV2(gx, gz);
+        p = NOV6P ? 0.06 : YARD_TREES[zn] ?? 0.06; list = STREET_TREES_V2[zn] || STREET_TREES_V2.victorian;
+      }
       if (h0 > p) continue;
       const x = gx + (hash2(gx, gz, 5) - 0.5) * G * 0.9, z = gz + (hash2(gx, gz, 6) - 0.5) * G * 0.9;
       if (terrain.surfaceRaw(x, z) !== surf || H(x, z) < 0.5) continue;

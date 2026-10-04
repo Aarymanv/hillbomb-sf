@@ -14,7 +14,7 @@ import { L, TILE } from './layers.js';
 import { Frame } from './emit.js';
 import { S } from './plan.js';
 import { prm, Z } from './v2plan.js';
-import { NOV5 } from './v2lots.js';
+import { NOV5, NOV6 } from './v2lots.js';
 
 export function h01(i, s) { let h = Math.imul(i ^ (s * 0x9e3779b1), 2654435761); h ^= h >>> 15; h = Math.imul(h, 2246822519); h ^= h >>> 13; return (h >>> 0) / 4294967296; }
 const shade = (c, k) => [Math.min(1, c[0] * k), Math.min(1, c[1] * k), Math.min(1, c[2] * k)];
@@ -29,6 +29,7 @@ export function bayForm(P, i) {
   const q = h01(i, 501), qd = h01(i, 502);
   if (st === S.VICTORIAN) return { kind: q < 0.18 ? 'round' : q < 0.3 ? 'square' : 'angled', dep: 0.6 + 0.55 * qd };
   if (st === S.EDWARDIAN) return { kind: q < 0.1 ? 'round' : q < 0.55 ? 'square' : 'angled', dep: 0.5 + 0.5 * qd };
+  if (st === S.STUCCO && !NOV6) return { kind: q < 0.8 ? 'squareS' : 'shallow', dep: 0.38 + 0.32 * qd };   // (v6) Sunset / Marina box oriel
   return { kind: q < 0.5 ? 'shallow' : 'squareS', dep: 0.45 + 0.4 * qd };
 }
 // bay outline in the wall frame: [[u, d], ...] from (ua, 0) out and back to (ub, 0)
