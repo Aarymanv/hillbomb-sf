@@ -14,16 +14,16 @@ const keyDist = (keys, loop) => { let d = 0; for (let i = 1; i < keys.length; i+
 
 function routeStats(R, keys, type) {
   const world = W.__world;
-  let bld = 0, water = 0, off = 0, grade = 0, gAt = null;
+  let bld = 0, water = 0, off = 0, grade = 0, gAt = null, up = 0, steep = 0;
   for (let i = 0; i < R.n; i++) {
     const [x, z] = R.pts[i];
     if (inBuilding(world, x, z)) bld++;
     if (world.heightAt(x, z) < 0.3 && R.ys[i] < 1.5) water++;
     if (R.off[i]) off++;
-    if (i >= 2) { const ds = R.cum[i] - R.cum[i - 2]; if (ds > 4) { const g = Math.abs(R.ys[i] - R.ys[i - 2]) / ds; if (g > grade) { grade = g; gAt = [x | 0, z | 0]; } } }
+    if (i >= 2) { const ds = R.cum[i] - R.cum[i - 2]; if (ds > 4) { const g = Math.abs(R.ys[i] - R.ys[i - 2]) / ds; if (g > grade) { grade = g; gAt = [x | 0, z | 0]; } const u = (R.ys[i] - R.ys[i - 2]) / ds; if (R.off[i]) { if (u > up) up = u; if (u > 0.3) steep++; } } }
   }
   const kd = keys ? keyDist(keys, R.loop) : 0;
-  return { L: R.L | 0, detour: kd ? +(R.L / kd).toFixed(2) : null, ut: R.loop ? 0 : findUturns(R.pts).length, offPct: +(off * 100 / R.n).toFixed(0), bld, water, grade: +(grade * 100).toFixed(0), gAt, type };
+  return { L: R.L | 0, detour: kd ? +(R.L / kd).toFixed(2) : null, ut: R.loop ? 0 : findUturns(R.pts).length, offPct: +(off * 100 / R.n).toFixed(0), bld, water, grade: +(grade * 100).toFixed(0), gAt, up: +(up * 100).toFixed(0), steep, type };
 }
 W.__gpRoutes = () => {
   const F = W.__G.festival, out = {};
@@ -89,6 +89,8 @@ W.__gpRun = async (id, { maxFrames = 30000, speed = 0.92, car = null, render = f
     rec.frames = f; rec.phase = phase; rec.how = A?.how; rec.why = A?.respawns; rec.whyAt = A?.respawnAt?.slice(0, 12);
     rec.ents = (A?.ents || []).map(e => (e.player ? 'YOU' : (e.name || '?').split(' ')[0]) + ':' + (e.done ? e.time.toFixed(1) : e.score != null ? Math.round(e.score) : '~' + (e.estTime ? e.estTime.toFixed(0) : 'dnf'))).join(' ');
     rec.pos = A?.player?.place ?? A?.player?.pos;
+    rec.fixes = A?.lineFixes || 0;
+    rec.rivResp = (A?.ents || []).reduce((t, e) => t + (e.player ? 0 : e.nResp || 0), 0);   // respawnOnRoute calls for rivals (aiResp = > 12 m jumps)
     W.__autopilot = null;
     // results screen: press confirm until the activity closes
     for (let k = 0; k < 40 && (F.activity || document.querySelector('.fs-screen, .hb-screen')); k++) { W.__gpKey('Enter'); W.__frames(30); await yieldT(); }

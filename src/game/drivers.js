@@ -43,19 +43,24 @@ export class Driver {
   // race mode: follow an explicit dense polyline [[x,z],...] with curvature speed limits
   // ys (optional, heights per point): race paths also slow for crests (vertical curvature), so racers on the 1:1 hills
   // don't launch off every intersection plateau at full speed and land sideways
-  setPath(points, { latAcc = 9, loop = false, ys = null, crestG = 1.35 } = {}) {
-    this.pathMode = true; this.loop = loop;
+  // grip (optional, per point surface grip 0.3..1, festival/util.js routeGrip): corner limits and braking scale with it. On
+  // grass / forest the asphalt latAcc slid racers 10-40 m off the line in downhill bends (Presidio XC above Baker Beach).
+  setPath(points, { latAcc = 9, loop = false, ys = null, crestG = 1.35, grip = null } = {}) {
+    this.pathMode = true; this.loop = loop; this.latAcc = latAcc;
     const n = points.length;
     const W = 3; // curvature over +-3 points (~18 m) so joins and tiny zigzags don't spike
     this.wps = points.map((p, i) => {
-      if (i < W || i >= n - W) return { x: p[0], z: p[1], limit: 70, idx: i };
+      const gr = grip ? grip[i] : 1;
+      if (i < W || i >= n - W) return { x: p[0], z: p[1], limit: 70, idx: i, grip: gr };
       const a = points[i - W], b = points[i + W];
       const d1x = p[0] - a[0], d1z = p[1] - a[1], d2x = b[0] - p[0], d2z = b[1] - p[1];
       const l1 = Math.hypot(d1x, d1z), l2 = Math.hypot(d2x, d2z);
-      if (l1 < 1e-3 || l2 < 1e-3) return { x: p[0], z: p[1], limit: 70, idx: i };
+      if (l1 < 1e-3 || l2 < 1e-3) return { x: p[0], z: p[1], limit: 70, idx: i, grip: gr };
       const ang = Math.acos(Math.max(-1, Math.min(1, (d1x * d2x + d1z * d2z) / (l1 * l2))));
       const kappa = ang / Math.max(1, (l1 + l2) / 2);
-      return { x: p[0], z: p[1], limit: kappa > 1e-4 ? Math.max(6, Math.min(70, Math.sqrt(latAcc / kappa))) : 70, idx: i };
+      // off the tarmac a bit more margin than the grip ratio alone (the line wanders, the ground is uneven)
+      const la = latAcc * (gr < 0.9 ? gr * 0.92 : gr);
+      return { x: p[0], z: p[1], limit: kappa > 1e-4 ? Math.max(6, Math.min(70, Math.sqrt(la / kappa))) : 70, idx: i, grip: gr };
     });
     if (ys && ys.length >= n) {
       for (let i = 0; i < n; i++) if (isFinite(ys[i])) this.wps[i].y = ys[i];
@@ -86,6 +91,24 @@ export class Driver {
     this.allPath = this.wps.slice();
     this.propagateBraking();
   }
+  // race line repair (festival/racing.js lineGuard): points i0..i1 of the path moved round an obstacle that streamed in after
+  // the route was built. Same indices, new positions: move them (queued copies too), redo their corner limits, re-brake.
+  patchPath(i0, i1, pts, ys = null) {
+    const P = this.allPath; if (!P) return;
+    const n = P.length, la = this.latAcc ?? 9, at = k => P[this.loop ? (k + n) % n : Math.max(0, Math.min(n - 1, k))];
+    for (let k = i0; k <= i1; k++) { const w = at(k), q = pts[k - i0]; w.x = q[0]; w.z = q[1]; if (ys && isFinite(ys[k - i0])) w.y = ys[k - i0]; }
+    for (let k = i0 - 4; k <= i1 + 4; k++) {
+      const w = at(k), a = at(k - 3), b = at(k + 3);
+      const d1x = w.x - a.x, d1z = w.z - a.z, d2x = b.x - w.x, d2z = b.z - w.z, l1 = Math.hypot(d1x, d1z), l2 = Math.hypot(d2x, d2z);
+      if (l1 < 1e-3 || l2 < 1e-3) continue;
+      const ang = Math.acos(Math.max(-1, Math.min(1, (d1x * d2x + d1z * d2z) / (l1 * l2)))), kappa = ang / Math.max(1, (l1 + l2) / 2), gr = w.grip ?? 1;
+      const lim = kappa > 1e-4 ? Math.max(6, Math.min(70, Math.sqrt(la * (gr < 0.9 ? gr * 0.92 : gr) / kappa))) : 70;
+      w.limit = Math.min(w.limit, lim);
+    }
+    const byIdx = new Map(); for (let k = i0; k <= i1; k++) { const w = at(k); byIdx.set(w.idx, w); }
+    for (const w of this.wps) { const src = byIdx.get(w.idx); if (src && src !== w) { w.x = src.x; w.z = src.z; w.y = src.y; w.limit = src.limit; } }
+    this.propagateBraking();
+  }
   // Backward pass: every point's limit <= what the car can still brake down from to meet every limit after it, with
   // downhill-weakened deceleration and ~no braking where it will be airborne off a plateau lip. The runtime look-ahead
   // (140 m, per-frame) misses corners hidden behind a crest: rivals flew the Hyde St plateaus toward Bay St at 25 m/s,
@@ -98,8 +121,8 @@ export class Driver {
       for (let k = n - 2 + (this.loop ? 1 : 0); k >= 0; k--) {
         const a = P[k % n], b = P[(k + 1) % n], ds = Math.hypot(b.x - a.x, b.z - a.z);
         if (ds < 1e-3) { if (b.limit < a.limit) a.limit = b.limit; continue; }
-        let d = dec;
-        if (a.y !== undefined && b.y !== undefined) d = Math.max(2.4, dec - 9.81 * Math.max(0, (a.y - b.y) / ds) * 1.15);
+        let d = dec * Math.min(1, a.grip ?? 1);
+        if (a.y !== undefined && b.y !== undefined) d = Math.max(2.4 * Math.min(1, a.grip ?? 1), d - 9.81 * Math.max(0, (a.y - b.y) / ds) * 1.15);
         if (a.flight) d = 0.6;
         const lim = Math.sqrt(b.limit * b.limit + 2 * d * ds);
         if (lim < a.limit) a.limit = lim;
@@ -327,8 +350,8 @@ export class Driver {
       if (acc > (this.mode === 'race' ? 140 : 60)) break;
       const lim = (w.limit ?? 99) * this.speedMul * (this.mode === 'pursuit' ? (w.turn ? 1.25 : 1.5) : 1);
       // race paths with heights: braking downhill is weaker (g * grade), and the run-up to a corner on SF's hills is steep
-      let dec = this.mode === 'race' ? 6.2 : 4.5;
-      if (w.y !== undefined && acc > 4) dec = Math.max(3, dec - 9.81 * Math.min(0.35, Math.max(0, (pos.y - w.y) / acc)) * 1.1);
+      let dec = (this.mode === 'race' ? 6.2 : 4.5) * Math.min(1, w.grip ?? 1);
+      if (w.y !== undefined && acc > 4) dec = Math.max(3 * Math.min(1, w.grip ?? 1), dec - 9.81 * Math.min(0.35, Math.max(0, (pos.y - w.y) / acc)) * 1.1);
       const allowed = Math.sqrt(lim * lim + 2 * dec * Math.max(0, acc - 4));
       if (allowed < vt) vt = allowed;
       // intersections: signals and stop signs

@@ -4,7 +4,8 @@
 // (checkpoints recomputed from position every frame, so rewinds and respawns are safe) -> finish camera -> results.
 import * as THREE from 'three';
 import { Driver } from '../drivers.js';
-import { makeTracker, trackUpdate, trackInit, routeAt, offsetPts, clamp, fmtTime, fmtGap, ordinal, yawOf, fmtNum, speedVal, solidNear } from './util.js';
+import { makeTracker, trackUpdate, trackInit, routeAt, offsetPts, clamp, fmtTime, fmtGap, ordinal, yawOf, fmtNum, speedVal, solidNear, routeGrip, terrainPath, onLand } from './util.js';
+import { keepOut } from '../../world/keepout.js';
 import { createDriftMeter } from './drift.js';
 import { DIFFICULTY } from './catalog.js';
 
@@ -35,7 +36,9 @@ export function createRacing(F) {
 
   function buildCheckpoints(A) {
     const R = A.route, loop = R.loop, sp = SPACING[A.discipline] ?? 260;
-    const lapLen = loop ? R.L : R.L - R.startS - 4; // sprints: finish line a few metres before the last point
+    // sprints: the finish line 12 m before the last point (the race line's driver steers for its final point and slows into it:
+    // at 4 m the Headlands XC autopilot stopped 1.8 m short of the line on Conzelman and never finished)
+    const lapLen = loop ? R.L : R.L - R.startS - 12;
     const n = A.discipline === 'drag' ? 1 : Math.max(loop ? 3 : 2, Math.min(40, Math.round(lapLen / sp)));
     A.cps = [];
     for (let k = 1; k <= n; k++) {
@@ -95,7 +98,8 @@ export function createRacing(F) {
     pv.health = 100;
     const me = { kind: 'player', name: F.playerName(), color: '#ff2e7e', v: pv, tr: makeTracker(R), done: false, time: 0, bins: null, prevP: 0, pos: totalCars, player: true };
     A.player = me; A.ents.push(me);
-    // AI rivals
+    // AI rivals (surface grip along the line, once per route: grass / dirt / forest corners and braking)
+    const grip = R.grip || (R.grip = routeGrip(world, R));
     cfg.grid.forEach((g, i) => {
       const v = G.spawnVehicle(g.carKey, pt.x, pt.z, 0, { role: 'racer', paint: g.paint });
       const slot = aiSlots[i];
@@ -104,11 +108,14 @@ export function createRacing(F) {
       const tune = F.rivals.tuning(g.rival, cfg.diff ?? 1);
       const d = new Driver(v, world.graph, { mode: 'race', speedMul: 1 });
       const lane = drag ? slot.lat : clamp(slot.lat * 0.4 + (i % 3 - 1) * 0.9, -2.6, 2.6);
-      d.setPath(offsetPts(R, lane), { latAcc: tune.latAcc, loop: R.loop, ys: R.ys });
+      // tall 4x4s / trucks roll before they slide (static stability factor track / 2h ~0.85 g for a Kodiak / Trekker): cap the
+      // corner speed at 80 % of it (XC rivals in Kodiaks rolled off the Conzelman bends at the tuned 9-10 m/s^2)
+      const ssf = (v.spec.width || 1.8) * 0.85 / (2 * Math.max(0.3, v.params.comY ?? 0.5)), latAcc = Math.min(tune.latAcc, 9.81 * ssf * 0.8);
+      d.setPath(offsetPts(R, lane), { latAcc, loop: R.loop, ys: R.ys, grip });
       if (!drag) d.limitLips((x, z, y) => world.groundAt(x, z, y));      // plateau lips: short hops, not 1.7 s flights
       d.speedMul = tune.speedMul; d.rubber = 1;
       v.ai = d;
-      A.ents.push({ kind: 'ai', name: g.rival?.nick || g.name, rival: g.rival, color: g.rival?.color || '#ccc', v, d, tune, tr: makeTracker(R), done: false, time: 0, stuck: 0, bins: null, prevP: 0, pos: i + 1 });
+      A.ents.push({ kind: 'ai', name: g.rival?.nick || g.name, rival: g.rival, color: g.rival?.color || '#ccc', v, d, lane, tune, tr: makeTracker(R), done: false, time: 0, stuck: 0, bins: null, prevP: 0, pos: i + 1 });
     });
     // virtual opponents (showcases)
     for (const o of cfg.virtual || []) { o.P = -R.startS; o.done = false; o.time = 0; A.ents.push({ kind: 'virtual', name: o.name, color: o.color || '#fff', o, done: false, time: 0, bins: null, prevP: 0, P: 0, catcher: !!o.catcher, pos: 0 }); o.setup?.(A, F); }
@@ -271,6 +278,7 @@ export function createRacing(F) {
     F.racehud.warn(A.missT > 0 ? 'Missed checkpoint' : A.wrongT > 1.2 ? 'Wrong way' : A.offT > 2 ? 'Return to the route' : A.stuckT > 2.5 || A.noProgT > 4 ? 'Stuck? Press R to reset' : '');
     // drift scoring
     if (A.drift) A.drift.update(dt, pv);
+    lineGuard(A, dt);
     // entrants
     for (const e of A.ents) {
       if (e.kind === 'ai') aiStep(A, e, dt);
@@ -309,9 +317,90 @@ export function createRacing(F) {
     if (A.route.loop && (j + 1) % A.nCp === 0) { A.lapTimes.push(A.t - A.lapStart); A.lapStart = A.t; if (A.cpNext < A.nCp * A.laps) F.overlay.banner('', `Lap ${A.cpNext / A.nCp + 1} / ${A.laps}`, fmtTime(A.lapTimes[A.lapTimes.length - 1]), A.color, 1600); }
     placeGates(A);
   }
+  // ---------------------------------------------------------------- line guard: runtime re-clear of the racing line
+  // The route is built before the race from data the router can see (terrain, building footprints, decks). Colliders that
+  // stream in later (walls / retaining walls of landmark sites, thin structures between 6 m router cells, parked cars just
+  // outside the corridor) sat on off-road lines and every racer queued there: noProgress respawn clusters (GG Park XC at the
+  // Music Concourse walls, Twin Peaks XC by the Clarendon houses). Every 0.4 s the next ~250 m of line ahead of the player and
+  // of each nearby rival is tested against the loaded colliders; parked cars on it are hidden, anything else solid bends the
+  // line round it (a smooth lateral bump, else a fine local terrain detour with the colliders now loaded). Same point count,
+  // positions moved in place: trackers, checkpoints and progress (cum) stay valid; the drivers' paths are patched to match.
+  const _lgTmp = [];
+  RC.addLineUser = (d, lane = 0) => { const A = RC.active; if (A && !(A.lineUsers ||= []).some(u => u.d === d)) A.lineUsers.push({ d, lane }); };
+  function lineBlocked(A, R, i, pad = 2) {
+    const [x, z] = R.pts[i], y = R.ys[i] + 1;
+    let hit = null;
+    for (const c of world.colliders.query(x, z, 7, _lgTmp)) {
+      if (c.breakable || c.broken || c.removed || c.kind === 'bounds' || y < c.yMin - 0.5 || y > c.yMax + 1.5) continue;
+      const dx = x - c.x, dz = z - c.z, lx = c.c * dx - c.s * dz, lz = c.s * dx + c.c * dz, pd = c.kind === 'parked' ? 5.5 : pad;   // (parked: the rivals' lanes + corner cuts)
+      if (Math.abs(lx) > c.hx + pd || Math.abs(lz) > c.hz + pd) continue;
+      if (c.kind === 'parked') { if (c.id && G.world.props?.parked?.hide?.(c.id)) A.parked?.push?.(c.id); continue; }
+      hit = c;
+    }
+    return hit;
+  }
+  function lineRepair(A, i) {
+    const R = A.route, n = R.n, loop = R.loop, ix = k => (loop ? ((k % n) + n) % n : clamp(k, 0, n - 1));
+    let a = i - 10, b = i + 10; if (!loop) { a = Math.max(1, a); b = Math.min(n - 2, b); } if (b - a < 4) return false;
+    const nrm = k => { const p = R.pts[ix(k - 1)], q = R.pts[ix(k + 1)], dx = q[0] - p[0], dz = q[1] - p[1], l = Math.hypot(dx, dz) || 1; return [-dz / l, dx / l]; };
+    const free = (x, z, y) => onLand(world, x, z) && !solidNear(world, x, y + 1, z, 1.7);
+    let Q = null;
+    for (const o of [2.5, -2.5, 5, -5, 7.5, -7.5, 10, -10, 13, -13]) {
+      const T = []; let ok = true, yp = null, pp = null;
+      for (let k = a; k <= b; k++) {
+        const t = (k - a) / (b - a), w = (t < 0.35 ? (t / 0.35) ** 2 * (3 - 2 * t / 0.35) : t > 0.65 ? ((1 - t) / 0.35) ** 2 * (3 - 2 * (1 - t) / 0.35) : 1);
+        const p = R.pts[ix(k)], [nx, nz] = nrm(k), x = p[0] + nx * o * w, z = p[1] + nz * o * w, y = world.groundAt(x, z, R.ys[ix(k)] + 2);
+        if (w > 0.15 && !free(x, z, y)) { ok = false; break; }
+        if (pp) { const L = Math.hypot(x - pp[0], z - pp[1]); if (L > 0.5 && Math.abs(y - yp) / L > 0.45) { ok = false; break; } }
+        T.push([x, z, y]); yp = y; pp = [x, z];
+      }
+      if (ok) { Q = T; break; }
+    }
+    if (!Q) {
+      const p0 = R.pts[ix(a)], p1 = R.pts[ix(b)], tp = terrainPath(world, [p0[0], p0[1]], [p1[0], p1[1]], { cell: 3, pad: 45, up: 0.33, down: 0.5 });
+      if (!tp || tp.length < 2) return false;
+      const cum = [0]; for (let k = 1; k < tp.length; k++) cum.push(cum[k - 1] + Math.hypot(tp[k][0] - tp[k - 1][0], tp[k][1] - tp[k - 1][1]));
+      const L = cum.at(-1); if (L > (b - a) * 5 * 2.5 + 40) return false;
+      Q = []; let j = 0;
+      for (let k = a; k <= b; k++) {
+        const s = L * (k - a) / (b - a); while (j < tp.length - 2 && cum[j + 1] < s) j++;
+        const u = clamp((s - cum[j]) / ((cum[j + 1] - cum[j]) || 1), 0, 1), x = tp[j][0] + (tp[j + 1][0] - tp[j][0]) * u, z = tp[j][1] + (tp[j + 1][1] - tp[j][1]) * u;
+        const y = world.groundAt(x, z, world.heightAt(x, z) + 2.5);
+        if (k > a && k < b && !free(x, z, y)) return false;
+        Q.push([x, z, y]);
+      }
+    }
+    for (let k = a; k <= b; k++) { const q = Q[k - a], m = ix(k); R.pts[m] = [q[0], q[1]]; R.ys[m] = q[2]; }
+    if (A.parked?.keepId && A.parked.hw) A.parked.keepId = keepOut.add(A.parked.keepId, R.pts, A.parked.hw, { loop: !!loop });
+    const users = A.ents.filter(e => e.kind === 'ai' && e.d).map(e => ({ d: e.d, lane: e.lane || 0 })).concat(A.lineUsers || []);
+    const lanes = new Map();
+    for (const u of users) {
+      if (!lanes.has(u.lane)) lanes.set(u.lane, u.lane ? offsetPts(R, u.lane) : R.pts);
+      const LP = lanes.get(u.lane), pts = [], ys = [];
+      for (let k = a; k <= b; k++) { pts.push(LP[ix(k)]); ys.push(R.ys[ix(k)]); }
+      u.d.patchPath(a, b, pts, ys);
+    }
+    A.lineFixes = (A.lineFixes || 0) + 1;
+    return true;
+  }
+  function lineGuard(A, dt) {
+    if (A.discipline === 'drag') return;
+    if ((A.lgT = (A.lgT ?? 0) - dt) > 0) return;
+    A.lgT = 0.4;
+    const R = A.route, n = R.n, tries = R.lgTries || (R.lgTries = new Uint8Array(n)), pp = A.player.v.pos;
+    const centers = [A.player.tr.i];
+    for (const e of A.ents) if (e.kind === 'ai' && !e.done && Math.hypot(e.v.pos.x - pp.x, e.v.pos.z - pp.z) < 350) centers.push(e.tr.i);
+    const seen = new Set(), offDisc = A.discipline === 'dirt' || A.discipline === 'xc';
+    for (const c of centers) for (let k = c - 2; k <= c + 50; k++) {
+      const i = R.loop ? ((k % n) + n) % n : k; if (i < 0 || i >= n || seen.has(i)) continue; seen.add(i);
+      if (tries[i] >= 2 || (!R.off[i] && !offDisc) || !lineBlocked(A, R, i)) continue;   // (road legs: keepout + route clearance own those)
+      tries[i]++;
+      if (lineRepair(A, i)) return;      // one repair per tick
+    }
+  }
   function respawnOnRoute(A, e, why = 'reset') {
     const R = A.route;
-    const st = (A.respawns ||= {}); st[why] = (st[why] || 0) + 1; (A.respawnAt ||= []).length < 40 && A.respawnAt.push([why, e.player ? 'YOU' : e.name, Math.round(e.v.pos.x), Math.round(e.v.pos.z), Math.round(e.P), [...new Set(G.world.colliders.query(e.v.pos.x, e.v.pos.z, 3.5, []).map(c => c.kind))].join('/')]);   // dev stats (dev/gameplay_audit.js): + obstacle kinds within 3.5 m
+    const st = (A.respawns ||= {}); st[why] = (st[why] || 0) + 1; e.nResp = (e.nResp || 0) + 1; (A.respawnAt ||= []).length < 40 && A.respawnAt.push([why, e.player ? 'YOU' : e.name, Math.round(e.v.pos.x), Math.round(e.v.pos.z), Math.round(e.P), [...new Set(G.world.colliders.query(e.v.pos.x, e.v.pos.z, 3.5, []).map(c => c.kind))].join('/')]);   // dev stats (dev/gameplay_audit.js): + obstacle kinds within 3.5 m
     // back to just after the last passed checkpoint (or current progress, whichever is further back)
     const lastP = A.cpNext > 0 ? cpP(A, A.cpNext - 1) + 6 : 0;
     let P = e.player ? Math.min(Math.max(lastP, e.tr.P - 10), e.tr.P) : e.tr.P - 5;
@@ -324,7 +413,7 @@ export function createRacing(F) {
     if (again) P = Math.max(P, e.rsP) + 18 * Math.min(4, (e.rsN = (e.rsN || 1) + 1));
     else e.rsN = 1;
     e.rsP = Math.max(P, e.tr.P); e.rsT = A.t;
-    const Lmax = R.loop ? Infinity : R.L - R.startS - 6;
+    const Lmax = R.loop ? Infinity : R.L - R.startS - 14;
     P = Math.min(P, Lmax);
     let s = R.loop ? ((P % R.L) + R.L) % R.L : P + R.startS;
     routeAt(R, s, pt);
@@ -369,6 +458,7 @@ export function createRacing(F) {
         if (os < sp) cap = Math.min(cap, clamp((os + (along - 6) * 0.6) / sp, 0.35, 1));
       }
       if (cap < e.d.rubber) e.d.rubber = cap;
+      e.queued = cap < 0.6;   // waiting behind a slower racer (a grid funnelling into a single lane): not stuck
     }
     e.d.drive(dt, G.traffic.ctx);
     // launch reaction
@@ -376,11 +466,20 @@ export function createRacing(F) {
     if (e.P >= A.total) { e.done = true; e.time = A.t; }
     // recover stuck / flipped rivals
     const up = v.body.up(_up).y;
-    if ((up < 0.3 || v.body.speed < 0.6) && A.t > 4) { e.stuck += dt; if (e.stuck > 3) { respawnOnRoute(A, e, up < 0.3 ? 'flip' : 'stopped'); e.stuck = 0; } } else e.stuck = 0;
+    // recovery before respawn: a rival that stalls (nosed into a bank, slid off a grass bend, beached on a kerb) first backs
+    // out and drives on (Driver.unstuck: reverse / forward cycles, growing). Off-road that cleared most stalls the 3-4.5 s
+    // respawn timers used to teleport (Twin Peaks XC 59, Headlands XC 119 per race). Upside down / on its side respawns fast.
+    const rec = !!e.d.unstuck, onSide = up < 0.6;
+    if ((up < 0.3 || v.body.speed < 0.6) && A.t > 4) { e.stuck += dt; if (e.stuck > (up < 0.3 ? 3 : rec ? 9 : 4)) { respawnOnRoute(A, e, up < 0.3 ? 'flip' : 'stopped'); e.stuck = 0; e.d.unstuck = null; } } else e.stuck = 0;
     // no route progress (wedged on a wall / parked car, rocking back and forth above 0.6 m/s, or lying tilted on two
     // wheels): the speed test above never fired and rivals sat on Hyde St for the rest of the race
-    if (A.t > 4 && e.P < (e.bestP ?? -1e9) + 4) { e.noProg = (e.noProg || 0) + dt; if (e.noProg > (up < 0.6 ? 2 : 4.5)) { respawnOnRoute(A, e, 'noProgress'); e.noProg = 0; e.bestP = e.P; } }
-    else { e.noProg = 0; e.bestP = e.P; }
+    if (A.t > 4 && e.P < (e.bestP ?? -1e9) + 4) {
+      if (!e.queued || onSide) e.noProg = (e.noProg || 0) + dt;
+      // crawling / sliding without progress never trips the driver's own stall test (speed > 0.8): start the back-out here
+      if (!rec && !onSide && e.noProg > 2.2 && !e.recT) { e.d.unstuck = { phase: 'rev', t: 1.2, n: 0, total: 0, x: p.x, z: p.z }; e.recT = 1; }
+      if (e.noProg > (onSide ? 2 : rec || e.recT ? 10 : 4.5)) { respawnOnRoute(A, e, 'noProgress'); e.noProg = 0; e.bestP = e.P; e.d.unstuck = null; e.recT = 0; }
+    }
+    else { e.noProg = 0; e.bestP = e.P; e.recT = 0; }
     if (e.tr.dist > 60) { e.far = (e.far || 0) + dt; if (e.far > 4) { respawnOnRoute(A, e, 'offRoute'); e.far = 0; } } else e.far = 0;
   }
   function virtualStep(A, e, dt) {

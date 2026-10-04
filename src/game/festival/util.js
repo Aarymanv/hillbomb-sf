@@ -4,6 +4,7 @@
 // so content moves with map rebuilds. Nothing here allocates per frame except where noted.
 import { ll } from '../../world/latlon.js';
 import { findRoute, edgePointAt } from '../../world/roads.js';
+import { HERO_SITES } from '../../world/landmarks/v2/hero_sites.js';
 
 export { ll };
 export const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -64,8 +65,25 @@ export function snapNode(world, lat, lon, hint = null) {
 }
 // on land inside the map (outside the heightfield the surface reads as water)
 export function onLand(world, x, z, minH = 0.35) { return world.heightAt(x, z) > minH && (world.terrain?.surfaceAt ? world.terrain.surfaceAt(x, z) !== 0 : true); }
-// inside an OSM building footprint (1:1 map: its collider may not be streamed in yet)
-export function inBuilding(world, x, z) { return (world.buildings?.buildingAt?.(x, z) ?? -1) >= 0; }
+// inside an OSM building footprint (1:1 map: its collider may not be streamed in yet), or a Blender hero landmark's solid
+// (its walls / colonnades only collide once its LOD streams in: GG Park XC ran through the de Young garden walls)
+export function inBuilding(world, x, z) { return (world.buildings?.buildingAt?.(x, z) ?? -1) >= 0 || (!!world.v2 && heroSolidAt(x, z, 1)); }
+let heroGrid = null;
+const HG = 64, hgKey = (cx, cz) => cx * 100003 + cz;
+export function heroSolidAt(x, z, pad = 0) {
+  if (!heroGrid) {
+    heroGrid = new Map();
+    for (const s of HERO_SITES) for (const c of s.colliders || []) {
+      const cc = Math.cos(c.yaw || 0), ss = Math.sin(c.yaw || 0), r = Math.hypot(c.hx, c.hz) + 4, q = { x: c.x, z: c.z, hx: c.hx, hz: c.hz, c: cc, s: ss };
+      for (let cz = Math.floor((c.z - r) / HG); cz <= Math.floor((c.z + r) / HG); cz++) for (let cx = Math.floor((c.x - r) / HG); cx <= Math.floor((c.x + r) / HG); cx++) {
+        const k = hgKey(cx, cz); let a = heroGrid.get(k); if (!a) heroGrid.set(k, a = []); a.push(q);
+      }
+    }
+  }
+  const a = heroGrid.get(hgKey(Math.floor(x / HG), Math.floor(z / HG))); if (!a) return false;
+  for (const c of a) { const dx = x - c.x, dz = z - c.z, lx = c.c * dx - c.s * dz, lz = c.s * dx + c.c * dz; if (Math.abs(lx) <= c.hx + pad && Math.abs(lz) <= c.hz + pad) return true; }
+  return false;
+}
 // free spot for an off-road point: on land, not inside a static collider; searches rings outward
 export function snapLand(world, lat, lon, { radius = 80, pad = 2.5 } = {}) {
   const [x0, z0] = ll(lat, lon);
@@ -124,69 +142,138 @@ export function findFootprint(world, lat, lon, w, d, { radius = 180, step = 8, r
 }
 
 // ------------------------------------------------------------------ straight off-road legs
+// Off-road grade limits (measured on grass, dev/climb probe: CarBody on a 60 m plane, full throttle + TCS): from a standstill
+// most 2WD cars stall at 30 % (a respawned rival restarts from rest), with a 12 m/s run-up they make 40 %; at 50 % only
+// AWD / 4x4 get up. Downhill, grass brakes to ~2 m/s^2 at 45 %. Legs climb <= UP_MAX (sustained), fall <= DOWN_MAX.
+export const OFF_GRADE = { up: 0.25, upHard: 0.33, down: 0.42 };
+// a building footprint within ~3 m (the line is a car's centre: footprints alone let racers clip walls; building colliders
+// stream in late, so the route can't see them: Twin Peaks XC / Lands End XC grids stalled on house corners)
+function nearBuilding(world, x, z, r = 3) { return inBuilding(world, x, z) || inBuilding(world, x + r, z) || inBuilding(world, x - r, z) || inBuilding(world, x, z + r) || inBuilding(world, x, z - r); }
+// a viaduct / bridge deck (with its barriers) within 2.5 m of its edge and less than 4.5 m above / below the ground here: an
+// off-road line can't cross it (GG Park XC rivals queued at a deck barrier); tunnels and high bridges are passed under
+function atGradeDeck(world, x, z, h) {
+  const T = world.terrain; if (!T?.deckHash) return false;
+  const arr = T.deckHash.get(Math.floor(x / 32) * 100003 + Math.floor(z / 32)); if (!arr) return false;
+  for (const sg of arr) {
+    let t = ((x - sg.ax) * sg.ex + (z - sg.az) * sg.ez) / sg.l2; t = t < 0 ? 0 : t > 1 ? 1 : t;
+    const dx = x - (sg.ax + sg.ex * t), dz = z - (sg.az + sg.ez * t), r = sg.deck.hw + 2.5;
+    const dy = Math.abs(sg.ay + (sg.by - sg.ay) * t - h);
+    if (dx * dx + dz * dz < r * r && dy > 0.6 && dy < 4.5) return true;   // (at grade it is just road: no barrier there)
+  }
+  return false;
+}
 // fraction of the segment that is drivable (land, no collider); samples every `step` m
-export function legClear(world, x0, z0, x1, z1, step = 6) {
+export function legClear(world, x0, z0, x1, z1, step = 4) {
   const L = Math.hypot(x1 - x0, z1 - z0), n = Math.max(1, Math.ceil(L / step));
   let bad = 0, hp = null;
   const sl = L / n;
   for (let i = 0; i <= n; i++) {
     const t = i / n, x = x0 + (x1 - x0) * t, z = z0 + (z1 - z0) * t;
     const h = world.heightAt(x, z);
-    // cliffs / seawalls / dune faces: > ~27 deg between samples is not drivable (the prologue beach leg climbed a 50 deg bluff)
-    if (hp !== null && Math.abs(h - hp) > sl * 0.5) bad += 2;
+    // cliffs / seawalls / dune faces / climbs a car can't make from rest (Headlands Dirt: straight legs up 50-57 % grass
+    // faces, the whole grid stalled and respawned in place). Direction matters: a 40 % descent is drivable, a 40 % climb isn't.
+    if (hp !== null && (h - hp > sl * (OFF_GRADE.up + 0.05) || hp - h > sl * (OFF_GRADE.down + 0.05))) bad += 2;
     hp = h;
-    if (h < 0.15 && world.terrain?.surfaceAt?.(x, z) === 0) { bad += 3; continue; }
-    if (world.colliders.pointHit(x, world.groundAt(x, z) + 1, z, 1.6) || inBuilding(world, x, z)) bad++;
+    if (world.terrain?.surfaceAt?.(x, z) === 0) { bad += 3; continue; }   // sea, and the park lakes / ponds up the hills (GG Park XC rivals drove into Elk Glen Lake)
+    if (world.colliders.pointHit(x, world.groundAt(x, z) + 1, z, 1.6) || nearBuilding(world, x, z) || atGradeDeck(world, x, z, h)) bad++;
   }
   return bad;
 }
 // off-road path a -> b over the terrain: A* on an 8 m grid, cost grows with grade, cliffs (> ~31 deg), water, buildings and
 // solid colliders are walls. Smoothed to ~24 m spacing. null when there is no way through inside the search box.
-export function terrainPath(world, a, b, { cell = 8, pad = 160, maxGrade = 0.6 } = {}) {
+// Directional: a step may climb <= up and fall <= down (grade over the step). Cheaper along OSM trails / fire roads (unpaved
+// paths, tracks, park footways) and existing roads, dearer across steep side slopes (rollovers) and on any climb.
+// opts.maxGrade (legacy) = symmetric limit.
+// cells on a trail / track (1) or a road carriageway (2) (built per call over the search box; steps excluded)
+function trailMask(world, x0, z0, W, H, cell) {
+  const m = new Uint8Array(W * H), x1 = x0 + W * cell, z1 = z0 + H * cell;
+  const mark = (pts, v) => {
+    for (let k = 0; k < pts.length - 1; k++) {
+      const [ax, az] = pts[k], [bx, bz] = pts[k + 1];
+      if ((ax < x0 && bx < x0) || (ax > x1 && bx > x1) || (az < z0 && bz < z0) || (az > z1 && bz > z1)) continue;
+      const L = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.ceil(L / (cell * 0.5)));
+      for (let s = 0; s <= n; s++) {
+        const i = Math.round((ax + (bx - ax) * s / n - x0) / cell), j = Math.round((az + (bz - az) * s / n - z0) / cell);
+        if (i >= 0 && j >= 0 && i < W && j < H) m[j * W + i] = Math.max(m[j * W + i], v);
+      }
+    }
+  };
+  for (const p of world.data?.extras?.paths || []) if (p.kind !== 'steps') mark(p.pts, 1);
+  for (const e of world.graph?.edges || []) if (!e.deck && !e.tunnel && e.kind !== 'highway' && e.kind !== 'bridge') mark(e.pts, 2);
+  return m;
+}
+export function terrainPath(world, a, b, { cell = 6, pad = 220, maxGrade = null, up = OFF_GRADE.up, down = OFF_GRADE.down, sideMax = 0.85 } = {}) {
+  if (maxGrade != null) up = down = maxGrade;
   const x0 = Math.min(a[0], b[0]) - pad, z0 = Math.min(a[1], b[1]) - pad;
   const W = Math.ceil((Math.max(a[0], b[0]) + pad - x0) / cell) + 1, H = Math.ceil((Math.max(a[1], b[1]) + pad - z0) / cell) + 1;
-  if (W * H > 90000) return null;
-  const N = W * H, h = new Float32Array(N), ok = new Uint8Array(N);
+  if (W * H > 250000) return null;
+  const N = W * H, h = new Float32Array(N), ok = new Uint8Array(N), side = new Float32Array(N), bl = new Uint8Array(N), upK = new Float32Array(N);
   for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
     const x = x0 + i * cell, z = z0 + j * cell, k = j * W + i, y = world.heightAt(x, z);
     h[k] = y;
-    ok[k] = !(y < 0.15 && world.terrain?.surfaceAt?.(x, z) === 0) && !inBuilding(world, x, z) && !world.colliders.pointHit(x, world.groundAt(x, z) + 1, z, 1.2) ? 1 : 0;
+    bl[k] = inBuilding(world, x, z) ? 1 : 0;
+    upK[k] = Math.min(1.2, Math.max(0.8, (SURF_GRIP_AI[world.terrain?.surfaceAt?.(x, z) ?? 3] ?? 0.72) / 0.75));   // climb limit by grip (forest / sand less)
+    ok[k] = !(world.terrain?.surfaceAt?.(x, z) === 0) && !bl[k] && !atGradeDeck(world, x, z, y) && !world.colliders.pointHit(x, world.groundAt(x, z) + 1, z, 1.2) ? 1 : 0;
+    // local slope magnitude over +-3 m: crossing a steep face side-on rolls cars (> 85 %: never; > 25 % costs: a line cut across
+    // the bank beside Conzelman Rd slid every Headlands XC rival down to the bay)
+    side[k] = Math.hypot(world.heightAt(x + 3, z) - world.heightAt(x - 3, z), world.heightAt(x, z + 3) - world.heightAt(x, z - 3)) / 6;
   }
+  // footprint clearance: cells next to a building cost 4x (the line is a car's centre; building colliders stream in late, the
+  // route can't see them: Twin Peaks / Lands End XC rivals stalled on house corners). Not a wall: gaps between houses stay open.
+  const trail = trailMask(world, x0, z0, W, H, cell), nearB = new Uint8Array(N);
+  for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) { const k = j * W + i; if (bl[k] || trail[k] === 2) continue; for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) { const ii = i + di, jj = j + dj; if (ii >= 0 && jj >= 0 && ii < W && jj < H && bl[jj * W + ii]) nearB[k] = 1; } }
   const idx = (x, z) => Math.max(0, Math.min(H - 1, Math.round((z - z0) / cell))) * W + Math.max(0, Math.min(W - 1, Math.round((x - x0) / cell)));
   const s0 = idx(a[0], a[1]), s1 = idx(b[0], b[1]); ok[s0] = ok[s1] = 1;
   const g = new Float32Array(N).fill(Infinity), prev = new Int32Array(N).fill(-1), closed = new Uint8Array(N);
   const heap = [], hf = [];
   const push = (id, f) => { heap.push(id); hf.push(f); let i = heap.length - 1; while (i > 0) { const q = (i - 1) >> 1; if (hf[q] <= hf[i]) break; [heap[q], heap[i]] = [heap[i], heap[q]]; [hf[q], hf[i]] = [hf[i], hf[q]]; i = q; } };
   const pop = () => { const top = heap[0], last = heap.pop(), lf = hf.pop(); if (heap.length) { heap[0] = last; hf[0] = lf; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < heap.length && hf[l] < hf[m]) m = l; if (r < heap.length && hf[r] < hf[m]) m = r; if (m === i) break; [heap[m], heap[i]] = [heap[i], heap[m]]; [hf[m], hf[i]] = [hf[i], hf[m]]; i = m; } } return top; };
-  const bi = s1 % W, bj = (s1 / W) | 0, heur = k => Math.hypot((k % W) - bi, ((k / W) | 0) - bj) * cell;
+  const bi = s1 % W, bj = (s1 / W) | 0, heur = k => Math.hypot((k % W) - bi, ((k / W) | 0) - bj) * cell * 0.62;   // admissible with the trail discount
   g[s0] = 0; push(s0, heur(s0));
   const D = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
   while (heap.length) {
     const k = pop(); if (closed[k]) continue; closed[k] = 1;
     if (k === s1) break;
-    const i = k % W, j = (k / W) | 0;
+    const i = k % W, j = (k / W) | 0, pk = prev[k], pi = pk >= 0 ? i - (pk % W) : 0, pj = pk >= 0 ? j - ((pk / W) | 0) : 0, pl = Math.hypot(pi, pj) || 1;
     for (const [di, dj] of D) {
       const ni = i + di, nj = j + dj; if (ni < 0 || nj < 0 || ni >= W || nj >= H) continue;
       const q = nj * W + ni; if (!ok[q] || closed[q]) continue;
-      const d = (di && dj ? 1.4142 : 1) * cell, gr = Math.abs(h[q] - h[k]) / d;
-      if (gr > maxGrade) continue;
-      const c = g[k] + d * (1 + 6 * gr * gr);
+      // turns: no hooks (a > 120 deg change between 6 m steps is a 3 m-radius hairpin: the climbing line zig-zagged up the
+      // slope to Stow Lake and every racer stalled on the hook), sharp turns cost (switchbacks open out)
+      const tc = pk >= 0 ? (pi * di + pj * dj) / (pl * Math.hypot(di, dj)) : 1;
+      if (tc < -0.5) continue;
+      const d = (di && dj ? 1.4142 : 1) * cell, gr = (h[q] - h[k]) / d;
+      if (gr > up * (trail[q] === 2 ? 1.3 : upK[q]) || -gr > down) continue;   // (paved road: asphalt grip climbs 30 %)
+      const sd = side[q];
+      if (sd > sideMax && q !== s1) continue;   // (no trail exemption: the DEM doesn't carve paths; a 'road' cell this steep is the cut bank beside it)
+      const climb = gr > 0 ? gr : 0, fall = gr < 0 ? -gr : 0;
+      let c = d * (1 + 24 * climb * climb + 3 * fall * fall + (sd > 0.25 ? 8 * (sd - 0.25) : 0));
+      if (trail[q]) c *= trail[q] === 2 ? 0.72 : 0.62;   // (trails and fire roads first, streets when they are the gentle way)
+      if (nearB[q]) c *= 4;
+      if (tc < 0.1) c += d * (tc < -0.1 ? 3 : 1);
+      c += g[k];
       if (c < g[q]) { g[q] = c; prev[q] = k; push(q, c + heur(q)); }
     }
   }
   if (!closed[s1]) return null;
   const cells = []; for (let k = s1; k >= 0; k = prev[k]) cells.push(k); cells.reverse();
   const P = cells.map(k => [x0 + (k % W) * cell, z0 + ((k / W) | 0) * cell]); P[0] = a; P[P.length - 1] = b;
-  // string-pull: from each kept point jump to the furthest cell (<= 48 m) whose straight segment stays drivable (grade, walls)
-  const segOk = (p, q) => {
-    const L = Math.hypot(q[0] - p[0], q[1] - p[1]), n = Math.max(1, Math.ceil(L / 4)); let hp = world.heightAt(p[0], p[1]);
-    for (let i = 1; i <= n; i++) { const x = p[0] + (q[0] - p[0]) * i / n, z = p[1] + (q[1] - p[1]) * i / n, y = world.heightAt(x, z); if (Math.abs(y - hp) / (L / n) > maxGrade + 0.05 || !ok[idx(x, z)]) return false; hp = y; }
+  // string-pull: from each kept point jump to the furthest cell (<= 42 m) whose straight segment stays drivable (directional
+  // grade, side slope, walls) and does not leave a trail the A* line was following
+  const segOk = (p, q, onTrail, nb0) => {
+    const L = Math.hypot(q[0] - p[0], q[1] - p[1]), n = Math.max(1, Math.ceil(L / 3)), sl = L / n; let hp = world.heightAt(p[0], p[1]);
+    for (let i = 1; i <= n; i++) {
+      const x = p[0] + (q[0] - p[0]) * i / n, z = p[1] + (q[1] - p[1]) * i / n, y = world.heightAt(x, z), k = idx(x, z);
+      if (y - hp > sl * (up + 0.04) || hp - y > sl * (down + 0.04) || !ok[k] || heroSolidAt(x, z, 1.2) || (side[k] > sideMax) || (onTrail && !trail[k]) || (nearB[k] && !nb0)) return false;
+      hp = y;
+    }
     return true;
   };
+  const tOf = p => trail[idx(p[0], p[1])];
   const out = [P[0]];
   for (let i = 0; i < P.length - 1;) {
     let j = i + 1;
-    for (let k = i + 2; k < P.length && Math.hypot(P[k][0] - P[i][0], P[k][1] - P[i][1]) <= 48; k++) if (segOk(P[i], P[k])) j = k;
+    for (let k = i + 2; k < P.length && Math.hypot(P[k][0] - P[i][0], P[k][1] - P[i][1]) <= 42; k++) if (segOk(P[i], P[k], tOf(P[i]) && tOf(P[k]), nearB[idx(P[i][0], P[i][1])] && nearB[idx(P[k][0], P[k][1])])) j = k;
     out.push(P[j]); i = j;
   }
   return out;
@@ -194,8 +281,11 @@ export function terrainPath(world, a, b, { cell = 8, pad = 160, maxGrade = 0.6 }
 // straight leg from a to b, bending around obstacles (terrain A*, then lateral mid-point detours); null when hopeless
 export function offroadLeg(world, a, b) {
   if (legClear(world, a[0], a[1], b[0], b[1]) === 0) return [a, b];
-  // gentle first (race cars spin up > ~25 deg of grass: Headlands XC rivals all stalled on 31 deg faces), steeper if that's all there is
-  const tp = terrainPath(world, a, b, { maxGrade: 0.45 }) || terrainPath(world, a, b); if (tp) return tp;
+  // gentle first (race cars stall on > ~25 % grass climbs from rest: Headlands Dirt / XC grids stalled on 50-57 % faces),
+  // a harder climb if that's all there is (then detours, then the roads: threadKeys)
+  // (a wider box lets the gentle line wind round a spur along a road / fire road: Conzelman Rd from the bridge to Hawk Hill;
+  // a finer grid finds the gaps between retaining walls / house pads on the residential slopes: Twin Peaks XC)
+  const tp = terrainPath(world, a, b) || terrainPath(world, a, b, { pad: 480 }) || terrainPath(world, a, b, { cell: 4 }) || terrainPath(world, a, b, { up: OFF_GRADE.upHard, down: 0.5 }); if (tp) return tp;
   const dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz) || 1, nx = -dz / L, nz = dx / L;
   let best = null;
   for (const off of [12, -12, 24, -24, 40, -40, 60, -60, 90, -90]) {
@@ -383,15 +473,22 @@ export function pathBetween(world, A, B) {
   };
   if (A.edge === B.edge) return slice(A.edge, A.s, B.s);
   let best = null;
-  for (const na of [A.edge.a, A.edge.b]) for (const nb of [B.edge.a, B.edge.b]) {
-    const r = na === nb ? [] : findRoute(g, na, nb, RACE_ROUTE);
+  const search = (opts) => { for (const na of [A.edge.a, A.edge.b]) for (const nb of [B.edge.a, B.edge.b]) {
+    const r = na === nb ? [] : findRoute(g, na, nb, opts);
     if (!r) continue;
     const la = na === A.edge.a ? A.s : A.edge.len - A.s, lb = nb === B.edge.a ? B.s : B.edge.len - B.s;
     let L = la + lb; for (const { edge } of r) L += edge.len;
     // skip routes that immediately double back over their own start / end edge
     if (r.length && (r[0].edge === A.edge || r[r.length - 1].edge === B.edge)) continue;
     if (!best || L < best.L) best = { L, na, nb, r };
-  }
+  } };
+  search(RACE_ROUTE);
+  // closed-road races may run a one-way the wrong way: when the legal way round is a big detour (lower Conzelman Rd is
+  // one-way downhill in OSM: up to Hawk Hill 'legally' meant 8 km via the Baker-Barry tunnel), take the direct road
+  const straight = Math.hypot(B.x - A.x, B.z - A.z);
+  // (single-lane minor roads only: never against a divided highway / bridge carriageway)
+  const minorWrong = r => r.every(({ edge, forward }) => !edge.oneway || forward || ((edge.kind === 'street' || edge.kind === 'mountain' || edge.kind === 'alley') && edge.width <= 6 && !edge.deck));
+  if (best && best.L > straight * 2.5 && best.L - straight > 600) { const legal = best; best = null; search({ ...RACE_ROUTE, onewayCost: 1.05 }); if (!best || best.L > legal.L * 0.6 || !minorWrong(best.r)) best = legal; }
   if (!best) return null;
   const a = slice(A.edge, A.s, best.na === A.edge.a ? 0 : A.edge.len);
   const pts = a.pts, deck = a.deck;
@@ -660,6 +757,26 @@ export function trackInit(R, tr, x, z) {
   trackUpdate(R, tr, x, z);
   if (R.loop && tr.s > R.L * 0.5) { tr.lap = -1; tr.P = -R.L + tr.s; }
   return tr;
+}
+
+// ------------------------------------------------------------------ surface grip along a route (AI corner / braking limits)
+// same multipliers as vehicle/physics.js SURF_GRIP (water, asphalt, concrete, grass, sand, dirt, rock, forest)
+export const SURF_GRIP_AI = [0.3, 1.0, 0.95, 0.72, 0.6, 0.75, 0.85, 0.7];
+// per route point: the lowest grip within +-2 points and 2.5 m either side (the line wanders; braking starts before the grass)
+export function routeGrip(world, R) {
+  const n = R.n, raw = new Float32Array(n), out = new Float32Array(n), o = {};
+  for (let i = 0; i < n; i++) {
+    const [x, z] = R.pts[i], a = R.pts[R.loop ? (i + 1) % n : Math.min(n - 1, i + 1)], b = R.pts[R.loop ? (i - 1 + n) % n : Math.max(0, i - 1)];
+    const dx = a[0] - b[0], dz = a[1] - b[1], l = Math.hypot(dx, dz) || 1, rx = -dz / l * 2.5, rz = dx / l * 2.5;
+    let g = 1;
+    for (const k of [0, 1, -1]) { world.groundAt(x + rx * k, z + rz * k, R.ys[i] + 1.5, o); g = Math.min(g, SURF_GRIP_AI[o.surface] ?? 0.72); }
+    // a line along a steep side slope (fire road switchbacks above a drop): running wide = leaving the hill, so less margin
+    // is spent (Headlands XC rivals slid off the Julian Trail hairpins and down the slope)
+    { const cross = Math.abs(world.heightAt(x + rx * 2, z + rz * 2) - world.heightAt(x - rx * 2, z - rz * 2)) / 10; if (cross > 0.3) g *= Math.max(0.7, 1 - (cross - 0.3)); }
+    raw[i] = g;
+  }
+  for (let i = 0; i < n; i++) { let g = 1; for (let k = -2; k <= 2; k++) { const j = R.loop ? (i + k + n) % n : Math.max(0, Math.min(n - 1, i + k)); g = Math.min(g, raw[j]); } out[i] = g; }
+  return out;
 }
 
 // ------------------------------------------------------------------ curvature speed limits (driving line + AI hints)

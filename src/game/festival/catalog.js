@@ -173,8 +173,10 @@ export const EVENTS = [
     desc: 'Through the eucalyptus from the Arguello Gate down to the bay.',
     keys: [[37.7880, -122.4590], [37.7925, -122.4610, '~'], [37.7960, -122.4650, '~'], [37.8000, -122.4600, '~'], [37.8040, -122.4560, '~']] },
   { id: 'headlands-dirt', type: 'dirt', name: 'Headlands Dirt Sprint', cls: 'B', chapter: 5, rivals: 5,
-    desc: 'Up and over the Marin hills on fire roads, the bridge towers poking through the fog below.',
-    keys: [[37.8330, -122.4840, 'Conzelman'], [37.8350, -122.4900, '~'], [37.8330, -122.4970, '~'], [37.8290, -122.5010, '~'], [37.8255, -122.4990, 'Conzelman']] },
+    desc: 'Over the top at Hawk Hill and down the Julian fire road to Fort Barry, the bridge towers poking through the fog behind you.',
+    // Conzelman Rd at Hawk Hill -> the Julian Trail fire road (OSM track, <= 20 %) -> the Fort Barry lawn. The old straight
+    // legs climbed 50-57 % grass faces from the bridge: nobody (player autopilot included) got past the first ridge.
+    keys: [[37.83355, -122.49261, 'Conzelman'], [37.83274, -122.49942, 'Julian'], [37.83041, -122.50688, 'Julian'], [37.83193, -122.50895, '~']] },
 
   // ---- Cross Country
   { id: 'presidio-xc', type: 'xc', name: 'Presidio Cross Country', cls: 'C', chapter: 1, rivals: 5,
@@ -185,15 +187,23 @@ export const EVENTS = [
     keys: [[37.7870, -122.4900], [37.7850, -122.4990, '~'], [37.7810, -122.5060, '~'], [37.7790, -122.5105, '~'], [37.7740, -122.5115, '~'], [37.7680, -122.5110, '~'], [37.7695, -122.5090, 'Great Highway']] },
   { id: 'ggpark-xc', type: 'xc', name: 'Golden Gate Park Cross Country', cls: 'C', chapter: 2, rivals: 5,
     desc: 'Meadow to meadow across the park, all the way to the ocean.',
-    keys: [[37.7745, -122.4540], [37.7720, -122.4620, '~'], [37.7700, -122.4720, '~'], [37.7680, -122.4930, '~'], [37.7690, -122.5010, '~'], [37.7700, -122.5080, 'Great Highway']] },
+    // (no key on the Stow Lake ridge between JFK and MLK Drives: its line hairpinned down one side and up the other)
+    keys: [[37.7745, -122.4540], [37.7720, -122.4620, '~'], [37.7680, -122.4930, '~'], [37.7690, -122.5010, '~'], [37.7700, -122.5080, 'Great Highway']] },
   { id: 'twin-peaks-xc', type: 'xc', name: 'Twin Peaks Cross Country', cls: 'B', chapter: 4, rivals: 5,
     desc: 'Straight down the grass from the summit. Gravity does most of the work.',
-    keys: [[37.7544, -122.4477, 'Twin Peaks'], [37.7560, -122.4510, '~'], [37.7585, -122.4540, '~'], [37.7560, -122.4600, 'Clarendon'], [37.7600, -122.4560, '~'], [37.7625, -122.4465]] },
+    // summit -> the open grass between the peaks -> the north slope -> Twin Peaks Blvd's lower bend -> down into the streets.
+    // (the old Clarendon Ave key pulled the off-road legs through back yards and up the cut banks of Christopher Dr: 59 rival
+    // respawns a race, every rival stuck on house corners and garden walls)
+    keys: [[37.7544, -122.4477, 'Twin Peaks'], [37.7560, -122.4510, '~'], [37.7600, -122.4560, '~'], [37.7625, -122.4465]] },
   { id: 'headlands-xc', type: 'xc', name: 'Marin Headlands Cross Country', cls: 'A', chapter: 5, rivals: 5,
     desc: 'The big one: off the bridge, over the headlands, past the batteries and down to the cliffs.',
     // (no Alexander Ave / 101 hill keys: reaching them from the bridge needed a U-turn on US 101 at the Alexander Ave
     // tunnel, where the whole grid piled up on the tunnel walls)
-    keys: [[37.8324, -122.4812, 'Golden Gate'], [37.8340, -122.4930, '~'], [37.8255, -122.4990, '~'], [37.8290, -122.5040, '~'], [37.8280, -122.4940, 'Conzelman']] },
+    // the foot of Conzelman Rd off the bridge -> up to Hawk Hill -> the Julian fire road -> across Fort Barry past Battery
+    // Mendell -> Conzelman at the Point Bonita cliffs. (The old off-road legs climbed 50 % faces and two keys were dropped as
+    // U-turns; a bridge start needs a US 101 U-turn to reach Conzelman. Lower Conzelman is one-way downhill in the graph: util.js
+    // pathBetween takes it against the flow when the legal way round is a huge detour.)
+    keys: [[37.8330, -122.4840, 'Conzelman'], [37.83355, -122.49261, 'Conzelman'], [37.83274, -122.49942, 'Julian'], [37.83121, -122.5068, '~'], [37.82941, -122.50964, '~'], [37.82788, -122.51134, 'Conzelman']] },
 
   // ---- Drag
   { id: 'marina-drag', type: 'drag', name: 'Marina Boulevard Drag', cls: 'B', chapter: 0, time: 21.5, dist: 402, rivals: 3,

@@ -20,7 +20,7 @@ import { createCollectibles } from './collectibles.js';
 import { createStories } from './stories.js';
 import { createPrologue } from './prologue.js';
 import { createScreens } from './screens.js';
-import { roadPath, fmtNum, fmtMoney, clamp, routeAt } from './util.js';
+import { roadPath, fmtNum, fmtMoney, clamp, routeAt, routeGrip } from './util.js';
 import { Driver } from '../drivers.js';
 import { keepOut } from '../../world/keepout.js';
 
@@ -204,7 +204,7 @@ export function createFestival(G) {
       let dh = Math.abs(h2 - h1); if (dh > Math.PI) dh = 2 * Math.PI - dh;
       if (dh > 0.52) hw[i] += 3;
     }
-    hidden.keepId = keepOut.add('route:' + (++corridorN), R.pts, hw, { loop: !!R.loop });
+    hidden.keepId = keepOut.add('route:' + (++corridorN), R.pts, hw, { loop: !!R.loop }); hidden.hw = hw;   // (hw: racing.js lineGuard re-adds the corridor after a repair)
     return hidden;
   };
   let corridorN = 0;
@@ -417,7 +417,7 @@ export function createFestival(G) {
           const pv = G.player.vehicle; if (!pv) return;
           const R = F.racing.active?.route || F.stories.active?.route || F.prologue.active?.R || null;
           if (!R) return;
-          if (R !== route || !d || d.v !== pv) { route = R; d = new Driver(pv, G.world.graph, { mode: 'race' }); d.setPath(R.pts, { latAcc: 7.2, loop: R.loop, ys: R.ys }); d.speedMul = speedMul; d.rubber = 1; }
+          if (R !== route || !d || d.v !== pv) { route = R; d = new Driver(pv, G.world.graph, { mode: 'race' }); d.setPath(R.pts, { latAcc: 7.2, loop: R.loop, ys: R.ys, grip: R.grip || (R.grip = routeGrip(G.world, R)) }); d.speedMul = speedMul; d.rubber = 1; F.racing.addLineUser?.(d, 0); }
           d.drive(dt, G.traffic.ctx);
           input.axes.throttle = pv.input.throttle; input.axes.brake = pv.input.brake; input.axes.steer = pv.input.steer;
         };
