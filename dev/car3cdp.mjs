@@ -31,12 +31,12 @@ async function main() {
   if (!tgt) throw new Error('chrome did not start');
   ws = new WebSocket(tgt.webSocketDebuggerUrl);
   await new Promise((r) => (ws.onopen = r));
-  ws.onmessage = (m) => { const d = JSON.parse(m.data); if (d.id && pend.has(d.id)) { const p = pend.get(d.id); pend.delete(d.id); d.error ? p.rej(new Error(d.error.message)) : p.res(d.result); } };
+  ws.onmessage = (m) => { const d = JSON.parse(m.data); if (d.method === 'Runtime.exceptionThrown') console.error('PAGE EXC', JSON.stringify(d.params.exceptionDetails).slice(0, 600)); if (d.id && pend.has(d.id)) { const p = pend.get(d.id); pend.delete(d.id); d.error ? p.rej(new Error(d.error.message)) : p.res(d.result); } };
   await send('Runtime.enable');
   await send('Page.enable');
   await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
   await send('Page.navigate', { url });
-  for (let k = 0; k < 240; k++) { await sleep(500); try { if (await ev('!!window.__shot', 5000)) break; } catch { /* loading */ } }
+  for (let k = 0; k < 240; k++) { await sleep(500); try { if (await ev('!!(window.__shot && window.__G && window.__G.player)', 5000)) break; } catch { /* loading */ } }
   const body = fs.readFileSync(scriptPath, 'utf8');
   const out = await ev(`(async () => { ${body} })()`);
   console.log(JSON.stringify(out, null, 1));

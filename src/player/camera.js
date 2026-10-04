@@ -83,15 +83,16 @@ export function createCameraRig(camera, world) {
       rig.pos.set(h[0], h[1], h[2]).applyQuaternion(veh.root.quaternion).add(origin);
       target.set(0, h[1] - 0.35, h[2] - 30).applyQuaternion(veh.root.quaternion).add(origin);
     } else if (rig.mode === 'cockpit') {
-      // driver eye: a touch behind + inboard of the seat reference (the A-pillar filled the left third), looking level
+      // driver's eye point (models.js P.eye: centred on the steering wheel, ~0.27 m above the belt, ~1.06 m behind the
+      // windscreen base; body pass 3 slimmed the A-pillars so the old pulled-back / inboard offset is gone), ~1.5 deg down
       const s = spec.seat;
-      rig.pos.set(s[0] * 0.92, s[1] + 0.01, s[2] + 0.1).applyQuaternion(veh.root.quaternion).add(origin);
-      target.set(s[0] * 0.8, s[1] - 1.5, s[2] - 30).applyQuaternion(veh.root.quaternion).add(origin);
+      rig.pos.set(s[0], s[1], s[2]).applyQuaternion(veh.root.quaternion).add(origin);
+      target.set(s[0], s[1] - 0.8, s[2] - 30).applyQuaternion(veh.root.quaternion).add(origin);
     }
     veh.visual?.setCabin?.(rig.mode === 'cockpit');
     rig.near = rig.mode === 'cockpit' ? 0.04 : rig.mode === 'hood' ? 0.1 : 0.25;
     rig.look.copy(target);
-    rig.fov = THREE.MathUtils.lerp(rig.fov, (rig.mode === 'hood' ? 70 : rig.mode === 'cockpit' ? 56 : 60) + Math.min(inCar ? 10 : 16, sp * (inCar ? 0.14 : 0.22)), Math.min(1, dt * 3));
+    rig.fov = THREE.MathUtils.lerp(rig.fov, (rig.mode === 'hood' ? 70 : rig.mode === 'cockpit' ? 54 : 60) + Math.min(rig.mode === 'cockpit' ? 6 : inCar ? 10 : 16, sp * (inCar ? 0.14 : 0.22)), Math.min(1, dt * 3));
     rig.speedBlur = THREE.MathUtils.clamp((sp - 30) / 45, 0, 1);
     // road shake: grows with speed (and on rough surfaces while grounded), stronger in the in-car views
     rig.roadShake = b.grounded ? THREE.MathUtils.smoothstep(sp, 12, 70) * (inCar ? 1 : 0.55) : 0;

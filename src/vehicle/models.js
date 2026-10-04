@@ -5304,6 +5304,10 @@ function fixCarGeo(g, kind) {
 // in-car view fill: a lit box (model space) around the cabin adds soft indirect light to the details material (seats,
 // dash, door cards, headliner) while the camera is in the cockpit. A uniform, not a light: adding a PointLight to the
 // scene recompiled every program (a multi-second hitch on the first 'C').
+// in-car view gains: window-light irradiance x gain (the eye adapts to the cabin; at the street exposure a physically lit
+// black dash reads as a hole), gauges / screen emissive x lamp (night readability). window.__hbCab for live tuning.
+export const CABIN = { gain: 3.2, lamp: 2.5 };
+if (typeof window !== 'undefined') window.__hbCab = CABIN;
 function cabinBox(id) {
   const P = getP(id), e = P.eye || P.seat || [-0.37, 1.1, 0];
   return { c: new THREE.Vector4(0, e[1] - 0.3, e[2] - 0.15, 0), h: new THREE.Vector3(0.95, 0.62, 1.25) };
@@ -5318,10 +5322,33 @@ function makeDetailsMat(ao, cab) {
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', '#include <common>\nuniform vec4 uHbCab;\nuniform vec3 uHbCabH;\nvarying vec3 vHbCabP;')
       .replace('#include <lights_fragment_maps>', '#include <lights_fragment_maps>\n' + envGlsl('mix(1.0, 1.9, metalnessFactor)') + `
-        if (uHbCab.w > 0.0) { vec3 hbQ = abs(vHbCabP - uHbCab.xyz) - uHbCabH; irradiance += step(max(hbQ.x, max(hbQ.y, hbQ.z)), 0.0) * uHbCab.w * vec3(1.0, 0.95, 0.88); }`);
+        // in-car view (body pass 3): the cabin is lit by what the glass sees. The street probe (or the sky IBL where the
+        // probe saw nothing) is sampled diffusely along the surface normal bent towards the horizon (the roof hides the
+        // zenith), plus a little bounce from the cabin itself; the baked AO is softened in the cabin (below)
+        float hbCabIn = 0.0;
+        if (uHbCab.w > 0.0) {
+          vec3 hbQ = abs(vHbCabP - uHbCab.xyz) - uHbCabH; hbCabIn = step(max(hbQ.x, max(hbQ.y, hbQ.z)), 0.0);
+          if (hbCabIn > 0.0) {
+            vec3 hbWn = inverseTransformDirection(geometryNormal, viewMatrix);
+            vec3 hbD = normalize(vec3(hbWn.x, hbWn.y * 0.3 + 0.18, hbWn.z));
+            vec3 hbL = vec3(0.0);
+            #if defined( USE_ENVMAP ) && defined( ENVMAP_TYPE_CUBE_UV )
+            hbL = getIBLIrradiance(transformDirection(hbD, viewMatrix));
+            #endif
+            if (uProbeP.w > 0.0) { vec4 hbP = textureLod(uProbe, hbD, 6.0); hbL = mix(hbL, PI * hbP.rgb * 1.15 + hbL * (1.0 - hbP.a), uProbeP.w); }
+            irradiance += hbL * uHbCab.w + vec3(0.06, 0.055, 0.05) * uHbCab.w;
+          }
+        }`)
+      .replace('#include <aomap_fragment>', `#ifdef USE_AOMAP
+        float ambientOcclusion = ( texture2D( aoMap, vAoMapUv ).r - 1.0 ) * aoMapIntensity * (1.0 - 0.5 * hbCabIn) + 1.0;
+        reflectedLight.indirectDiffuse *= ambientOcclusion;
+        #if defined( USE_ENVMAP ) && defined( STANDARD )
+        reflectedLight.indirectSpecular *= computeSpecularOcclusion( saturate( dot( geometryNormal, geometryViewDir ) ), ambientOcclusion, material.roughness );
+        #endif
+        #endif`);
     applyCarProbe(sh);
   };
-  m.customProgramCacheKey = () => 'hb-car-surf-ao-v3';
+  m.customProgramCacheKey = () => 'hb-car-surf-ao-v4';
   m.name = 'car-details';
   return m;
 }
@@ -5637,6 +5664,7 @@ export function buildCarModel(id, opts = {}) {
   mountBody();
   if (!asset) { if (hero && !P.custom) addCalipers(); syncWheels(); onCarAsset(id, () => { if (!disposed) { mountBody(); if (lastLook) setLook(lastLook); } }); }
   const u = lamps.userData.uLamp.value;
+  let cabinOn = false;
   function setLights(o = {}) {
     u[0] = 0.05;
     u[1] = o.head ? 1.3 : 0.15;            // lit lens; the bright point is the flare core (render/carlights.js): 2.5 bloomed the whole lamp cluster white
@@ -5648,9 +5676,10 @@ export function buildCarModel(id, opts = {}) {
       const on = (a) => (ph > a && ph < a + 0.11) || (ph > a + 0.19 && ph < a + 0.3);
       u[5] = on(0.0) ? 6 : 0.12; u[6] = on(0.5) ? 7 : 0.12;
     } else { u[5] = 0.2; u[6] = 0.2; }
-    u[7] = o.head ? 2.4 : 0.35;
+    const kc = cabinOn ? CABIN.lamp : 1;     // in-car view: gauges / screen read at the cabin's adapted exposure
+    u[7] = (o.head ? 2.4 : 0.35) * kc;
     u[8] = o.head ? 1.7 : 1.5;
-    u[9] = o.head ? 2.2 : 1.4;
+    u[9] = (o.head ? 2.2 : 1.4) * kc;
   }
   setLights({});
   const spec = getModelSpec(id);
@@ -5695,7 +5724,7 @@ export function buildCarModel(id, opts = {}) {
     }
   }
   // in-car view: cabin fill (see makeDetailsMat)
-  function setCabin(on) { if (asset?.cab) asset.cab.c.w = on ? 3.5 : 0; }
+  function setCabin(on) { cabinOn = on; if (asset?.cab) asset.cab.c.w = on ? CABIN.gain : 0; }
   if (opts.wing || opts.splitter) setAero(opts.wing | 0, opts.splitter | 0);
   if (opts.look) setLook(opts.look);
   else if (hero) applyFinish(paint, flakeFor(paintHex) < 0.1 ? 'gloss' : 'metallic', paintHex);   // solid whites / blacks stay solid (unowned player cars have no look)
