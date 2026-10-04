@@ -71,6 +71,12 @@ Look-dev pass 9/29 (whole-image cohesion, shots/look_*_{before,after}.jpg, look_
   (11 cm texels, ~18 cm normal bias), not 4096. Measure on an idle machine, then default it on if < 1 ms.
   the ref; Hyde St camera does not frame Alcatraz; sidewalks read pale at night.
 
+World round 2 10/4 (01d64e8..): peds hot spots / tourist spots by real lat/lon (game/peds/nav.js SPOTS_LL, TOUR_LL; v2 had none),
+plaza footways at sights = walker paths; yard ground patchwork (grass/yard_glsl.js shared by terrainmat + grass blades, lot frames from
+v2/lotframe.js in BioWindow.lotTex, terrain aYard attr, Y_SEASON fall dryness; ?noyardground); yard fence / shed colliders (v6yard.js YCOL ->
+MID result -> v2city kind 'fence' while bld-col live, street-raster filter; fences double-sided; ?noyardcol). Harness: dev/world2_shots.js,
+world2_run.js, world2_flick.js, world2_perf.js (node dev/car3cdp.mjs "<5191 url>&mute&prologue=0" dev/world2_<run|flick|perf>.js). Shots: shots/world2_*.
+Open: class-3 grass inside residential blocks (near GG Park) is still plain lawn; yard trees' own shade is only the sun shadow.
 Buildings v6 pass 10/3 (district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs): see src/world/facade/PROGRESS_V2.md top; ?nov6 = A/B; shots/bld6_*; headless harness dev/bld6_run.js via dev/car3cdp.mjs.
 Buildings v5 pass 10/1 (massing variety: setbacks / bays / turrets / chamfers / mansards / balconies / eaves / crests; near sun-shadow cascade on by default; dithered cross-fades for v3 / kit / yards / near tiles): see src/world/facade/PROGRESS_V2.md top; ?nov5 ?nofade ?nonearshadow = A/B; shots/bld5_*.
 Buildings v4 pass 9/29 (grounding / bounce / lamp-map night / front yards / murals / tree wells / residential poles): see src/world/facade/PROGRESS_V2.md top; ?nov4 = A/B; shots/bld4_*.
