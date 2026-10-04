@@ -86,10 +86,14 @@ for (const nm of (H.get('d') || Object.keys(ROUTES).join(',')).split(',')) {
   const avgPart = {}, maxPart = {}; for (const f of F) for (const k in f.parts) { avgPart[k] = (avgPart[k] || 0) + f.parts[k]; maxPart[k] = Math.max(maxPart[k] || 0, f.parts[k]); }
   const partsMax = Object.fromEntries(Object.entries(maxPart).filter(e => e[1] > 2 && /^(ld|ul|up):|^(stream|gtiles|tiles\.update|sim|props|lm|water|grass|traffic|sys\d+:)/.test(e[0])).map(([k, v]) => [k, +v.toFixed(1)]).sort((a, b) => b[1] - a[1]));
   const partsMean = Object.fromEntries(Object.entries(avgPart).map(([k, v]) => [k, +(v / F.length).toFixed(2)]).filter(e => e[1] > 0.15).sort((a, b) => b[1] - a[1]));
+  // what makes the slow frames slow: mean part time in frames with CPU >= p90 minus frames with CPU <= p50
+  const c90 = q(F.map(f => f.cpu), 0.9), c50 = q(F.map(f => f.cpu), 0.5), hi = F.filter(f => f.cpu >= c90), lo = F.filter(f => f.cpu <= c50);
+  const mp = (A) => { const m = {}; for (const f of A) for (const k in f.parts) m[k] = (m[k] || 0) + f.parts[k] / A.length; return m; };
+  const mh = mp(hi), ml = mp(lo), excess = Object.fromEntries(Object.keys(mh).map(k => [k, +(mh[k] - (ml[k] || 0)).toFixed(2)]).filter(e => e[1] > 0.3).sort((a, b) => b[1] - a[1]));
   const stepsHist = {}; for (const f of F) stepsHist[f.steps] = (stepsHist[f.steps] || 0) + 1;
   out.spots[nm] = { frames: iv.length, fps: +(1000 / q(iv, 0.5)).toFixed(1), meanFps: +(1000 * iv.length / iv.reduce((a, b) => a + b, 0)).toFixed(1), p50: q(iv, 0.5), p95: q(iv, 0.95), p99: q(iv, 0.99), max: q(iv, 1), over50: iv.filter(x => x > 50).length, over33: iv.filter(x => x > 33.4).length,
     hist: [10, 14, 17, 20, 25, 33, 40, 50, 1e9].map((b, j, A) => iv.filter(x => x <= b && x > (A[j - 1] || 0)).length).join(' '), gapP50: q(F.map(f => f.gap), 0.5), gapP95: q(F.map(f => f.gap), 0.95),
     cpuP50: q(F.map(f => f.cpu), 0.5), cpuP95: q(F.map(f => f.cpu), 0.95), gpuP50: q(F.map(f => f.gpu), 0.5), gpuP95: q(F.map(f => f.gpu), 0.95), callsP50: q(F.map(f => f.calls), 0.5), trisP50k: Math.round(q(F.map(f => f.tris), 0.5) / 1000),
-    steps: stepsHist, partsMean, partsMax, bld: { applyMax: W.__world.buildings?.stats?.applyMax, yardFilterMs: W.__world.buildings?.stats?.yardFilterMs }, slow: slow.slice(0, 40) };
+    steps: stepsHist, partsMean, partsMax, slowExcess: { cpuP90: c90, cpuP50: c50, stepsHi: +(hi.reduce((a, f) => a + f.steps, 0) / hi.length).toFixed(2), stepsLo: +(lo.reduce((a, f) => a + f.steps, 0) / lo.length).toFixed(2), callsHi: Math.round(hi.reduce((a, f) => a + f.calls, 0) / hi.length), callsLo: Math.round(lo.reduce((a, f) => a + f.calls, 0) / lo.length), parts: excess }, bld: { applyMax: W.__world.buildings?.stats?.applyMax, yardFilterMs: W.__world.buildings?.stats?.yardFilterMs }, slow: slow.slice(0, 40) };
 }
 return out;

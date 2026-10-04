@@ -49,6 +49,7 @@ async function main() {
   for (let k = 0; k < 240; k++) { await sleep(500); try { if (await ev('!!(window.__shot && window.__G && window.__G.player)', 5000)) break; } catch { /* loading */ } }
   const body = fs.readFileSync(scriptPath, 'utf8');
   console.log(JSON.stringify(await ev(`(async () => { ${body} })()`)));
+  if (process.env.ALLOC) { await allocs(); await send('Page.navigate', { url: new URL('/assets/manifest.json', url).href }); await sleep(500); return; }
   if (process.env.SPIKE) { await spikes(); await send('Page.navigate', { url: new URL('/assets/manifest.json', url).href }); await sleep(500); return; }
   await send('Tracing.start', { transferMode: 'ReportEvents', traceConfig: { recordMode: 'recordContinuously', includedCategories: ['devtools.timeline', 'disabled-by-default-devtools.timeline', 'disabled-by-default-devtools.timeline.frame', 'blink.user_timing', 'v8', 'v8.execute', 'toplevel', 'disabled-by-default-v8.gc', 'gpu'] } });
   if (process.env.PROF) { await send('Profiler.enable'); await send('Profiler.setSamplingInterval', { interval: 200 }); await send('Profiler.start'); }
@@ -59,6 +60,20 @@ async function main() {
   if (process.env.TRACE_OUT) fs.writeFileSync(process.env.TRACE_OUT, JSON.stringify({ traceEvents: events }));
   analyse();
   await send('Page.navigate', { url: new URL('/assets/manifest.json', url).href }); await sleep(500);
+}
+// ALLOC=1: sampling heap profiler over the run (bytes allocated, sampled every 16 KB), top allocation sites by self size
+async function allocs() {
+  await send('HeapProfiler.enable'); await send('HeapProfiler.startSampling', { samplingInterval: 16384, includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
+  const t0 = Date.now(); await ev('window.__traceRun()'); const secs = (Date.now() - t0) / 1000;
+  const { profile } = await send('HeapProfiler.stopSampling');
+  const self = new Map(), incl = new Map(); let tot = 0;
+  const key = n => `${n.callFrame.functionName || '(anon)'}@${n.callFrame.url.split('/').pop().split('?')[0]}:${n.callFrame.lineNumber + 1}`;
+  const walk = (n, chain) => { const k = key(n); self.set(k, (self.get(k) || 0) + n.selfSize); tot += n.selfSize; const c2 = chain.includes(k) ? chain : [...chain, k]; for (const q of c2) incl.set(q, (incl.get(q) || 0) + n.selfSize); for (const c of n.children || []) walk(c, c2); };
+  walk(profile.head, []);
+  const fmt = m => [...m].sort((a, b) => b[1] - a[1]).slice(0, +(process.env.TOPN || 40)).map(([k, b]) => `${(b / 1048576 / secs).toFixed(2).padStart(8)} MB/s  ${k}`).join(String.fromCharCode(10));
+  console.log(`ALLOC total ${(tot / 1048576 / secs).toFixed(1)} MB/s over ${secs.toFixed(0)} s`);
+  console.log('--- SELF ---' + String.fromCharCode(10) + fmt(self));
+  console.log('--- INCLUSIVE ---' + String.fromCharCode(10) + fmt(incl));
 }
 // SPIKE=1: no trace; V8 sampling profile (100 us) over the run, then for every long frame the page recorded in
 // window.__longFrames ([t0, t1, parts] in performance.now(), perf_rt2.js #spike=<ms>) the functions on the stack in that window

@@ -207,21 +207,22 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
         camera.getWorldDirection(_tf);
         const turned = _tf.dot(tLast.fwd) < TCOS, jumped = camera.position.distanceToSquared(tLast.pos) > 400;
         const urgent = turned || jumped || camera.fov !== tLast.fov || camera.aspect !== tLast.aspect || !tiles.cameras.length;
-        // (perf r3) the traversal runs as three phases on consecutive frames (world/v2/tilesphase.js): one third of the
-        // cost every frame instead of all of it every 3rd frame; a sharp turn / jump finishes the running cycle at once
-        // and starts the next. A cycle starts every phCycle (5) frames: A, B, C, two idle frames (pan test dev/tiles_pan.js,
-        // 120 deg/s vs a full traversal every frame on the real camera: differing cells below the A/A noise at 3 and 5).
+        // (perf r3) the traversal runs as a cycle sliced over frames (world/v2/tilesphase.js, ~1 ms per frame) instead of
+        // all of it every 3rd frame; a sharp turn / jump finishes the running cycle at once and starts the next. A cycle
+        // starts every phCycle (5) frames or when the last one ends, whichever is later (pan test dev/tiles_pan.js,
+        // 120 deg/s vs a full traversal every frame on the real camera: differing cells below the A/A noise).
         // ?notilesphase = the library's whole update() every TSKIP frames.
         const usePh = PERF.tilesphase && phased.ready();
+        tLast.n++;
         if (usePh && phased.busy) { if (urgent) phased.finish(); else phased.next(); }
-        if (!(usePh && phased.busy) && (++tLast.n >= (usePh ? api.phCycle : TSKIP) || urgent)) {
+        if (!(usePh && phased.busy) && (tLast.n >= (usePh ? api.phCycle : TSKIP) || urgent)) {
           tLast.n = 0; tLast.fwd.copy(_tf); tLast.pos.copy(camera.position); tLast.fov = camera.fov; tLast.aspect = camera.aspect;
           tcam.fov = camera.fov + 2 * TPAD; tcam.aspect = camera.aspect; tcam.near = camera.near; tcam.far = camera.far; tcam.zoom = camera.zoom; tcam.updateProjectionMatrix();
           tcam.matrixWorld.copy(camera.matrixWorld); tcam.matrixWorldInverse.copy(camera.matrixWorldInverse); tcam.position.setFromMatrixPosition(camera.matrixWorld);
           tiles.setCamera(tcam);
           renderer.getSize(_tv); tiles.setResolution(tcam, _tv.x * k, _tv.y * k);
           maskStats.culled = 0;
-          if (usePh) { phased.start(); if (urgent) phased.finish(); tLast.n = 1; }
+          if (usePh) { phased.start(); if (urgent) phased.finish(); }
           else tiles.update();
         }
       } else {
