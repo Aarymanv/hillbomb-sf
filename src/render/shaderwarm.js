@@ -17,7 +17,9 @@ export function installShaderWarm(renderer, { scene: world = null } = {}) {
   const gl = renderer.getContext();
   const par = gl.getExtension('KHR_parallel_shader_compile');
   // dev: waiting = program -> [skipped draws, first frame, ms since first skip]; waits = [[frames, ms, draws]] of the ones that got ready
-  const api = { enabled: !!par, stats: { skipped: 0, programs: 0, timedOut: 0 }, waiting: new Map(), waits: [] };
+  // extra: other scenes whose draws are guarded too (perf r3: the hero-interior reflection probe renders a temporary scene;
+  // its first capture compiled every interior material synchronously, a 250-300 ms hitch while driving past a lobby)
+  const api = { enabled: !!par, stats: { skipped: 0, programs: 0, timedOut: 0 }, waiting: new Map(), waits: [], extra: new Set() };
   if (!par) return api;
   const COMPLETE = par.COMPLETION_STATUS_KHR || 0x91B1;
   const ready = new WeakSet();
@@ -36,7 +38,7 @@ export function installShaderWarm(renderer, { scene: world = null } = {}) {
   gl.getProgramInfoLog = function (p) { check(p); return gpl(p); };
   const rbd = renderer.renderBufferDirect;
   renderer.renderBufferDirect = function (camera, scene, geometry, material, object, group) {
-    if (!PERF.shaderwarm || guard || !scene || (world && scene !== world)) return rbd.apply(this, arguments);
+    if (!PERF.shaderwarm || guard || !scene || (world && scene !== world && !api.extra.has(scene))) return rbd.apply(this, arguments);
     guard = true;
     try { return rbd.apply(this, arguments); }
     catch (e) { if (e !== NOT_READY) throw e; api.stats.skipped++; }

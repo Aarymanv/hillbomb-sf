@@ -16,6 +16,7 @@ import { PBR } from '../assets.js';
 import { loadPacked } from '../texpack.js';
 import { createInteriorLife } from './hero_int_life.js';
 import { HERO_INT_EXPO } from './hero_int_expo.js';
+import { PERF } from '../../render/perfflags.js';
 
 // white balance by the kind of fixtures: warm incandescent / sodium-warm hotels, theatres, churches, restaurants (~2900 K),
 // neutral LED stores, offices, arenas (~4000 K), daylight glasshouses and observation floors (~5500 K)
@@ -276,21 +277,37 @@ export function installHeroInteriors(G) {
     it.uLmN.value = null; it.daylit.length = 0; it.emits.length = 0; it.emitK = undefined; texUnref(it);
     Object.assign(it, { state: 0, group: null, lmTex: null, lmnTex: null, env: null, envRT: null, cols: null, signTex: null, probeN: undefined, texOK: false });
   }
+  // (perf r3) one PMREM generator for every probe, kept alive: a new one per probe (disposed after) released its programs,
+  // so each capture recompiled the cube-UV / blur shaders. Warmed at install (behind the loading screen) at the probe size.
+  // ?nointprobe = the old path (new generator per probe, the capture compiles the interior's materials synchronously).
+  let PM = null;
+  const pmrem = (r) => { if (!PM) PM = new THREE.PMREMGenerator(r); return PM; };
+  if (PERF.intprobe && G.renderer) {
+    try { const rt = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType }); pmrem(G.renderer).fromCubemap(rt.texture).dispose(); rt.dispose(); }
+    catch (e) { console.warn('[heroInt] pmrem warm', e); }
+  }
   // one-shot local reflection probe (the interior alone, from the middle of its first room)
   function probe(it) {
     const r = G.renderer; if (!r || !it.group) return;
     try {
-      if (it.envRT) { it.envRT.dispose(); it.envRT = null; }
       const rt = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType });
       const cam = new THREE.CubeCamera(0.2, 300, rt); cam.position.copy(center(it));
       const tmp = new THREE.Scene(); const parent = it.group.parent;
       const vis = it.group.visible; it.group.visible = true; tmp.add(it.group); tmp.add(cam);
       const sk = it.emitK ?? 1;    // capture the room as seen from inside (undo the street-view dimming)
       if (sk !== 1) { it.uLmK.value /= sk; for (const m of it.emits) m.color.setScalar(m.userData.emit); }
-      cam.update(r, tmp);
+      // (perf r3) the capture's draws go through render/shaderwarm.js: materials whose program is still compiling are
+      // skipped and the probe is retried a moment later (the old env, if any, stays) instead of freezing for the compile
+      const sw = PERF.intprobe && window.__shaderWarm?.enabled ? window.__shaderWarm : null, sk0 = sw ? sw.stats.skipped : 0;
+      if (sw) sw.extra.add(tmp);
+      try { cam.update(r, tmp); } finally { if (sw) sw.extra.delete(tmp); }
       if (sk !== 1) { it.uLmK.value *= sk; for (const m of it.emits) m.color.setScalar(m.userData.emit * sk); }
       parent.add(it.group); it.group.visible = vis;
-      const pm = new THREE.PMREMGenerator(r); it.envRT = pm.fromCubemap(rt.texture); it.env = it.envRT.texture; pm.dispose(); rt.dispose();
+      if (sw && sw.stats.skipped !== sk0) { rt.dispose(); it.probeWait = performance.now(); return; }
+      it.probeWait = 0;
+      if (it.envRT) { it.envRT.dispose(); it.envRT = null; }
+      if (PERF.intprobe) { it.envRT = pmrem(r).fromCubemap(rt.texture); it.env = it.envRT.texture; rt.dispose(); }
+      else { const pm = new THREE.PMREMGenerator(r); it.envRT = pm.fromCubemap(rt.texture); it.env = it.envRT.texture; pm.dispose(); rt.dispose(); }
       const first = !it.probeN && it.probeN !== 0;
       it.group.traverse(o => { if (o.isMesh && o.material.isMeshStandardMaterial && !o.material.transparent) { o.material.envMap = it.env; o.material.envMapIntensity = 1; if (first) o.material.needsUpdate = true; } });
       it.probeN = it.uNight.value;
@@ -433,7 +450,7 @@ export function installHeroInteriors(G) {
           it.group.visible = inside || dc < (it.I.showR ?? SHOW_R);
           // open courtyards share the exterior's walls: hide the exterior hero while inside (hideExt)
           if (it.I.hideExt) { const ex = extOf(it); if (ex) ex.visible = !inside; }
-          if (it.group.visible && it.texOK && (!it.env || Math.abs(night - (it.probeN ?? night)) > 0.5)) probe(it);   // re-capture across dusk / dawn
+          if (it.group.visible && it.texOK && (!it.env || Math.abs(night - (it.probeN ?? night)) > 0.5) && !(it.probeWait && performance.now() - it.probeWait < 250)) probe(it);   // re-capture across dusk / dawn
           // tone-mapping exposure rises at night: keep the baked light constant on screen
           const ex = G.renderer?.toneMappingExposure || 1;
           // seen from the street (camera outside every room) a lit lobby is dimmed toward the street's exposure: at night an
