@@ -7,6 +7,7 @@
 // buildCtStreet({ scene, segs, groundAt, night }) -> { update(camera) }
 import * as THREE from 'three';
 import { HB_WET } from '../../../render/fog.js';
+import { PERF } from '../../../render/perfflags.js';
 
 const VS = `varying vec3 vW; varying float vD;
 void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vec4 mv = viewMatrix * w; vD = -mv.z; gl_Position = projectionMatrix * mv; }`;
@@ -42,9 +43,24 @@ export function buildCtStreet({ scene, segs, groundAt, night, onCt = () => true 
       P.push(x, groundAt(x, z) + 0.035, z);
     }
     for (let k = 0; k < nu; k++) for (let j = 0; j < nw; j++) { const q = k * (nw + 1) + j; I.push(q, q + nw + 1, q + 1, q + 1, q + nw + 1, q + nw + 2); }
+    if (PERF.ctmerge) { addToCell((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, P, I); return; }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setIndex(I); g.computeBoundingSphere();
     const m = new THREE.Mesh(g, mat); m.name = 'ct:asphalt'; m.renderOrder = -2; m.matrixAutoUpdate = false; m.castShadow = m.receiveShadow = false;
     group.add(m);
+  }
+  // (perf r3) ?noctmerge: one mesh per street segment (40-55 transparent draws on the hero streets). The decal multiplies
+  // (order-independent, no depth write), so segments are merged into one mesh per 120 m cell instead, rebuilt when a
+  // segment of the cell is built (a few hundred vertices each); same shader, same overlaps, same 200 m hiding per cell.
+  const CELL = 120, cells = new Map();
+  function addToCell(mx, mz, P, I) {
+    const key = Math.floor(mx / CELL) * 100003 + Math.floor(mz / CELL);
+    let c = cells.get(key);
+    if (!c) { c = { P: [], I: [], mesh: null }; cells.set(key, c); }
+    const base = c.P.length / 3; for (const v of P) c.P.push(v); for (const i of I) c.I.push(i + base);
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(c.P, 3)); g.setIndex(c.I); g.computeBoundingSphere();
+    if (c.mesh) { c.mesh.geometry.dispose(); c.mesh.geometry = g; return; }
+    const m = new THREE.Mesh(g, mat); m.name = 'ct:asphalt'; m.renderOrder = -2; m.matrixAutoUpdate = false; m.castShadow = m.receiveShadow = false;
+    c.mesh = m; group.add(m);
   }
   // contact shadows under the parked cars on the hero streets (props2 parked instances are placed level on the slope with
   // no ground contact at night: they read as floating): soft multiply blobs following the road under each car
