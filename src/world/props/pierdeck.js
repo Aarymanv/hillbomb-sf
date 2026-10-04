@@ -21,6 +21,30 @@ function flattenPier(t) {
   }
 }
 
+// Physics: the flattened raster only matches the deck where the whole 4 m height cell is plateau. Along the deck's edges, on
+// the dock fingers and wherever the planks overhang the water the bilinear terrain under them falls away to the bay (cars
+// dipped through the planks, wheels sank on the rim, the outer walkway dropped them in the water). Every run of deck cells
+// that stands above the terrain becomes a flat terrain deck (2 m strips, kind 'pier' = concrete grip) at the plank height,
+// so terrain.groundAt (cars, peds, props) stands on exactly what is drawn.
+function addPierDecks(terrain, mask, lvl, nx, nz) {
+  if (!terrain.addDeck) return 0;
+  let runs = 0;
+  for (let j = 0; j < nz; j++) {
+    const z = BOX.z0 + (j + 0.5) * G;
+    for (let i = 0; i < nx;) {
+      const k = j * nx + i;
+      // (lowest terrain under the cell: centre + corners; low docks only where they clear the ground by > 15 cm)
+      const above = (ii) => { const kk = j * nx + ii; if (mask[kk] !== 1) return false; const x = BOX.x0 + (ii + 0.5) * G, h = Math.min(terrain.heightAt(x, z), terrain.heightAt(x - 1, z - 1), terrain.heightAt(x + 1, z - 1), terrain.heightAt(x - 1, z + 1), terrain.heightAt(x + 1, z + 1)); return lvl[kk] > h + (lvl[kk] >= TOP ? 0.02 : 0.15); };
+      if (!above(i)) { i++; continue; }
+      const Y = lvl[k]; let e = i + 1;
+      while (e < nx && above(e) && Math.abs(lvl[j * nx + e] - Y) < (Y >= TOP ? 0.04 : 0.1)) e++;
+      terrain.addDeck({ pts: [[BOX.x0 + i * G - 0.05, z, Y], [BOX.x0 + e * G + 0.05, z, Y]], width: G + 0.1, kind: 'pier', name: 'Pier 39 deck', sidewalk: 0 });
+      runs++; i = e;
+    }
+  }
+  return runs;
+}
+
 export function buildPierDeck({ terrain, parent }) {
   flattenPier(terrain);
   const nx = Math.round((BOX.x1 - BOX.x0) / G), nz = Math.round((BOX.z1 - BOX.z0) / G);
@@ -35,6 +59,7 @@ export function buildPierDeck({ terrain, parent }) {
     mask[j * nx + i] = 1; lvl[j * nx + i] = h >= 1.6 ? TOP + 0.05 : Math.max(0.8, h + 0.06); n++;
   }
   if (n < 50) return null;
+  const runs = addPierDecks(terrain, mask, lvl, nx, nz);
   const P = [], N = [], UV = [], C = [], I = [];
   const quad = (a, b, c, d, n, uv, col) => {
     const k = P.length / 3;
@@ -78,5 +103,5 @@ export function buildPierDeck({ terrain, parent }) {
   const mesh = new THREE.Mesh(g, m);
   mesh.name = 'pier39-deck'; mesh.receiveShadow = true; mesh.castShadow = false; mesh.matrixAutoUpdate = false;
   parent.add(mesh);
-  return { mesh, top: TOP };
+  return { mesh, top: TOP, decks: runs };
 }
