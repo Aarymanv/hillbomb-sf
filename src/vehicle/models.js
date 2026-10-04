@@ -5855,6 +5855,17 @@ export function buildCarModel(id, opts = {}) {
     const proxied = lean && !split && lodLevel > 0 && !!proxyLevels[lodLevel];
     const merged = lean && !split && !!asset?.lean?.[lodLevel]?.wheelsMerged;
     for (const m of wheelMeshes) { m.castShadow = !proxied; m.visible = !merged; }
+    // merged far wheels: the four wheel pivots (pivot / spin / wheel / caliper: 16 nodes) leave the graph while unused.
+    // Applied from setLights (every sync, outside rendering): this runs inside LOD.update, i.e. while the renderer
+    // iterates root's children
+    pivotsOut = merged;
+  }
+  let pivotsOut = false;
+  function applyPivots() {
+    for (const w of wheels) {
+      if (pivotsOut) { if (w.pivot.parent === root) root.remove(w.pivot); }
+      else if (w.pivot.parent !== root) { root.add(w.pivot); w.pivot.updateMatrixWorld(true); }
+    }
   }
   function mountBody() {
     body.clear(); glassMeshes.length = 0; doorPivots.L.length = 0; doorPivots.R.length = 0;
@@ -5913,6 +5924,7 @@ export function buildCarModel(id, opts = {}) {
   const u = lamps.userData.uLamp.value;
   let cabinOn = false;
   function setLights(o = {}) {
+    if (pivotsOut !== (wheels[0]?.pivot.parent !== root)) applyPivots();
     u[0] = 0.05;
     u[1] = o.head ? 1.3 : 0.15;            // lit lens; the bright point is the flare core (render/carlights.js): 2.5 bloomed the whole lamp cluster white
     u[2] = o.brake ? 3.0 : 0.6;
