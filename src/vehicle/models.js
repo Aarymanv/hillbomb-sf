@@ -5339,9 +5339,11 @@ function leanLevel(L) {
 // (same scheme as the hero landmark proxies). ?nocarshadowproxy = off
 const _carFarSphere = new THREE.Sphere(new THREE.Vector3(0, -1e7, 0), 0);
 let _carProxyMat = null;
-function carShadowProxy(A, P, i, wheelPos) {
+const wheelPosOf = (P) => [[-P.tf / 2, P.axleFZ, P.ww], [P.tf / 2, P.axleFZ, P.ww], [-P.tr / 2, P.axleRZ, P.wwR], [P.tr / 2, P.axleRZ, P.wwR]];
+function carShadowProxy(A, P, i) {
   const C = A.shadowProxy || (A.shadowProxy = []);
   if (C[i] !== undefined) return C[i];
+  const wheelPos = wheelPosOf(P);
   const L = A.lean[i], parts = [];
   const pos = (g, m) => {
     const b = new THREE.BufferGeometry();
@@ -5371,6 +5373,15 @@ function carShadowProxyMesh(g) {
   p.name = 'carShadowProxy'; p.castShadow = true; p.receiveShadow = false;
   p.userData.shadowSphere = g.userData.realSphere; p.userData.noReflect = true; p.userData.shadowOnly = true;
   return p;
+}
+/** (perf r2) street-car warm-up behind the loading screen (game/sys_carwarm.js): the procedural build (P, lamp anchors,
+ *  fallback geometry: 30-66 ms on a model's first spawn), the baked asset, its AO atlas upload and the far shadow proxies. */
+export function prewarmCarModel(id, renderer = null) {
+  getGeoms(id); getModelSpec(id);
+  onCarAsset(id, (A) => {
+    if (renderer && A.ao && !A._warm) { A._warm = true; try { renderer.initTexture(A.ao); } catch { /* uploads on first draw instead */ } }
+    if (PERF.carshadowproxy) { const P = getP(id); for (let i = 1; i < A.lean.length; i++) carShadowProxy(A, P, i); }
+  });
 }
 /** cb(asset) once the baked asset of id is in (immediately if it already is; never if the id has no asset). */
 export function onCarAsset(id, cb) {
@@ -5837,7 +5848,7 @@ export function buildCarModel(id, opts = {}) {
       proxyLevels.length = 0;
       (lean && !split ? asset.lean : asset.lods).forEach((L, i) => {
         const grp = new THREE.Group(); addBodyLevel(grp, L); lod.addLevel(grp, CAR_LOD_DIST[i], i ? 0.08 : 0);
-        const pg = lean && !split && i > 0 && PERF.carshadowproxy ? carShadowProxy(asset, P, i, pos) : null;
+        const pg = lean && !split && i > 0 && PERF.carshadowproxy ? carShadowProxy(asset, P, i) : null;
         if (pg) { for (const m of grp.children) if (m.isMesh) m.castShadow = false; grp.add(carShadowProxyMesh(pg)); proxyLevels[i] = true; }
       });
       const upd = lod.update.bind(lod);

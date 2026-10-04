@@ -82,7 +82,7 @@ G.systems.push(G.economy, G.skills);
 G.hud.units = G.economy.settings.units;
 env.state.fogMode = G.economy.settings.fog;
 
-// optional systems (loaded if present)
+// optional systems (loaded if present: every src/game/sys_*.js, e.g. sys_carwarm street-car warm-up)
 for (const [name, m] of Object.entries(import.meta.glob('./game/sys_*.js', { eager: true }))) {
   try { m.install?.(G); } catch (e) { console.error('[system] ' + name, e); }
 }
