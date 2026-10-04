@@ -91,6 +91,27 @@ Look-dev pass 9/29 (whole-image cohesion, shots/look_*_{before,after}.jpg, look_
   (11 cm texels, ~18 cm normal bias), not 4096. Measure on an idle machine, then default it on if < 1 ms.
   the ref; Hyde St camera does not frame Alcatraz; sidewalks read pale at night.
 
+Perf pass 10/4 (3125624..b1ab294; 1080p High, RTX 5070 Ti laptop, dev/perf_prof_run.js 700-frame drives + dev/perf_rt.js real time):
+- What runs where: frame is CPU-bound (20-25 ms frame CPU in real time vs 13-17 ms GPU). Profilers: dev/perf_prof.js (__gpuPass per-pass
+  GPU timer sections + CPU per render / draw category, __drawCensus main / shadow (SH#) / probe + mirror (X) draws), perf_prof_run.js,
+  cpuprof_cdp.mjs (V8 sampling profile, use :5190 for names), perf_views_ab.js (low-noise fixed-view A/B of render/perfflags.js switches,
+  window.__perf.<name>; dev-only nocars / noprobe arms), perf_ab.js, perf_rt.js (HB_UNCAP=1), perf_shots.js + perf_diff.py (look A/B).
+- Done (each has ?no<name>): maskcull (tiles wholly inside our near block not refined/drawn), tilesthrottle (traversal every 3rd frame on a
+  10 deg padded frustum, meshes culled by three), shaderwarm (KHR_parallel_shader_compile: a draw whose program isn't linked is skipped,
+  <= 600 ms), shadowcull (casters whose shadow can't reach the view skipped), waterthrottle (mirror every 3rd frame when no water within
+  320 m), extcull (interior shells past 650 m); heromerge + heroshadow (hero slots merged per material, one depth proxy per hero LOD:
+  Chinatown shadow draws 434 -> 142); ct:asphalt decals hidden past 200 m; dynres step-downs are trials (undone when the frame interval
+  doesn't improve: on High it was sinking to 0.65 for nothing).
+- Rejected (measured): tiles errorFalloff (far city visibly softer), distance-banded opaque sort (+1.2 ms CPU, +0.9 GPU).
+- Open, cars owner (measured with perf_views_ab nocars / noprobe): car probe 3.2 ms CPU + 2.5-4.3 ms GPU (128 px faces of the whole
+  near city, ~80 draws: a probe layer without bld-mid / kit / terrain or every-other-frame faces); traffic cars ~2.4 ms CPU / 1.2 GPU
+  (10-50 draws and 200-560 scene nodes per car: merge per LOD, drop sub-meshes at distance); player physics 2 ms; traffic spawns =
+  new Vehicle() 30-45 ms hitches (pool them); first-draw car AO texture uploads 32-37 ms (initTexture at load).
+- Open, world: ~100 ms GPU-side stalls (frame JS 20-40 ms, readPixels waits 70-110 ms; present before too: texture / driver compile?),
+  tiles ~160-300 draws (one material per tile), cloud pass 1.1-1.7 ms GPU, the sun map could cache static casters (shadow #0 ~1.5 ms).
+  NOTE near3 (nearest cascade) layer 7 is not detail-only: three r180 tests caster layers against the MAIN camera (layers 0 + 7), so every
+  caster draws into it; the look was tuned with that, left as is.
+
 World round 2 10/4 (01d64e8..): peds hot spots / tourist spots by real lat/lon (game/peds/nav.js SPOTS_LL, TOUR_LL; v2 had none),
 plaza footways at sights = walker paths; yard ground patchwork (grass/yard_glsl.js shared by terrainmat + grass blades, lot frames from
 v2/lotframe.js in BioWindow.lotTex, terrain aYard attr, Y_SEASON fall dryness; ?noyardground); yard fence / shed colliders (v6yard.js YCOL ->
