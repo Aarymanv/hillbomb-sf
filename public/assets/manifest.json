@@ -1,0 +1,362 @@
+{
+ "materials": {
+  "asphalt": {
+   "source": "ambientCG",
+   "id": "Asphalt031",
+   "res": "4K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Asphalt031"
+  },
+  "brick_red": {
+   "source": "ambientCG",
+   "id": "Bricks075A",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Bricks075A"
+  },
+  "concrete": {
+   "source": "ambientCG",
+   "id": "Concrete034",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough"
+   ],
+   "url": "https://ambientcg.com/view?id=Concrete034"
+  },
+  "brick_tan": {
+   "source": "ambientCG",
+   "id": "Bricks101",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Bricks101"
+  },
+  "siding": {
+   "source": "ambientCG",
+   "id": "WoodSiding008",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao",
+    "metal"
+   ],
+   "url": "https://ambientcg.com/view?id=WoodSiding008"
+  },
+  "stucco": {
+   "source": "ambientCG",
+   "id": "Plaster001",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough"
+   ],
+   "url": "https://ambientcg.com/view?id=Plaster001"
+  },
+  "painted_plaster": {
+   "source": "ambientCG",
+   "id": "PaintedPlaster017",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough"
+   ],
+   "url": "https://ambientcg.com/view?id=PaintedPlaster017"
+  },
+  "concrete_rough": {
+   "source": "ambientCG",
+   "id": "Concrete046",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough"
+   ],
+   "url": "https://ambientcg.com/view?id=Concrete046"
+  },
+  "paving": {
+   "source": "ambientCG",
+   "id": "PavingStones128",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=PavingStones128"
+  },
+  "gravel_roof": {
+   "source": "ambientCG",
+   "id": "Gravel023",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Gravel023"
+  },
+  "grass": {
+   "source": "ambientCG",
+   "id": "Grass004",
+   "res": "1K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Grass004"
+  },
+  "forest_floor": {
+   "source": "ambientCG",
+   "id": "Ground037",
+   "res": "1K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Ground037"
+  },
+  "sand": {
+   "source": "ambientCG",
+   "id": "Ground054",
+   "res": "1K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Ground054"
+  },
+  "rock": {
+   "source": "ambientCG",
+   "id": "Rock035",
+   "res": "1K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Rock035"
+  },
+  "metal": {
+   "source": "ambientCG",
+   "id": "Metal032",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "metal"
+   ],
+   "url": "https://ambientcg.com/view?id=Metal032"
+  },
+  "corrugated": {
+   "source": "ambientCG",
+   "id": "CorrugatedSteel009",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao",
+    "metal"
+   ],
+   "url": "https://ambientcg.com/view?id=CorrugatedSteel009"
+  },
+  "roof_tiles": {
+   "source": "ambientCG",
+   "id": "RoofingTiles013A",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=RoofingTiles013A"
+  },
+  "wood_floor": {
+   "source": "ambientCG",
+   "id": "WoodFloor051",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=WoodFloor051"
+  },
+  "fabric": {
+   "source": "ambientCG",
+   "id": "Fabric030",
+   "res": "1K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Fabric030"
+  },
+  "tiles": {
+   "source": "ambientCG",
+   "id": "Tiles107",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Tiles107"
+  },
+  "marble": {
+   "source": "ambientCG",
+   "id": "Marble012",
+   "res": "2K",
+   "maps": [
+    "color",
+    "normal",
+    "rough"
+   ],
+   "url": "https://ambientcg.com/view?id=Marble012"
+  },
+  "carpet": {
+   "source": "ambientCG",
+   "id": "Carpet016",
+   "res": "1K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Carpet016"
+  },
+  "leather": {
+   "source": "ambientCG",
+   "id": "Leather037",
+   "res": "1K",
+   "maps": [
+    "color",
+    "normal",
+    "rough"
+   ],
+   "url": "https://ambientcg.com/view?id=Leather037"
+  },
+  "bark": {
+   "source": "ambientCG",
+   "id": "Bark014",
+   "res": "1K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Bark014"
+  },
+  "cliff_rock": {
+   "source": "ambientCG",
+   "id": "Rock051",
+   "res": "1K",
+   "maps": [
+    "color",
+    "normal",
+    "rough",
+    "ao"
+   ],
+   "url": "https://ambientcg.com/view?id=Rock051"
+  }
+ },
+ "hdri": {
+  "sunrise": {
+   "source": "Poly Haven",
+   "id": "qwantani_sunrise_puresky",
+   "res": "2k",
+   "url": "https://polyhaven.com/a/qwantani_sunrise_puresky"
+  },
+  "morning": {
+   "source": "Poly Haven",
+   "id": "qwantani_morning_puresky",
+   "res": "2k",
+   "url": "https://polyhaven.com/a/qwantani_morning_puresky"
+  },
+  "noon": {
+   "source": "Poly Haven",
+   "id": "kloofendal_48d_partly_cloudy_puresky",
+   "res": "2k",
+   "url": "https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky"
+  },
+  "afternoon": {
+   "source": "Poly Haven",
+   "id": "kloofendal_38d_partly_cloudy_puresky",
+   "res": "2k",
+   "url": "https://polyhaven.com/a/kloofendal_38d_partly_cloudy_puresky"
+  },
+  "sunset": {
+   "source": "Poly Haven",
+   "id": "qwantani_sunset_puresky",
+   "res": "2k",
+   "url": "https://polyhaven.com/a/qwantani_sunset_puresky"
+  },
+  "dusk": {
+   "source": "Poly Haven",
+   "id": "qwantani_dusk_2_puresky",
+   "res": "2k",
+   "url": "https://polyhaven.com/a/qwantani_dusk_2_puresky"
+  },
+  "night": {
+   "source": "Poly Haven",
+   "id": "qwantani_night_puresky",
+   "res": "2k",
+   "url": "https://polyhaven.com/a/qwantani_night_puresky"
+  },
+  "evening_storm_4k": {
+   "source": "ambientCG",
+   "id": "EveningSkyHDRI030B",
+   "res": "4k",
+   "url": "https://ambientcg.com/view?id=EveningSkyHDRI030B"
+  },
+  "evening_storm_2k": {
+   "source": "ambientCG",
+   "id": "EveningSkyHDRI030B",
+   "res": "2k (downscaled)",
+   "url": "https://ambientcg.com/view?id=EveningSkyHDRI030B"
+  }
+ },
+ "trees": {
+  "source": "generated",
+  "index": "trees/trees.json",
+  "generator": "tools/blender/trees.py (Blender 5.2 Cycles + numpy)",
+  "note": "no downloaded assets: leaf cards rendered from procedural 3D leaves, bark from periodic procedural height fields"
+ }
+}
