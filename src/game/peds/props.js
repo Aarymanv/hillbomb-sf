@@ -36,7 +36,7 @@ export function loadProps() {
 export function setPropNight(n) {
   if (Math.abs(n - night) < 0.01) return;
   night = n;
-  if (MAT.screen) MAT.screen.emissiveIntensity = 0.55 + 1.6 * n;
+  if (MAT.screen) MAT.screen.emissiveIntensity = 0.5 + 0.75 * n;
 }
 
 // a phone app (messages / map / feed), drawn once
@@ -56,7 +56,7 @@ function screenTex() {
 
 const _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1);
 const _e = new THREE.Euler(), _m = new THREE.Matrix4();
-const PHONE_ROT = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, Math.PI / 2));
+const PHONE_ROT = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, Math.PI / 2));   // long axis along the fingers, screen +Z
 
 export class HeldProps {
   constructor(rig, seed) {
@@ -91,7 +91,8 @@ export class HeldProps {
       const o = this._mesh('phone', [['phone', MAT.phone], ['phone_screen', MAT.screen]]);
       if (o) {
         const left = want.phone === BN.LHand;
-        h._boneMatrix(want.phone, o.matrix, -0.075, 0.012, left ? 0.022 : -0.022, left ? PHONE_ROT_L : PHONE_ROT);
+        // Bip01 hands: fingers -X, palm faces +Z on both sides, thumb +Y (right) / -Y (left: mirrored frame); screen out of the palm
+        h._boneMatrix(want.phone, o.matrix, -0.075, left ? -0.012 : 0.012, 0.022, PHONE_ROT);
         o.matrixWorldNeedsUpdate = true; show.phone = 1;
       }
     }
@@ -153,4 +154,3 @@ export class HeldProps {
 
   dispose() { for (const k in this.m) this.rig.remove(this.m[k]); this.m = {}; }
 }
-const PHONE_ROT_L = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, -Math.PI / 2));

@@ -36,14 +36,28 @@
   };
   W.__p2Phone = async (suf, h = 20.6) => {
     await prep(h);
-    const r = pick(q => q.style !== 'jogger', 1.25, 0.35, 1.5); if (!r) throw new Error('no ped');
+    const alone = q => !q.partner && !q.leader && !G().peds.list.some(o => o !== q && Math.hypot(o.x - q.x, o.z - q.z) < 2.5);
+    const r = pick(q => q.style !== 'jogger' && alone(q), 1.25, 0.35, 1.5) || pick(q => q.style !== 'jogger', 1.25, 0.35, 1.5); if (!r) throw new Error('no ped');
     const q = r.q, hm = q.human;
     freezePeds();
+    hm.phoneClip = null;   // -> the texting clip (phone in front of the chest)
     hm._force = { state: 'phone', speed: 0 };
     for (let i = 0; i < 90; i++) { hm.update(1 / 60, hm._last || {}); W.__frames(1); }
+    // wait for a moment the phone is up in front of the chest / face (texting or reading), max ~8 s
+    const ph = () => hm.held?.m?.phone;
+    for (let i = 0; i < 480; i++) {
+      const o = ph(); if (o?.visible) { o.updateWorldMatrix(true, false); if (o.matrixWorld.elements[13] > q.y + 1.15) break; }
+      hm.update(1 / 60, hm._last || {}); W.__frames(1);
+    }
     const aim = () => W.__look(...r.cam, q.x, q.y + 1.3, q.z);
     W.__player.human.setVisible(false); aim(); W.__frames(1); aim();
     const out = await W.__shot(`peds2_closeup_phone_${suf}`, 1280, 720);
+    // over the shoulder: the lit screen
+    { const fx = -Math.sin(q.yaw), fz = -Math.cos(q.yaw), o = ph(); if (o) o.updateWorldMatrix(true, false);
+      const e = o ? o.matrixWorld.elements : null, px = e ? e[12] : q.x + fx * 0.3, py = e ? e[13] : q.y + 1.2, pz = e ? e[14] : q.z + fz * 0.3;
+      const rx = -fz, rz = fx, side = Math.sign((px - q.x) * rx + (pz - q.z) * rz) || 1;   // the phone hand's side
+      const sh = () => W.__look(px - fx * 0.5 + rx * side * 0.3, py + 0.5, pz - fz * 0.5 + rz * side * 0.3, px, py, pz);
+      sh(); W.__frames(1); sh(); await W.__shot(`peds2_closeup_phone2_${suf}`, 1280, 720); }
     hm._force = null; W.__player.human.setVisible(true); thawPeds();
     return out;
   };

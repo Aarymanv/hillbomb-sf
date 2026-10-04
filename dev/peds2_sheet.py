@@ -5,7 +5,8 @@ import os, sys, glob
 from PIL import Image, ImageDraw
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'shots')
-STRIPS = ['enter_car', 'exit_car', 'knockdown', 'jump', 'senter', 'sexit', 'sknock', 'carry']
+STRIPS = ['enter_car', 'exit_car', 'knockdown', 'jump', 'carry']
+ZOOM = {'crowd_far': (500, 200, 740, 470)}   # 1280x720 crop shown 2.5x under the pair
 SINGLE = ['closeup_phone', 'umbrella_rain', 'crowd_far']
 
 
@@ -37,6 +38,12 @@ def sheet(sufs):
             for k, (s, im) in enumerate(ims):
                 row.paste(im.resize((w, row.height)), (k * w, 0)); ImageDraw.Draw(row).text((k * w + 8, 6), f'{n} {s}', fill=(255, 255, 0))
             out_rows.append(row)
+            if n in ZOOM:
+                z = Image.new('RGB', (W, int(w * (ZOOM[n][3] - ZOOM[n][1]) / (ZOOM[n][2] - ZOOM[n][0]))))
+                for k, (s, im) in enumerate(ims):
+                    c = im.resize((1280, 720)).crop(ZOOM[n]).resize((w, z.height), Image.LANCZOS); z.paste(c, (k * w, 0))
+                    ImageDraw.Draw(z).text((k * w + 8, 6), f'{n} {s} (zoom)', fill=(255, 255, 0))
+                out_rows.append(z)
         else:
             for s, im in ims:
                 im = im.resize((W, int(im.height * W / im.width))); ImageDraw.Draw(im).text((8, 6), f'{n} {s}', fill=(255, 255, 0)); out_rows.append(im)
