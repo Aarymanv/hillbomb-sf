@@ -74,8 +74,13 @@ export function createDynRes({ renderer, post, quality, enabled = true }) {
   const gl = renderer.getContext(), tq = gl.getExtension('EXT_disjoint_timer_query_webgl2');
   const pend = []; let open = null, gpuMs = 0;
   let base = renderer.getPixelRatio(), applied = base, k = 0, ema = 12, over = 0, under = 0, last = 0, cool = 0;
+  // (perf 10/4) a step down is a trial: the GPU timer also counts the GPU waiting for a CPU-bound frame's commands, so a
+  // CPU-bound frame (traffic, draw submission) looked "over budget" and the scale sank to minScale with no frame-rate gain,
+  // just a blurrier image. ~2 s after a step down the smoothed frame interval must have improved by >= 6 %, else the step
+  // is undone and no step down is tried for 20 s.
+  let ivEma = 16.7, trial = null, noDownUntil = 0;
   const api = {
-    enabled, budget: 1000 / 60 * 0.95,
+    enabled, budget: 1000 / 60 * 0.95, trials: [],
     get scale() { return STEPS[k]; }, get load() { return ema; },
     apply(i) {
       k = Math.max(0, Math.min(STEPS.length - 1, i)); applied = base * STEPS[k];
@@ -93,10 +98,17 @@ export function createDynRes({ renderer, post, quality, enabled = true }) {
       if (!api.enabled || !active || document.hidden || dt > 250) { if (!api.enabled && k) api.apply(0); over = under = 0; return; }
       const work = tq ? Math.max(cpuMs, gpuMs) : dt;
       ema += (Math.min(work, 100) - ema) * 0.08;
+      ivEma += (Math.min(dt, 100) - ivEma) * 0.05;
       if (cool > 0) { cool--; return; }
+      if (trial && ++trial.n >= 120) {
+        const kept = ivEma < trial.iv * 0.94; api.trials.push({ from: trial.from, iv0: +trial.iv.toFixed(1), iv1: +ivEma.toFixed(1), kept });
+        if (api.trials.length > 20) api.trials.shift();
+        const from = trial.from; trial = null;
+        if (!kept) { api.apply(from); noDownUntil = t + 20000; return; }
+      }
       if (ema > api.budget) { over++; under = 0; } else if (ema < api.budget * 0.7) { under++; over = 0; } else { over = Math.max(0, over - 1); under = 0; }
-      if (over > 45 && k < STEPS.length - 1) api.apply(k + 1);
-      else if (under > 240 && k > 0) api.apply(k - 1);
+      if (over > 45 && k < STEPS.length - 1 && !trial && t > noDownUntil) { const iv = ivEma, from = k; api.apply(k + 1); trial = { from, iv, n: 0 }; }
+      else if (under > 240 && k > 0) { trial = null; api.apply(k - 1); }
     },
   };
   return api;

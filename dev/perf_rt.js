@@ -37,6 +37,6 @@ for (const nm of (H.get('d') || Object.keys(ROUTES).join(',')).split(',')) {
   await new Promise(res => { const t0 = performance.now(); const tick = (t) => { if (last) iv.push(t - last); last = t; if (t - t0 < SECS * 1000) requestAnimationFrame(tick); else res(); }; requestAnimationFrame(tick); });
   W.__manual = true; W.__autopilot = null; W.__G.post.render = g0;
   const q = (a, p) => { const b = [...a].sort((x, y) => x - y); return +b[Math.min(b.length - 1, Math.floor(p * b.length))].toFixed(1); };
-  out.spots[nm] = { frames: iv.length, fps: +(1000 / q(iv, 0.5)).toFixed(1), p50: q(iv, 0.5), p95: q(iv, 0.95), p99: q(iv, 0.99), max: q(iv, 1), over50: iv.filter(x => x > 50).length, renderCpuP50: q(cpu, 0.5), frameCpuP50: q(fcpu, 0.5), frameCpuP95: q(fcpu, 0.95) };
+  out.spots[nm] = { frames: iv.length, fps: +(1000 / q(iv, 0.5)).toFixed(1), p50: q(iv, 0.5), p95: q(iv, 0.95), p99: q(iv, 0.99), max: q(iv, 1), over50: iv.filter(x => x > 50).length, renderCpuP50: q(cpu, 0.5), frameCpuP50: q(fcpu, 0.5), frameCpuP95: q(fcpu, 0.95), dynres: W.__G.dynres?.enabled ? { scale: W.__G.dynres.scale, trials: W.__G.dynres.trials?.slice(-6) } : null };
 }
 return out;
