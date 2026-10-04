@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><title>HILLBOMB audio scenarios</title>
+<style>body{margin:0;padding:16px;background:#111418;color:#e6e9ee;font:13px/1.4 ui-monospace,Consolas,monospace}pre{white-space:pre-wrap}</style></head>
+<body>
+<p>Offline audio scenario renderer (no WebGL). In the console: <code>await S.run({ impl: 'new', names: ['throttle'] })</code></p>
+<pre id="out"></pre>
+<script type="module">
+import * as S from './audio.scenarios.js';
+window.S = S;
+document.getElementById('out').textContent = 'scenarios: ' + S.NAMES.join(', ');
+</script>
+</body></html>
