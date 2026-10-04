@@ -1,0 +1,226 @@
+[
+ {
+  "index": 0,
+  "type": "living",
+  "name": "victorian_fireplace",
+  "col": 0,
+  "row": 0,
+  "tint": [
+   0.2468,
+   0.226,
+   0.195
+  ],
+  "tintHex": "#3f3a32",
+  "litFraction": 0.5094
+ },
+ {
+  "index": 1,
+  "type": "living",
+  "name": "loft_brick",
+  "col": 1,
+  "row": 0,
+  "tint": [
+   0.2922,
+   0.267,
+   0.2442
+  ],
+  "tintHex": "#4b443e",
+  "litFraction": 0.1725
+ },
+ {
+  "index": 2,
+  "type": "living",
+  "name": "tv_room",
+  "col": 2,
+  "row": 0,
+  "tint": [
+   0.3087,
+   0.306,
+   0.2947
+  ],
+  "tintHex": "#4f4e4b",
+  "litFraction": 0.468
+ },
+ {
+  "index": 3,
+  "type": "living",
+  "name": "library",
+  "col": 3,
+  "row": 0,
+  "tint": [
+   0.3689,
+   0.3079,
+   0.2399
+  ],
+  "tintHex": "#5e4f3d",
+  "litFraction": 0.153
+ },
+ {
+  "index": 4,
+  "type": "living",
+  "name": "modern_hall",
+  "col": 0,
+  "row": 1,
+  "tint": [
+   0.3726,
+   0.3464,
+   0.3073
+  ],
+  "tintHex": "#5f584e",
+  "litFraction": 0.3041
+ },
+ {
+  "index": 5,
+  "type": "bedroom",
+  "name": "blush_victorian",
+  "col": 1,
+  "row": 1,
+  "tint": [
+   0.4116,
+   0.3483,
+   0.3044
+  ],
+  "tintHex": "#69594e",
+  "litFraction": 0.1401
+ },
+ {
+  "index": 6,
+  "type": "bedroom",
+  "name": "navy_tv",
+  "col": 2,
+  "row": 1,
+  "tint": [
+   0.3083,
+   0.301,
+   0.2879
+  ],
+  "tintHex": "#4f4d49",
+  "litFraction": 0.2891
+ },
+ {
+  "index": 7,
+  "type": "bedroom",
+  "name": "student",
+  "col": 3,
+  "row": 1,
+  "tint": [
+   0.3588,
+   0.3683,
+   0.3224
+  ],
+  "tintHex": "#5b5e52",
+  "litFraction": 0.1625
+ },
+ {
+  "index": 8,
+  "type": "kitchen",
+  "name": "white_shaker",
+  "col": 0,
+  "row": 2,
+  "tint": [
+   0.4024,
+   0.3806,
+   0.3558
+  ],
+  "tintHex": "#67615b",
+  "litFraction": 0.2998
+ },
+ {
+  "index": 9,
+  "type": "kitchen",
+  "name": "retro_galley",
+  "col": 1,
+  "row": 2,
+  "tint": [
+   0.4658,
+   0.4397,
+   0.3615
+  ],
+  "tintHex": "#77705c",
+  "litFraction": 0.8566
+ },
+ {
+  "index": 10,
+  "type": "office",
+  "name": "open_plan",
+  "col": 2,
+  "row": 2,
+  "tint": [
+   0.5279,
+   0.4911,
+   0.4569
+  ],
+  "tintHex": "#877d75",
+  "litFraction": 0.7941
+ },
+ {
+  "index": 11,
+  "type": "office",
+  "name": "brick_exec",
+  "col": 3,
+  "row": 2,
+  "tint": [
+   0.2854,
+   0.2465,
+   0.2198
+  ],
+  "tintHex": "#493f38",
+  "litFraction": 0.0984
+ },
+ {
+  "index": 12,
+  "type": "office",
+  "name": "cubicles_dark",
+  "col": 0,
+  "row": 3,
+  "tint": [
+   0.5191,
+   0.4851,
+   0.4498
+  ],
+  "tintHex": "#847c73",
+  "litFraction": 0.0044
+ },
+ {
+  "index": 13,
+  "type": "dining",
+  "name": "victorian_dining",
+  "col": 1,
+  "row": 3,
+  "tint": [
+   0.2768,
+   0.2432,
+   0.2066
+  ],
+  "tintHex": "#473e35",
+  "litFraction": 0.4983
+ },
+ {
+  "index": 14,
+  "type": "empty",
+  "name": "renovation",
+  "col": 2,
+  "row": 3,
+  "tint": [
+   0.3805,
+   0.3488,
+   0.3057
+  ],
+  "tintHex": "#61594e",
+  "litFraction": 0.2663
+ },
+ {
+  "index": 15,
+  "type": "blinds",
+  "name": "study_blinds",
+  "col": 3,
+  "row": 3,
+  "tint": [
+   0.3493,
+   0.3416,
+   0.3248
+  ],
+  "tintHex": "#595753",
+  "litFraction": 0.0321
+ }
+]
