@@ -174,3 +174,20 @@ jump fix (P.jumpT now skips the ground snap; every jump used to be swallowed). s
 point (spec.seat[1] is near eye level). Open: no car door opening (cars agent); impostors switch view in 45-deg steps (no blending);
 peds' styleFor() Union Square constant (1400,-100) is v1-map coordinates.
 Perf (10/04, 5191, Union Sq): far crowd ~2400 agents = +0.25 ms CPU (ped system 0.86 -> 1.10 ms) + ~0.4 ms GPU at street level; VRAM High 2.24-2.66 GB at the 5 memspots. Interiors round 3: see src/world/landmarks/PROGRESS_V2.md.
+
+Gameplay / nature round 3 10/4 (commits e1f7e96..2a850c7). Off-road: festival/util.js terrain router is directional (climb <= 25 % grass, grip-scaled, 30 % on
+roads, descents <= 42 %), prefers OSM trails / fire roads (1 = path 0.62x, 2 = road 0.72x), side slopes cost from 25 %, hero landmark solids (HERO_SITES
+colliders via inBuilding/heroSolidAt), inland lakes and raised decks are walls, no 3 m hooks (turn > 120 deg banned), 4 m-grid fallback; pathBetween may run a
+minor single-lane one-way the wrong way when the legal way is a big detour (lower Conzelman). Headlands Dirt = Conzelman at Hawk Hill -> Julian Trail fire road ->
+Fort Barry; Headlands XC = Conzelman foot -> Hawk Hill -> Julian -> Fort Barry -> Battery Mendell -> Point Bonita; Twin Peaks XC without the Clarendon key; GG Park
+XC without the Stow Lake ridge key. Race AI (drivers.js / racing.js): per-point surface grip (util routeGrip) in corner + braking limits, side-slope margin,
+rollover cap for tall 4x4s (SSF), back-out recovery before respawn, queued rivals not counted stuck, runtime line guard (racing.js lineGuard: re-routes the line
+round colliders that stream in, hides parked cars on it, patches Driver paths in place), sprint finish 12 m before the route end. Rival respawns per race
+(dev/gameplay_audit.js rec.rivResp, mean of 2): Headlands Dirt 42 -> 5, XC 118 -> 7, Twin Peaks XC 59 -> 0, GG Park XC 28 -> 3, Presidio XC 30 -> 1, Lands End
+17 -> 3; all 36 non-showcase events finish (Bay Crown needs > 640 s of harness time). Police: one-way spawns only in the legal direction, two-way spawns face
+the shorter A* route, <= 14 s at 12 m/s, shortest of 4 candidates, first leg clear of building colliders; dev/police_probe.js (6 downtown spots by lat/lon):
+24/24 arrive < 30 m, median 4.8 s (was 14/18, 6.2 s, 23/60 wrong-way spawns). Pier 39: props/pierdeck.js adds 1201 terrain deck strips wherever the planks
+stand above the terrain (rim, overhang, docks): sinking cells 2772 -> 1. Grass: ice plant mats / lupine racemes (dev/grass_shots.js). Rain flicker: no
+wet-pass regression from road fix 3 (dev/flicker_map.js; the high readings were traffic + rain particles over lit windows). Shots: shots/fix_*_{before,after}.jpg.
+Open: rain streak particles (weather.js) still shimmer over lit tower windows; pursuit units ram parked cars en route (union sq / tenderloin outliers 15-21 s);
+festival routes now take 0.1-1.3 s to build on first open (Twin Peaks XC 1.3 s); off-road routes depend on colliders loaded at build time (route cached per page).
