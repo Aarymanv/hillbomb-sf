@@ -5333,6 +5333,45 @@ function leanLevel(L) {
   }
   return out;
 }
+// (perf r2) far street cars (LOD 1 / 2, > 24 m from the camera) cast their sun shadow from one depth-only proxy: body
+// paint + details + the four wheels at rest, positions merged (1 shadow draw per cascade instead of ~6). Never drawn in a
+// colour pass: its geometry bounds are parked below the map, environment.js' caster test reads userData.shadowSphere
+// (same scheme as the hero landmark proxies). ?nocarshadowproxy = off
+const _carFarSphere = new THREE.Sphere(new THREE.Vector3(0, -1e7, 0), 0);
+let _carProxyMat = null;
+function carShadowProxy(A, P, i, wheelPos) {
+  const C = A.shadowProxy || (A.shadowProxy = []);
+  if (C[i] !== undefined) return C[i];
+  const L = A.lean[i], parts = [];
+  const pos = (g, m) => {
+    const b = new THREE.BufferGeometry();
+    if (!m) { b.setAttribute('position', g.attributes.position); if (g.index) b.setIndex(g.index); return b; }
+    // transformed copy (never the shared wheel arrays); a mirrored wheel gets its winding flipped back
+    const a = g.attributes.position, out = new Float32Array(a.count * 3), v = new THREE.Vector3();
+    for (let q = 0; q < a.count; q++) { v.fromBufferAttribute(a, q).applyMatrix4(m); out[q * 3] = v.x; out[q * 3 + 1] = v.y; out[q * 3 + 2] = v.z; }
+    b.setAttribute('position', new THREE.BufferAttribute(out, 3));
+    if (g.index) {
+      const ix = g.index.array.slice();
+      if (m.determinant() < 0) for (let q = 0; q + 2 < ix.length; q += 3) { const t = ix[q + 1]; ix[q + 1] = ix[q + 2]; ix[q + 2] = t; }
+      b.setIndex(new THREE.BufferAttribute(ix, 1));
+    }
+    return b;
+  };
+  for (const k of ['paint', 'paint2', 'details']) if (L[k]) parts.push(pos(L[k]));
+  if (L.wheel) for (const [x, z, w] of wheelPos) parts.push(pos(L.wheel, new THREE.Matrix4().makeTranslation(x, P.R, z).multiply(new THREE.Matrix4().makeScale((x < 0 ? -1 : 1) * (w / P.ww), 1, 1))));
+  let g = null;
+  try { g = parts.length && parts.every((q) => !!q.index === !!parts[0].index) ? mergeGeometries(parts, false) : null; } catch { g = null; }
+  if (g) { g.computeBoundingSphere(); g.userData.realSphere = g.boundingSphere.clone(); g.boundingSphere = _carFarSphere.clone(); g.name = 'car:shadowProxy'; }
+  C[i] = g;
+  return g;
+}
+function carShadowProxyMesh(g) {
+  _carProxyMat = _carProxyMat || new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });
+  const p = new THREE.Mesh(g, _carProxyMat);
+  p.name = 'carShadowProxy'; p.castShadow = true; p.receiveShadow = false;
+  p.userData.shadowSphere = g.userData.realSphere; p.userData.noReflect = true; p.userData.shadowOnly = true;
+  return p;
+}
 /** cb(asset) once the baked asset of id is in (immediately if it already is; never if the id has no asset). */
 export function onCarAsset(id, cb) {
   if (ASSET.has(id)) { cb(ASSET.get(id)); return; }
@@ -5758,6 +5797,7 @@ export function buildCarModel(id, opts = {}) {
   }
   // cars pass 4: front doors hang on a hinge pivot (vertical axis through the front edge on the outer skin)
   const doorPivots = { L: [], R: [] }, doorOpen = { L: 0, R: 0 };
+  const proxyLevels = [];
   function addBodyLevel(parent, g) {
     addParts(parent, g);
     const H = asset?.doors;
@@ -5782,6 +5822,8 @@ export function buildCarModel(id, opts = {}) {
     const g = wheelGeo(), mat = asset && !customRim ? asset.details : S.details;
     for (const m of wheelMeshes) { m.geometry = g; m.material = mat; }
     for (const c of calipers) c.visible = hero || lodLevel === 0;
+    const proxied = lean && !split && lodLevel > 0 && !!proxyLevels[lodLevel];
+    for (const m of wheelMeshes) m.castShadow = !proxied;
   }
   function mountBody() {
     body.clear(); glassMeshes.length = 0; doorPivots.L.length = 0; doorPivots.R.length = 0;
@@ -5792,7 +5834,12 @@ export function buildCarModel(id, opts = {}) {
     if (hero) { addBodyLevel(body, asset.hero || asset.lods[0]); lodLevel = 0; }
     else {
       const lod = new THREE.LOD(); lod.name = 'lod';
-      (lean && !split ? asset.lean : asset.lods).forEach((L, i) => { const grp = new THREE.Group(); addBodyLevel(grp, L); lod.addLevel(grp, CAR_LOD_DIST[i], i ? 0.08 : 0); });
+      proxyLevels.length = 0;
+      (lean && !split ? asset.lean : asset.lods).forEach((L, i) => {
+        const grp = new THREE.Group(); addBodyLevel(grp, L); lod.addLevel(grp, CAR_LOD_DIST[i], i ? 0.08 : 0);
+        const pg = lean && !split && i > 0 && PERF.carshadowproxy ? carShadowProxy(asset, P, i, pos) : null;
+        if (pg) { for (const m of grp.children) if (m.isMesh) m.castShadow = false; grp.add(carShadowProxyMesh(pg)); proxyLevels[i] = true; }
+      });
       const upd = lod.update.bind(lod);
       lod.update = (cam) => { upd(cam); const l = lod.getCurrentLevel(); if (l !== lodLevel) { lodLevel = l; syncWheels(); } if (lean) attachLevel(lod, l); };
       body.add(lod);
