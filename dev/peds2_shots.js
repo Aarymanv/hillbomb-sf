@@ -47,10 +47,23 @@
     hm._force = null; W.__player.human.setVisible(true); thawPeds();
     return out;
   };
+  // carried props: one frame per kind (cup, bag, case, furled umbrella in a drizzle)
+  W.__p2Carry = async (suf, h = 14) => {
+    await prep(h, 'clear', US, 300);
+    const out = [];
+    for (const kind of ['cup', 'bag', 'case']) {
+      const r = pick(q => q.carry === kind && q.mode !== 'stand', 2.6, 0.9, 1.5); if (!r) continue;
+      const q = r.q, aim = () => W.__look(...r.cam, q.x, q.y + 1.0, q.z);
+      W.__player.human.setVisible(false); aim(); W.__frames(1); aim();
+      out.push(await W.__shot(`peds2_carry_${suf}_${out.length}`, 640, 400));
+    }
+    W.__player.human.setVisible(true);
+    return out;
+  };
   W.__p2Umbrella = async (suf, h = 16.5) => {
     await prep(h, 'rain');
     W.__frames(200);
-    const r = pick(q => q.umb && q.style !== 'jogger' && q.mode !== 'stand', 3.6, 0.9, 1.75) || pick(q => q.human.umbW > 0.5, 3.6, 0.9, 1.75); if (!r) throw new Error('no umbrella ped');
+    const r = pick(q => q.human.umbW > 0.5 && q.mode !== 'stand', 3.6, 0.9, 1.75) || pick(q => q.human.umbW > 0.5, 3.6, 0.9, 1.75); if (!r) throw new Error('no umbrella ped');
     const q = r.q, aim = () => W.__look(...r.cam, q.x, q.y + 1.35, q.z);
     W.__player.human.setVisible(false); aim(); W.__frames(1); aim();
     const out = await W.__shot(`peds2_umbrella_rain_${suf}`, 1280, 720);

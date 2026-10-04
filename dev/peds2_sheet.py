@@ -5,7 +5,7 @@ import os, sys, glob
 from PIL import Image, ImageDraw
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'shots')
-STRIPS = ['enter_car', 'exit_car', 'knockdown', 'jump', 'senter', 'sexit', 'sknock']
+STRIPS = ['enter_car', 'exit_car', 'knockdown', 'jump', 'senter', 'sexit', 'sknock', 'carry']
 SINGLE = ['closeup_phone', 'umbrella_rain', 'crowd_far']
 
 

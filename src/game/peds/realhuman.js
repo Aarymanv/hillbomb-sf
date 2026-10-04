@@ -15,6 +15,8 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { packedUrl, loadPacked } from '../../world/texpack.js';
 import { Ragdoll } from './ragdoll.js';
+import { HeldProps, setPropNight } from './props.js';
+export { setPropNight };
 
 const BASE = (import.meta.env?.BASE_URL || './') + 'assets/peds/';
 const OFF = typeof location !== 'undefined' && /[?&]peds=(v1|proc|0)/.test(location.search);
@@ -235,6 +237,14 @@ function umbArmMask() {
   return UMB_ARM;
 }
 
+const ARM = {};
+function armMask(side) {
+  if (ARM[side]) return ARM[side];
+  const m = ARM[side] = new Float32Array(NB), re = new RegExp('^' + side + '(Clavicle|UpperArm|Forearm|Hand|Finger)');
+  for (const [n, i] of Object.entries(BN)) if (re.test(n)) m[i] = /Clavicle/.test(n) ? 0.5 : 1;
+  return m;
+}
+
 // ---------------------------------------------------------------------------------------------- procedural retarget
 // procedural rig bone -> realistic bone; world rotation of the real bone = Qproc_world * A (A = rest alignment)
 const PROC_MAP = [['hips', 'Pelvis'], ['spine', 'Spine'], ['chest', 'Spine2'], ['neck', 'Neck'], ['head', 'Head'],
@@ -348,28 +358,6 @@ const GAIT = {
   jog: ['run_slow_01'], run: ['run_neutral', 'run_neutral_01'], sprint: ['run_fast_01'],
 };
 
-// props: phone (right hand) and umbrella (right hand, rain)
-let PHONE_GEO = null, PHONE_MAT = null, UMB = null;
-function phoneMesh() {
-  if (!PHONE_GEO) {
-    PHONE_GEO = new THREE.BoxGeometry(0.072, 0.15, 0.009);
-    PHONE_MAT = new THREE.MeshStandardMaterial({ color: 0x111215, roughness: 0.25, metalness: 0.4 });
-  }
-  const m = new THREE.Mesh(PHONE_GEO, PHONE_MAT); m.matrixAutoUpdate = false; m.visible = false; m.name = 'pedPhone';
-  return m;
-}
-function umbrellaMesh() {
-  if (!UMB) {
-    const canopy = new THREE.SphereGeometry(0.56, 16, 5, 0, TAU, 0, 1.08); canopy.scale(1, 0.48, 1); canopy.translate(0, 0.9, 0);
-    const shaft = new THREE.CylinderGeometry(0.008, 0.008, 1.18, 5); shaft.translate(0, 0.5, 0);
-    UMB = { canopy, shaft, mats: [0x15171c, 0x3a1416, 0x1b2a44, 0x2c2c2c, 0x5a0f12].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.45, side: THREE.DoubleSide })),
-      shaftMat: new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5, metalness: 0.3 }) };
-  }
-  const g = new THREE.Group(); g.matrixAutoUpdate = false; g.visible = false; g.name = 'pedUmbrella';
-  g.add(new THREE.Mesh(UMB.canopy, UMB.mats[(Math.random() * UMB.mats.length) | 0]), new THREE.Mesh(UMB.shaft, UMB.shaftMat));
-  return g;
-}
-
 export class RealHuman {
   constructor(opts = {}) {
     const r = this.r = rng(opts.seed ?? Math.random());
@@ -395,7 +383,7 @@ export class RealHuman {
     this.WQ = new Float32Array(34 * 4); this.WP = new Float32Array(34 * 3);
     this.add = null;     // additive model-space rotations per bone (Float32Array quats) or null
     this.proc = null;
-    this.phoneM = null; this.umbM = null;
+    this.held = null; this.carryW = 0; this.carryKind = null; this.carryHand = 0;
     this.tint = new THREE.Vector4(0, 1, 1, 0);
     this.disposed = false;
     this._init(opts, g);
@@ -557,7 +545,7 @@ export class RealHuman {
       }
     }
     // umbrella in the rain: upper body from the umbrella idle over walk / idle (right arm only while walking)
-    const wantU = s.umbrella && (mode === 'loco' || mode === 'idle' || mode === 'look') && this.vs < 2.4 ? 1 : 0;
+    const wantU = (s.umbrella === true || s.umbrella === 'open') && (mode === 'loco' || mode === 'idle' || mode === 'look') && this.vs < 2.4 ? 1 : 0;
     this.umbW += (wantU - this.umbW) * Math.min(1, dt * 3);
     if (this.umbW > 0.01) {
       const uc = this.umbClip || (this.umbClip = clipFor(LISTS.umbrella[(this.r() * 2) | 0], this.g));
@@ -565,6 +553,23 @@ export class RealHuman {
         this.ut = ((this.ut || this.r() * 10) + dt) % (uc.dur - 0.1);
         sampleInto(uc, this.ut, this.over, 1, true, hs / uc.hip0); normPose(this.over);
         blendPose(T, T, this.over, smooth(this.umbW), mode === 'loco' ? umbArmMask() : upperMask());
+      }
+    }
+    // carried props (s.carry: 'cup' | 'bag' | 'case'): the cup arm from the drink idle (right forearm up at the waist),
+    // a bag / briefcase arm from the hold-bag idle at half weight (less arm swing under the load)
+    const kind = s.carry || null;
+    if (kind !== this.carryKind && this.carryW < 0.05) { this.carryKind = kind; this.carryClip = null; }
+    const wantC = kind && kind === this.carryKind && this.carryOK(mode) && this.vs < 3.4 ? 1 : 0;
+    this.carryW += (wantC - this.carryW) * Math.min(1, dt * 4);
+    this.carryHand = kind === 'cup' || this.umbW > 0.3 ? BN.RHand : BN.LHand;
+    if (this.carryW > 0.01 && this.carryKind && (mode === 'loco' || mode === 'idle' || mode === 'look')) {
+      const cc = this.carryClip || (this.carryClip = clipFor(this.carryKind === 'cup' ? 'drink_idle' : 'hold_bag_idle', this.g));
+      const w = this.carryKind === 'cup' ? 1 : this.carryHand === BN.LHand ? 0.55 : 0;
+      if (cc && w > 0) {
+        this.ct2 = ((this.ct2 || this.r() * 5) + dt) % (cc.dur - 0.1);
+        const O = this.over2 || (this.over2 = PS());
+        sampleInto(cc, this.ct2, O, 1, true, hs / cc.hip0); normPose(O);
+        blendPose(T, T, O, smooth(this.carryW) * w, armMask(this.carryHand === BN.LHand ? 'L' : 'R'));
       }
     }
     // cross-fade from the snapshot
@@ -583,7 +588,7 @@ export class RealHuman {
     this._fk(add);
     this._applyAnchor();
     this._prevRig = this._rigWorld(this._prevRig || {});
-    this._props(mode, dt);
+    this._props(mode, dt, s);
     // mesh LOD by camera distance (hysteresis)
     if (!this.lockLod0 && viewer && this.mesh) {
       const d = viewer.distanceTo(this.root.position);
@@ -853,39 +858,31 @@ export class RealHuman {
     return out.compose(_va, _qa, ONE);
   }
 
-  _props(mode, dt) {
+  _props(mode, dt, s) {
+    const W = this._want || (this._want = { phone: null, umb: null, carry: null, carryHand: 0 });
     const phoneOn = (mode === 'phone' || mode === 'photo') && this.fade > 0.5;
-    if (phoneOn && !this.phoneM) { this.phoneM = phoneMesh(); this.rig.add(this.phoneM); }
-    if (this.phoneM) {
-      this.phoneM.visible = phoneOn;
-      if (phoneOn) {
-        // the phone goes in the higher hand (at the ear for calls; texting / photo: either)
-        const yl = this.WP[BN.LHand * 3 + 1], yr = this.WP[BN.RHand * 3 + 1];
-        if (this.phoneHand === undefined || Math.abs(yl - yr) > 0.08) this.phoneHand = yl > yr ? BN.LHand : BN.RHand;
-        const left = this.phoneHand === BN.LHand;
-        this._boneMatrix(this.phoneHand, this.phoneM.matrix, -0.075, 0.012, left ? 0.022 : -0.022, PHONE_ROT);   // hand frame: fingers -X, thumb +Y
-        this.phoneM.matrixWorldNeedsUpdate = true;
-      }
+    W.phone = null;
+    if (phoneOn) {
+      // the phone goes in the higher hand (at the ear for calls; texting / photo: either)
+      const yl = this.WP[BN.LHand * 3 + 1], yr = this.WP[BN.RHand * 3 + 1];
+      if (this.phoneHand === undefined || Math.abs(yl - yr) > 0.08) this.phoneHand = yl > yr ? BN.LHand : BN.RHand;
+      W.phone = this.phoneHand;
     }
-    const umbOn = this.umbW > 0.4;
-    if (umbOn && !this.umbM) { this.umbM = umbrellaMesh(); this.rig.add(this.umbM); }
-    if (this.umbM) {
-      this.umbM.visible = umbOn;
-      if (umbOn) {
-        // Rocketbox umbrella clips hold it in the left hand in front of the chest; the shaft stays upright
-        _va.fromArray(this.WP, BN.LHand * 3); _vb.set(-0.05, 0, 0).applyQuaternion(_qa.fromArray(this.WQ, BN.LHand * 4)); _va.add(_vb);
-        _va.y -= 0.08;
-        this.umbM.matrix.compose(_va, _qb.setFromEuler(_eu.set(-0.1, 0, -0.06)), ONE);
-        this.umbM.matrixWorldNeedsUpdate = true;
-      }
-    }
+    W.umb = this.umbW > 0.4 ? 'open' : s.umbrella === 'closed' && this.carryOK(mode) ? 'closed' : null;
+    W.carry = this.carryW > 0.4 && this.carryOK(mode) && !(W.phone != null && this.carryHand === W.phone) ? this.carryKind : null;
+    W.carryHand = this.carryHand;
+    const near = !viewer || viewer.distanceTo(this.root.position) < 45;
+    if (!W.phone && !W.umb && !W.carry && !this.held) return;
+    (this.held || (this.held = new HeldProps(this.rig, this.r()))).update(this, W, dt, near, BN);
   }
+  carryOK(mode) { return mode === 'loco' || mode === 'idle' || mode === 'look' || mode === 'talk' || mode === 'listen' || mode === 'phone' || mode === 'photo' || mode === 'wave'; }
 
   dispose() {
     if (this.disposed) return;
     this.disposed = true;
     if (this.root.parent) this.root.parent.remove(this.root);
     if (this.mesh) { this.mesh.material.dispose(); this.skeleton.boneTexture?.dispose(); }
+    this.held?.dispose();
   }
 }
 const _eu = new THREE.Euler();

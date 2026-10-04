@@ -19,7 +19,7 @@ import { zoneAt } from '../world/map.js';
 import { createNav, pathPos, OFF_MIN, OFF_MAX, NIGHTLIFE, LIFT_WALK, LIFT_ROAD } from './peds/nav.js';
 import { createHumanPool } from './peds/looks.js';
 import { createYeller, pickLine } from './peds/yell.js';
-import { setPedViewer } from './peds/realhuman.js';
+import { setPedViewer, setPropNight } from './peds/realhuman.js';
 
 const MAX_BY_QUALITY = { low: 22, medium: 34, high: 45 };
 const R_PED = 0.3;
@@ -93,6 +93,10 @@ export function install(G) {
       threatT: 0, reflex: rand(0.1, 0.38), hitCd: 0, yellCd: 0, onRoad: false, bornT: time, probeT: Math.random() * 0.3,
       nextIdle: rand(12, 45), gy: 0, placed: false, waitPhone: chance(0.3),
     };
+    // something in hand: coffee, shopping, a briefcase (by crowd style)
+    const rc = Math.random();
+    p.carry = kind === 'jogger' || kind === 'victim' || style === 'jogger' ? null : style === 'business' ? (rc < 0.35 ? 'case' : rc < 0.5 ? 'cup' : null)
+      : style === 'tourist' ? (rc < 0.32 ? 'bag' : rc < 0.42 ? 'cup' : null) : (rc < 0.13 ? 'cup' : rc < 0.25 ? 'bag' : null);
     h.root.visible = true;
     list.push(p);
     return p;
@@ -1352,7 +1356,14 @@ export function install(G) {
     const a = p.tb ? 0 : Math.atan(p.slope), al = p.tb ? 0 : Math.atan(p.slopeL);
     _ha.lean = p.tb ? 0 : 0.42 * a + (a > 0 ? 0.42 * a : 0.22 * a); _ha.leanSide = 0.3 * al;
     if (p.umb === undefined) p.umb = p.style !== 'jogger' && Math.random() < 0.65;
-    _ha.umbrella = p.umb && (G.weather?.rain || 0) > 0.12 && !p.tb && p.fear <= 0;
+    // umbrellas: open in rain (some keep it furled in a drizzle), furled in hand when it has just stopped / drizzles
+    const wx = G.weather || G.env?.weather, rain = wx?.rain || 0, wet = wx?.wetness || 0;
+    _ha.umbrella = false;
+    if (p.umb && !p.tb && p.fear <= 0) {
+      if (p.umbOpen === undefined) p.umbOpen = Math.random() < 0.6;
+      if (rain > 0.3 || (rain > 0.12 && p.umbOpen)) _ha.umbrella = 'open'; else if (rain > 0.03 || wet > 0.3) _ha.umbrella = 'closed';
+    }
+    _ha.carry = p.tb || p.fear > 0 ? null : p.carry;
     // knocked down: the human runs a ragdoll (world space) that follows the tumble; then a mocap get-up placed on
     // the body (it hands back where it will stand: getupRoot). The root stays upright for it (set before update).
     _ha.vel = null; _ha.ground = null; _ha.rate = 1;
@@ -1441,7 +1452,7 @@ export function install(G) {
     vehicleContacts(dt);
     playerShove();
     if (prof) { prof.veh += performance.now() - tp; }
-    setPedViewer(camera.position);
+    setPedViewer(camera.position); setPropNight(G.env?.night?.value ?? 0);
     let tStep = 0, tAnim = 0;
     let updated = 0, visible = 0;
     for (let i = 0; i < list.length; i++) {
