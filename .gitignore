@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-dev
+shots
+.env.local
+.env*.local
+tools/.venv-blender
+tools/blender/_cache
+tools/hdri_backup
+*.blend1
+.stage-*
+tools/peds_src
+__pycache__/
