@@ -112,6 +112,22 @@ Perf pass 10/4 (3125624..b1ab294; 1080p High, RTX 5070 Ti laptop, dev/perf_prof_
   NOTE near3 (nearest cascade) layer 7 is not detail-only: three r180 tests caster layers against the MAIN camera (layers 0 + 7), so every
   caster draws into it; the look was tuned with that, left as is.
 
+Perf round 2 10/4 (cars; 032b7e1..c1d20b8; 1080p High; all switches ?no<name>, render/perfflags.js):
+- probeumw: car probe renders with the last main render's matrices (renderer.render redid scene.updateMatrixWorld): probe CPU 3.0-3.5 -> 1.5-1.8 ms.
+  Isolated probe face = 0.9 ms CPU / 0.3 ms GPU: the 2.5-4.8 ms "probe GPU" in __gpuPass is earlier queued GPU work landing in the first section.
+- carlean: street cars (Vehicle role != player) mount shut doors merged per material (asset.lean), only the drawn LOD level in the graph, static nodes
+  frozen; a door opening remounts the hinged split. carshadowproxy: LOD 1/2 cast one merged depth-only proxy (hero_lm scheme). carfarwheels: LOD 2
+  (> 75 m) wheels merged into details at rest, pivots out of the graph (applied from setLights: never mutate root.children inside LOD.update, it
+  crashed projectObject). carlampshare: lamp/lens materials shared per model + light-state bits. FiDi car nodes 2894 -> 491, scene 5518 -> 3097.
+- physlite: wheel first probe + chassis corners ask groundAt for height only (bit-identical trajectories, 7 -> 5 us/body step).
+- carwarm (game/sys_carwarm.js): every TRAFFIC_MIX model built + asset/AO uploaded at boot (first spawn 26-43 ms -> 0.3). NOTE the watch build
+  only picked the new sys_* file up after main.js changed (glob re-scan). Pooling vehicles not needed: new Vehicle() is 0.2 ms once warm.
+- Result (perf_rt real time fps, base -> after): Mission 34.8 -> 49.5, FiDi 42.9 -> 53.5, Chinatown 34.4 -> 40.7, Sunset 43.3 -> 56.2, Twin Peaks
+  39.4 -> 66.2; VRAM memspots 2.08-2.75 -> 2.12-2.59 GB; regression views (shots/r2_reg_sheet.jpg) + flicker probe unchanged.
+- Open: p95 ~36-40 ms everywhere = the Google tiles traversal frame (every 3rd frame, 6-12 ms in real time) + physics catch-up steps after it;
+  the >50 ms real-time spikes are tiles + streaming (ld:bld-col / up:terrain 5-11 ms). Chinatown main render (landmarks 251 draws) is the slowest
+  district. Not done: wheel instancing at LOD 0/1, paint material sharing, static-caster shadow cache, tile draw batching.
+
 World round 2 10/4 (01d64e8..): peds hot spots / tourist spots by real lat/lon (game/peds/nav.js SPOTS_LL, TOUR_LL; v2 had none),
 plaza footways at sights = walker paths; yard ground patchwork (grass/yard_glsl.js shared by terrainmat + grass blades, lot frames from
 v2/lotframe.js in BioWindow.lotTex, terrain aYard attr, Y_SEASON fall dryness; ?noyardground); yard fence / shed colliders (v6yard.js YCOL ->
