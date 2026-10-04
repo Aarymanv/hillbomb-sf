@@ -71,6 +71,10 @@ vec4 wts = max(vSplat, 0.0);
 // break up the blend borders with noise so transitions look natural
 float bn = vn(vTW.xz * 0.15) * 0.5 + vn(vTW.xz * 0.6) * 0.25;
 wts = pow(wts + bn * 0.35 * step(0.01, wts), vec4(3.0)); wts /= max(1e-4, dot(wts, vec4(1.0)));
+${NOYARDG ? 'float yW = 0.0;' : 'float yW = smoothstep(0.3, 0.7, vYard);   // residential yard share (below)'}
+vec3 alb = vec3(0.0); float macro = 1.0;
+// (inside yards the natural layers are skipped: the yard patchwork replaces them, perf)
+if (yW < 0.995) {
 // cliff rock: on steep faces project onto the dominant vertical plane (xy / zy) instead of xz (no vertical smearing)
 vec3 rockA = vec3(0.5);
 if (wts.w > 0.01) {
@@ -102,10 +106,10 @@ vec3 grassA;
   grassA = gc * mix(det, mix(det, 1.0, 0.6), smoothstep(30.0, 120.0, dist)) * mix(0.6, 0.78, smoothstep(12.0, 85.0, dist));
   grassA = mix(vec3(dot(grassA, vec3(0.3, 0.59, 0.11))), grassA, 0.88);
 }
-vec3 alb = grassA * wts.x + tri(tF, vTW.xz, kF) * wts.y + tri(tS, vTW.xz, kS) * wts.z + rockA * wts.w;
-float macro = mix(0.82 + 0.36 * vn(vTW.xz * 0.012), 1.0, wts.x * 0.6);
+alb = grassA * wts.x + tri(tF, vTW.xz, kF) * wts.y + tri(tS, vTW.xz, kS) * wts.z + rockA * wts.w;
+macro = mix(0.82 + 0.36 * vn(vTW.xz * 0.012), 1.0, wts.x * 0.6);
+}
 ${NOYARDG ? '' : `// residential yards (class 9): a lot patchwork of dry / watered lawn, dirt, paving, mulch, gravel (grass/yard_glsl.js)
-float yW = smoothstep(0.3, 0.7, vYard);
 if (yW > 0.001) {
   float aa = length(fwidth(vTW.xz));
   vec4 yc = yardCell(tLot, tBioXf, vTW.xz);
