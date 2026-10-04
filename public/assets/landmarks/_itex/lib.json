@@ -1,0 +1,310 @@
+{
+"marble_white": {
+"tile": 2.0,
+"albedo": [
+0.4163,
+0.4215,
+0.4699
+],
+"rough": 0.066,
+"metal": 0,
+"normal": true
+},
+"marble_cream": {
+"tile": 2.0,
+"albedo": [
+0.6355,
+0.5504,
+0.4387
+],
+"rough": 0.07,
+"metal": 0,
+"normal": true
+},
+"marble_black": {
+"tile": 2.0,
+"albedo": [
+0.0478,
+0.0502,
+0.0489
+],
+"rough": 0.114,
+"metal": 0,
+"normal": true
+},
+"marble_grey": {
+"tile": 2.0,
+"albedo": [
+0.0983,
+0.1131,
+0.1284
+],
+"rough": 0.047,
+"metal": 0,
+"normal": true
+},
+"marble_siena": {
+"tile": 2.0,
+"albedo": [
+0.1684,
+0.0922,
+0.04
+],
+"rough": 0.071,
+"metal": 0,
+"normal": true
+},
+"travertine": {
+"tile": 2.4,
+"albedo": [
+0.7398,
+0.6001,
+0.4135
+],
+"rough": 0.037,
+"metal": 0,
+"normal": true
+},
+"onyx": {
+"tile": 2.0,
+"albedo": [
+0.616,
+0.5985,
+0.5801
+],
+"rough": 0.044,
+"metal": 0,
+"normal": true
+},
+"checker": {
+"tile": 1.2,
+"albedo": [
+0.1525,
+0.113,
+0.0863
+],
+"rough": 0.088,
+"metal": 0,
+"normal": true
+},
+"mosaic": {
+"tile": 1.0,
+"albedo": [
+0.3607,
+0.2243,
+0.0973
+],
+"rough": 0.536,
+"metal": 0,
+"normal": true
+},
+"terrazzo": {
+"tile": 2.0,
+"albedo": [
+0.3524,
+0.2701,
+0.1775
+],
+"rough": 0.276,
+"metal": 0,
+"normal": true
+},
+"parquet": {
+"tile": 2.0,
+"albedo": [
+0.2924,
+0.1622,
+0.0747
+],
+"rough": 0.098,
+"metal": 0,
+"normal": true
+},
+"wood_dark": {
+"tile": 2.0,
+"albedo": [
+0.1109,
+0.0241,
+0.0089
+],
+"rough": 0.628,
+"metal": 0,
+"normal": true
+},
+"veneer": {
+"tile": 1.6,
+"albedo": [
+0.155,
+0.0325,
+0.0052
+],
+"rough": 0.313,
+"metal": 0,
+"normal": true
+},
+"cherry": {
+"tile": 1.6,
+"albedo": [
+0.0285,
+0.0118,
+0.0048
+],
+"rough": 0.248,
+"metal": 0,
+"normal": true
+},
+"wood_floor": {
+"tile": 2.4,
+"albedo": [
+0.216,
+0.1165,
+0.0547
+],
+"rough": 0.471,
+"metal": 0,
+"normal": true
+},
+"carpet_red": {
+"tile": 1.2,
+"albedo": [
+0.339,
+0.1074,
+0.059
+],
+"rough": 0.693,
+"metal": 0,
+"normal": true
+},
+"carpet_blue": {
+"tile": 1.6,
+"albedo": [
+0.0023,
+0.0173,
+0.0409
+],
+"rough": 0.873,
+"metal": 0,
+"normal": true
+},
+"carpet_beige": {
+"tile": 1.6,
+"albedo": [
+0.5368,
+0.4532,
+0.2987
+],
+"rough": 0.871,
+"metal": 0,
+"normal": true
+},
+"velvet": {
+"tile": 0.8,
+"albedo": [
+0.4212,
+0.0263,
+0.0633
+],
+"rough": 0.726,
+"metal": 0,
+"normal": true
+},
+"jacquard": {
+"tile": 0.8,
+"albedo": [
+0.2911,
+0.0009,
+0.0144
+],
+"rough": 0.716,
+"metal": 0,
+"normal": true
+},
+"leather": {
+"tile": 0.8,
+"albedo": [
+0.1274,
+0.0395,
+0.0222
+],
+"rough": 0.397,
+"metal": 0,
+"normal": true
+},
+"plaster": {
+"tile": 3.0,
+"albedo": [
+0.6794,
+0.6529,
+0.6296
+],
+"rough": 0.79,
+"metal": 0,
+"normal": true
+},
+"plaster_ornate": {
+"tile": 2.0,
+"albedo": [
+0.4646,
+0.3268,
+0.2414
+],
+"rough": 0.895,
+"metal": 0,
+"normal": true
+},
+"brass": {
+"tile": 1.0,
+"albedo": [
+0.8935,
+0.6719,
+0.2828
+],
+"rough": 0.118,
+"metal": 1,
+"normal": true
+},
+"gold": {
+"tile": 1.0,
+"albedo": [
+0.9935,
+0.7698,
+0.3348
+],
+"rough": 0.09,
+"metal": 1,
+"normal": true
+},
+"bronze": {
+"tile": 1.0,
+"albedo": [
+0.4066,
+0.2272,
+0.1335
+],
+"rough": 0.236,
+"metal": 1,
+"normal": true
+},
+"limestone": {
+"tile": 3.0,
+"albedo": [
+0.2938,
+0.2392,
+0.1429
+],
+"rough": 0.878,
+"metal": 0,
+"normal": true
+},
+"brick_old": {
+"tile": 2.5,
+"albedo": [
+0.2261,
+0.1194,
+0.0582
+],
+"rough": 0.518,
+"metal": 0,
+"normal": true
+}
+}
