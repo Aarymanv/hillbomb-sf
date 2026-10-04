@@ -13,7 +13,13 @@
 //   carwarm    every traffic model built + its asset / AO atlas loaded behind the loading screen (game/sys_carwarm.js)
 //   carfarwheels  street cars past 75 m (LOD 2): the four wheels at rest merged into the body details (vehicle/models.js)
 //   carlampshare  street cars share their lamp / lens materials per light state and model (vehicle/models.js)
+//   intprobe   hero-interior reflection probe: shared PMREM generator, capture draws wait for their programs (world/interiors/hero_int.js)
+//   simsmooth  vehicle sim: physics steps per frame capped at the recent need, the rest worked off over the next frames (vehicle/sim.js)
+//   streamslice  map streaming: 2.5 ms per frame, a load starts only if its provider's typical cost still fits (world/v2/stream.js)
+//   texwarm    image textures uploaded from the frame loop as they load (budgeted), big <img> decoded off-thread first (render/texwarm.js)
+//   intkeep    walk-in interior sites stay built (hidden when far) instead of drop + 40-60 ms rebuild (game/sys_interiors.js)
+//   tilesphase  Google tiles traversal split into three phases on consecutive frames (world/v2/tilesphase.js)
 const q = typeof location !== 'undefined' ? location.search : '';
 export const PERF = globalThis.HB_PERF || (globalThis.HB_PERF = {});
-for (const k of ['maskcull', 'extcull', 'shaderwarm', 'waterthrottle', 'shadowcull', 'tilesthrottle', 'probeumw', 'carlean', 'carshadowproxy', 'physlite', 'carwarm', 'carfarwheels', 'carlampshare']) if (PERF[k] === undefined) PERF[k] = !new RegExp('[?&]no' + k + '(&|$)').test(q);
+for (const k of ['maskcull', 'extcull', 'shaderwarm', 'waterthrottle', 'shadowcull', 'tilesthrottle', 'probeumw', 'carlean', 'carshadowproxy', 'physlite', 'carwarm', 'carfarwheels', 'carlampshare', 'tilesphase', 'intprobe', 'simsmooth', 'streamslice', 'texwarm', 'intkeep']) if (PERF[k] === undefined) PERF[k] = !new RegExp('[?&]no' + k + '(&|$)').test(q);
 if (typeof window !== 'undefined') window.__perf = PERF;

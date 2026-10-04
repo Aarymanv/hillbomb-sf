@@ -8,6 +8,7 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { toLatLon } from '../latlon.js';
 import { zoneAtV2, COMMERCIAL_ZONES_V2, COMMERCIAL_STREETS_V2 } from '../props/v2zones.js';
 import { PERF } from '../../render/perfflags.js';
+import { createPhasedUpdate } from './tilesphase.js';
 
 const GEOID_N = -32.2;              // SF geoid undulation: sea level sits ~32 m below the WGS84 ellipsoid
 const REANCHOR = 350;               // re-anchor the ENU frame when the player moves this far (curvature stays < 1 cm locally)
@@ -105,6 +106,7 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
   const TPAD = 10, TSKIP = 3, TCOS = Math.cos(THREE.MathUtils.degToRad(TPAD / 2));
   const tcam = new THREE.PerspectiveCamera(); tcam.matrixAutoUpdate = false; tcam.matrixWorldAutoUpdate = false;
   const tLast = { n: 9, fwd: new THREE.Vector3(), pos: new THREE.Vector3(1e9, 0, 0), fov: 0, aspect: 0 }, _tf = new THREE.Vector3(), _tv = new THREE.Vector2();
+  const phased = createPhasedUpdate(tiles);
   const cellsInMask = (x0, z0, x1, z1) => {
     const i0 = Math.floor((x0 - cx) / T0), i1 = Math.floor((x1 - cx) / T0), j0 = Math.floor((z0 - cz) / T0), j1 = Math.floor((z1 - cz) / T0);
     if (i0 < 0 || j0 < 0 || i1 > 2 || j1 > 2) return false;
@@ -133,7 +135,7 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
     },
   });
   const api = {
-    tiles, stats, maskStats, nearRadius: null, get ready() { return ready; }, get nearMask() { return mask; },
+    tiles, stats, maskStats, phased, nearRadius: null, get ready() { return ready; }, get nearMask() { return mask; },
     // is (x, z) inside our near block (or are the photos not ready yet)? (buildings kit cells follow it)
     ours: (x, z) => !ready || api.nearRadius !== 0 && inMask(x, z),
     update(dt, focus) {
@@ -204,14 +206,21 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
         const k = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2 + TPAD)) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
         camera.getWorldDirection(_tf);
         const turned = _tf.dot(tLast.fwd) < TCOS, jumped = camera.position.distanceToSquared(tLast.pos) > 400;
-        if (++tLast.n >= TSKIP || turned || jumped || camera.fov !== tLast.fov || camera.aspect !== tLast.aspect || !tiles.cameras.length) {
+        const urgent = turned || jumped || camera.fov !== tLast.fov || camera.aspect !== tLast.aspect || !tiles.cameras.length;
+        // (perf r3) the traversal runs as three phases on consecutive frames (world/v2/tilesphase.js): one third of the
+        // cost every frame instead of all of it every 3rd frame; a sharp turn / jump finishes the running cycle at once
+        // and starts the next. ?notilesphase = the library's whole update() every TSKIP frames.
+        const usePh = PERF.tilesphase && phased.ready();
+        if (usePh && phased.busy) { if (urgent) phased.finish(); else phased.next(); }
+        if (!(usePh && phased.busy) && (++tLast.n >= TSKIP || urgent)) {
           tLast.n = 0; tLast.fwd.copy(_tf); tLast.pos.copy(camera.position); tLast.fov = camera.fov; tLast.aspect = camera.aspect;
           tcam.fov = camera.fov + 2 * TPAD; tcam.aspect = camera.aspect; tcam.near = camera.near; tcam.far = camera.far; tcam.zoom = camera.zoom; tcam.updateProjectionMatrix();
           tcam.matrixWorld.copy(camera.matrixWorld); tcam.matrixWorldInverse.copy(camera.matrixWorldInverse); tcam.position.setFromMatrixPosition(camera.matrixWorld);
           tiles.setCamera(tcam);
           renderer.getSize(_tv); tiles.setResolution(tcam, _tv.x * k, _tv.y * k);
           maskStats.culled = 0;
-          tiles.update();
+          if (usePh) { phased.start(); if (urgent) phased.finish(); tLast.n = 1; }
+          else tiles.update();
         }
       } else {
         if (!tiles.autoDisableRendererCulling) tiles.autoDisableRendererCulling = true;
