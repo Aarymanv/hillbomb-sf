@@ -21,9 +21,9 @@ self.onmessage = (e) => {
     for (const [key, list] of m.chunks) { const b = buildFarChunk(ctx, list); if (b.empty) continue; const p = packBuf(b); out.push([key, p]); tl.push(...transferList(p)); }
     self.postMessage({ id: m.id, chunks: out, ms: performance.now() - t0 }, tl);
   } else if (m.type === 'mid') {
-    const { buf, fronts } = buildMidTile(ctx, m.tile, hidden);
+    const { buf, fronts, ycols } = buildMidTile(ctx, m.tile, hidden);
     const p = buf.empty ? null : packBuf(buf);
-    self.postMessage({ id: m.id, geo: p, fronts, ms: performance.now() - t0 }, p ? [...transferList(p), fronts.buffer] : [fronts.buffer]);
+    self.postMessage({ id: m.id, geo: p, fronts, ycols, ms: performance.now() - t0 }, p ? [...transferList(p), fronts.buffer, ycols.buffer] : [fronts.buffer, ycols.buffer]);
   } else if (m.type === 'near') {
     const { buf, kit } = buildNearTile(ctx, m.key, m.fronts, hidden, m.tx, m.tz);
     const p = buf.empty ? null : packBuf(buf), k = kit ? kit.pack(packBuf) : null;

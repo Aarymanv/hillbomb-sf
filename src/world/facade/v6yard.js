@@ -22,6 +22,53 @@ const PAVE = [[0.62, 0.6, 0.56], [0.55, 0.42, 0.34], [0.5, 0.49, 0.46], [0.66, 0
 const SHED = [[0.42, 0.47, 0.4], [0.62, 0.58, 0.5], [0.45, 0.33, 0.24], [0.55, 0.57, 0.6], [0.7, 0.66, 0.58]];
 const SOIL = [0.09, 0.065, 0.045], LEAF = [[0.07, 0.13, 0.045], [0.1, 0.15, 0.05], [0.12, 0.12, 0.05]], BLOOM = [[0.3, 0.12, 0.16], [0.36, 0.3, 0.08], [0.22, 0.12, 0.3]];
 
+// ---------------------------------------------------------------- colliders (world round 2)
+// Fences (both lot lines + the rear line) and sheds become oriented boxes, collected per MID tile while YCOL.on
+// (v2build.js buildMidTile) and merged there (mergeYardCols): back-to-back rear fences and neighbours' shared side fences
+// collapse into one box per straight fence run. Stride 7: x, z, hx, hz, yaw, yMin, yMax (collision.js oriented box).
+export const YCOL = { on: false, out: [] };
+const FT = 0.15;                                            // collider half thickness (thin fences tunnel at speed)
+let fyYaw = 0;
+function colBox(u0, u1, d0, d1, y0, y1) {
+  if (!YCOL.on) return;
+  const uc = (u0 + u1) / 2, dc = (d0 + d1) / 2;
+  YCOL.out.push(FY.wx(uc, dc), FY.wz(uc, dc), (u1 - u0) / 2, (d1 - d0) / 2, fyYaw, y0, y1);
+}
+// merge collinear, touching boxes: bucket by long-axis angle + line offset, then join overlapping intervals per line
+export function mergeYardCols(a) {
+  const n = a.length / 7, groups = new Map(), segs = [];
+  for (let k = 0; k < n; k++) {
+    const o = k * 7, x = a[o], z = a[o + 1], hx = a[o + 2], hz = a[o + 3], yaw = a[o + 4];
+    // long axis in world: local x = (cos, -sin), local z = (sin, cos)
+    let dx, dz, L, T;
+    if (hx >= hz) { dx = Math.cos(yaw); dz = -Math.sin(yaw); L = hx; T = hz; } else { dx = Math.sin(yaw); dz = Math.cos(yaw); L = hz; T = hx; }
+    if (dz < 0 || (dz === 0 && dx < 0)) { dx = -dx; dz = -dz; }  // angle in [0, pi)
+    const th = Math.atan2(dz, dx), nx = -dz, nz = dx, rho = x * nx + z * nz, s0 = x * dx + z * dz;
+    const sg = { th, dx, dz, nx, nz, rho, s0: s0 - L, s1: s0 + L, r0: rho - T, r1: rho + T, y0: a[o + 5], y1: a[o + 6], shed: hx > 0.6 && hz > 0.6 };
+    if (sg.shed) { segs.push([x, z, hx, hz, yaw, sg.y0, sg.y1]); continue; }
+    const key = Math.round(th / 0.04) * 100003 + Math.round(rho / 0.5);
+    let g = groups.get(key); if (!g) groups.set(key, g = []); g.push(sg);
+  }
+  for (const g of groups.values()) {
+    g.sort((p, q) => p.s0 - q.s0);
+    let cur = null;
+    const flush = () => {
+      if (!cur) return;
+      const sm = (cur.s0 + cur.s1) / 2, rm = (cur.r0 + cur.r1) / 2;
+      segs.push([cur.dx * sm + cur.nx * rm, cur.dz * sm + cur.nz * rm, (cur.s1 - cur.s0) / 2, Math.max(FT, (cur.r1 - cur.r0) / 2), Math.atan2(-cur.dz, cur.dx), cur.y0, cur.y1]);
+    };
+    for (const sg of g) {
+      if (cur && sg.s0 <= cur.s1 + 0.3 && Math.abs(sg.y1 - cur.y1) < 1.5) {
+        cur.s1 = Math.max(cur.s1, sg.s1); cur.r0 = Math.min(cur.r0, sg.r0); cur.r1 = Math.max(cur.r1, sg.r1); cur.y0 = Math.min(cur.y0, sg.y0); cur.y1 = Math.max(cur.y1, sg.y1);
+      } else { flush(); cur = { ...sg }; }
+    }
+    flush();
+  }
+  const out = new Float32Array(segs.length * 7);
+  segs.forEach((q, k) => out.set(q, k * 7));
+  return out;
+}
+
 // depth of the yard behind the edge (frame FY set on it): half the gap to the next building, capped where the raster ends
 function yardDepth(R, i, L0) {
   // (SF lots are ~30-37 m deep, houses 12-20 m: back-to-back yards meet at a shared rear fence 15-25 m apart)
@@ -60,7 +107,7 @@ export function yard(Bf, P, R, i, EX, EZ, EP, sgn) {
   const qq = (best + 1) % n, tx = bnz, tz = -bnx;           // frame: u along the rear wall, +d out into the yard
   const ax = EX[best], az = EZ[best], bx = EX[qq], bz = EZ[qq];
   const o = (bx - ax) * tx + (bz - az) * tz > 0 ? [ax, az] : [bx, bz];
-  FY.b = Bf; FY.set(o[0], 0, o[1], tx, tz);
+  FY.b = Bf; FY.set(o[0], 0, o[1], tx, tz); fyYaw = Math.atan2(-FY.tz, FY.tx);
   const Lw = bl, D = Math.min(18, yardDepth(R, i, Lw));
   if (D < 2.2) { YST.shallow++; return 0; }
   YST.ok++;
@@ -74,7 +121,12 @@ export function yard(Bf, P, R, i, EX, EZ, EP, sgn) {
   FY.q([0, t0, 0], [0, t1, D], [0.05, t1, D], [0.05, t0, 0]);
   FY.q([Lw - 0.05, yb, 0], [Lw - 0.05, yb, D], [Lw - 0.05, t1, D], [Lw - 0.05, t0, 0]);
   FY.q([Lw - 0.05, t0, 0], [Lw - 0.05, t1, D], [Lw, t1, D], [Lw, t0, 0]);
-  FY.box(0.05, Lw - 0.05, yb, t1, D - 0.05, D, 2 | 16);
+  FY.box(0.05, Lw - 0.05, yb, t1, D - 0.05, D, 1 | 2 | 16);
+  // (round 2) outer faces too: a fence seen from the neighbour's side / the street was invisible (and now it collides)
+  FY.q([0, yb, 0], [0, yb, D], [0, t1, D], [0, t0, 0]);
+  FY.q([Lw, yb, D], [Lw, yb, 0], [Lw, t0, 0], [Lw, t1, D]);
+  { const yTop = Math.max(t0, t1);
+    colBox(0.025 - FT, 0.025 + FT, 0, D, yb, yTop); colBox(Lw - 0.025 - FT, Lw - 0.025 + FT, 0, D, yb, yTop); colBox(0, Lw, D - 0.025 - FT, D - 0.025 + FT, yb, yTop); }
   // ---------------------------------------------------------------- deck (elevated at the living floor, or low)
   let dd = 0;
   const deckP = st === S.STUCCO ? 0.34 : st === S.APARTMENT ? 0.3 : 0.48;
@@ -154,6 +206,7 @@ export function yard(Bf, P, R, i, EX, EZ, EP, sgn) {
     const u0 = left ? 0.25 : Lw - 0.25 - w, u1 = u0 + w, d1 = D - 0.25, d0 = d1 - dp, gs = Math.min(G(d0), G(d1)), hw = Math.max(G(d0), G(d1)) + 2.0 + 0.2 * h(29), hr = hw + 0.4;
     FY.mat(L.SIDING, sc[0], sc[1], sc[2]);
     FY.box(u0, u1, gs - 0.3, hw, d0, d1, 1 | 2 | 4 | 8);
+    colBox(u0, u1, d0, d1, gs - 0.3, hr);
     FY.box(u0, u1, hw, hr, d1 - 0.04, d1, 2);
     FY.tri([u0, hw, d0], [u0, hr, d1], [u0, hw, d1]);
     FY.tri([u1, hw, d0], [u1, hw, d1], [u1, hr, d1]);

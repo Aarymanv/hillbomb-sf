@@ -86,7 +86,7 @@ export function registerBuildingsV2(stream, { data, terrain, scene, root = null,
     if (!renderer) m.onBeforeRender = grab;
     return m;
   };
-  const st = { planMs: P.ms, farMs: 0, farTris: 0, farChunks: 0, midTiles: 0, nearTiles: 0, midTris: 0, nearTris: 0, cols: 0,
+  const st = { planMs: P.ms, farMs: 0, farTris: 0, farChunks: 0, midTiles: 0, nearTiles: 0, midTris: 0, nearTris: 0, cols: 0, yardCols: 0, yardColsDropped: 0, yardFilterMs: 0,
     workers: 0, inflight: 0, queued: 0, maxWorkerMs: 0, lastWorkerMs: 0, maxMainMs: 0, applyMs: 0, readyMs: 0 };
 
   // ================================================================ worker pool
@@ -154,7 +154,7 @@ export function registerBuildingsV2(stream, { data, terrain, scene, root = null,
     const m = job.msg, hidden = m.hidden && m.hidden.length ? new Set(m.hidden) : null, s0 = performance.now();
     let res;
     if (m.type === 'far') res = { chunks: m.chunks.map(([key, list]) => [key, packBuf(buildFarChunk(ctx, list))]).filter(([, p]) => p.ni > 0) };
-    else if (m.type === 'mid') { const { buf, fronts } = buildMidTile(ctx, m.tile, hidden); res = { geo: buf.empty ? null : packBuf(buf), fronts }; }
+    else if (m.type === 'mid') { const { buf, fronts, ycols } = buildMidTile(ctx, m.tile, hidden); res = { geo: buf.empty ? null : packBuf(buf), fronts, ycols }; }
     else if (m.type === 'near') { const { buf, kit } = buildNearTile(ctx, m.key, m.fronts, hidden, m.tx, m.tz); res = { geo: buf.empty ? null : packBuf(buf), kit: kit ? kit.pack(packBuf) : null, kitOn: !!kit }; }
     else if (m.type === 'dress') res = buildDress(ctx, m.key, hidden, m.tx, m.tz);
     res.ms = performance.now() - s0; st.maxMainMs = Math.max(st.maxMainMs, res.ms);
@@ -243,6 +243,7 @@ export function registerBuildingsV2(stream, { data, terrain, scene, root = null,
     const done = (res) => {
       setMesh(h, res.geo, 'bld-mid', true, 'midTris');
       h.fronts = res.fronts; h.ready = true;
+      setYardCols(h.key, res.ycols);
       const [f, c] = B.inTile(t.tx, t.tz);
       for (let i = f; i < f + c; i++) setWhy(i, 1, true);
       const nh = nearH.get(h.key);
@@ -265,6 +266,7 @@ export function registerBuildingsV2(stream, { data, terrain, scene, root = null,
     unload(h) {
       if (!h) return;
       h.dead = true; midH.delete(h.key); st.midTiles--;
+      setYardCols(h.key, null);
       setMesh(h, null, '', false, 'midTris');
       const [f, c] = B.inTile(h.tile.tx, h.tile.tz);
       for (let i = f; i < f + c; i++) setWhy(i, 1, false);
@@ -487,6 +489,44 @@ export function registerBuildingsV2(stream, { data, terrain, scene, root = null,
 
   // ================================================================ colliders
   const colTrash = [], colH = new Map(), cring = [];
+  // back-yard fence / shed colliders (v6yard.js), built with the MID tile, live only while the tile's bld-col is loaded
+  const yardCols = new Map();                         // tile key -> Float32Array (stride 7) from the MID build
+  const NOYC = typeof location !== 'undefined' && /[?&]noyardcol\b/.test(location.search || '');
+  function yardColsOn(h) {
+    let a = yardCols.get(h.tile.key); if (!a || h.yard) return;
+    if (!a.free) { const t0 = performance.now(); a = streetFree(a); a.free = true; yardCols.set(h.tile.key, a); st.yardFilterMs = Math.max(st.yardFilterMs, performance.now() - t0); }
+    h.yard = [];
+    for (let o = 0; o < a.length; o += 7) h.yard.push(stream.ctx.colliders.add({ x: a[o], z: a[o + 1], hx: a[o + 2], hz: a[o + 3], yaw: a[o + 4], yMin: a[o + 5], yMax: a[o + 6], kind: 'fence' }));
+    st.yardCols += h.yard.length;
+  }
+  function yardColsOff(h, now) {
+    if (!h.yard) return;
+    for (const q of h.yard) if (now) stream.ctx.colliders.remove(q); else colTrash.push(q);
+    st.yardCols -= h.yard.length; h.yard = null;
+  }
+  // a yard whose rear faces a street (through lots: nothing behind to stop the depth scan) must not wall off the
+  // sidewalk / carriageway: drop boxes with a sample point (every ~3 m) on asphalt / paved ground (surface raster 1 / 2;
+  // a graph nearestEdge test per sample cost ~26 ms per tile on arrival)
+  function streetFree(a) {
+    const T = stream.ctx.terrain, keep = [];
+    for (let o = 0; o < a.length; o += 7) {
+      const x = a[o], z = a[o + 1], hx = a[o + 2], hz = a[o + 3], c = Math.cos(a[o + 4]), sn = Math.sin(a[o + 4]);
+      const long = hx >= hz, L = long ? hx : hz, ux = long ? c : sn, uz = long ? -sn : c;
+      let bad = false;
+      const ns = Math.max(1, Math.ceil(L / 1.6)), dt = 1 / ns;   // samples ~3.2 m apart (4 m raster)
+      for (let t = -1 + dt; t < 1 && !bad; t += 2 * dt) { const s = T.surfaceRaw(x + ux * L * t, z + uz * L * t); if (s === 1 || s === 2) bad = true; }
+      if (!bad) for (let k = 0; k < 7; k++) keep.push(a[o + k]);
+    }
+    st.yardColsDropped += (a.length - keep.length) / 7;
+    return keep.length === a.length ? a : new Float32Array(keep);   // (filtered lazily when the tile's colliders go live)
+  }
+  function setYardCols(key, a) {
+    if (NOYC) return;
+    const ch = colH.get(key);
+    if (ch) yardColsOff(ch, true);
+    if (a && a.length) yardCols.set(key, a); else { yardCols.delete(key); a = null; }
+    if (ch && a) yardColsOn(ch);
+  }
   function colsFor(i, out) {
     if (P.area[i] < 6) return;
     const yMin = BD.minH[i] > 0 ? BD.base[i] + BD.minH[i] : BD.base[i] - 2, yMax = P.yTop[i];
@@ -579,12 +619,14 @@ export function registerBuildingsV2(stream, { data, terrain, scene, root = null,
         if (l.length) { h.by.set(i, l); for (const q of l) cx.colliders.add(q); st.cols += l.length; }
       }
       colH.set(tile.key, h);
+      yardColsOn(h);
       return h;
     },
     unload(h) {
       if (!h) return;
       colH.delete(h.tile.key);
       for (const l of h.by.values()) { for (const q of l) colTrash.push(q); st.cols -= l.length; }
+      yardColsOff(h, false);
     },
   });
 

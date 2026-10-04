@@ -12,7 +12,7 @@ import { v3Eligible, v3Wall, FSTRIDE } from './v3front.js';
 import { bayCells, V3LOD, KitCells, kitReady, towerInfo, setTower, chamfer, rim, rimH, hasRim, roofY, midFront, gable, crown, clutterPlan, clutterMid, clutterKit, nearKitWall, falseFrontH, falseFront, solar, hasSaw, sawtooth } from './v2detail.js';
 import { buildDressTile } from './v2dressgeo.js';
 import { cornerPlan, turret, mansardOf, mansard, balconyPlan, balconies, crestOf, crest } from './v5mass.js';
-import { yard, roofDeck } from './v6yard.js';
+import { yard, roofDeck, YCOL, mergeYardCols } from './v6yard.js';
 
 // arrays that cross the worker boundary
 export const B_KEYS = ['verts', 'v0', 'nv', 'tileOf', 'tileFirst', 'tileCount', 'base', 'h', 'minH'];
@@ -131,8 +131,10 @@ export function buildMidTile({ B, P, R }, tile, hidden) {
   }
   const buf = new MeshBuf(false, 32768), fronts = [];
   const rnd = mulberry32(tile.key * 7919 + 13);
-  eachIn(P, f, c, hidden, (i) => emitMid(P, B, R, buf, i, fronts, rnd));
-  return { buf, fronts: packFronts(fronts) };
+  YCOL.on = true; YCOL.out.length = 0;
+  try { eachIn(P, f, c, hidden, (i) => emitMid(P, B, R, buf, i, fronts, rnd)); } finally { YCOL.on = false; }
+  const ycols = mergeYardCols(YCOL.out); YCOL.out.length = 0;   // yard fence / shed colliders (v6yard.js)
+  return { buf, fronts: packFronts(fronts), ycols };
 }
 const EX = [], EZ = [], EF = [], EG = [], FW = [], PL = [], EP = [];
 function emitMid(P, B, R, buf, i, fronts, rnd) {
