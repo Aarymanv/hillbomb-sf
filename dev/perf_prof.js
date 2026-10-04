@@ -38,14 +38,20 @@
       try { return rr.apply(this, arguments); } finally { if (on) addCpu('R ' + lab, performance.now() - t0); if (main) mainDepth--; lastCat = null; pop(); }
     };
     const sm = r.shadowMap, sr = sm.render;
-    let shBase = null; const shIds = new Map();
-    sm.render = function () { if (!on) return sr.apply(this, arguments); shBase = (cur || '') + '>shadow'; push(shBase); const md = mainDepth; mainDepth = 0; const t0 = performance.now(); try { return sr.apply(this, arguments); } finally { addCpu('S ' + shBase, performance.now() - t0); mainDepth = md; shBase = null; pop(); } };
+    let shBase = null, inSh = false, shTag = ''; const shIds = new Map();
+    sm.render = function () {
+      if (!on && !census.on) return sr.apply(this, arguments);
+      inSh = true; const md = mainDepth; mainDepth = 0; const t0 = performance.now();
+      if (on) { shBase = (cur || '') + '>shadow'; push(shBase); }
+      try { return sr.apply(this, arguments); } finally { if (on) { addCpu('S ' + shBase, performance.now() - t0); shBase = null; pop(); } inSh = false; mainDepth = md; }
+    };
     const srt = r.setRenderTarget;
-    r.setRenderTarget = function (t) { if (on && shBase && t) { if (!shIds.has(t)) shIds.set(t, shIds.size); sec(shBase + '#' + shIds.get(t) + ':' + t.width); } return srt.apply(this, arguments); };
+    r.setRenderTarget = function (t) { if (inSh && t) { if (!shIds.has(t)) shIds.set(t, shIds.size); shTag = '#' + shIds.get(t) + ':' + t.width; if (on && shBase) sec(shBase + shTag); } return srt.apply(this, arguments); };
     const rbd = r.renderBufferDirect;
+    let lastSh = null;
     r.renderBufferDirect = function (cam, sc, geo, mat, obj) {
-      if ((on || census.on) && mainDepth > 0) {
-        const cat = topOf(obj) + (mat.transparent ? ' (T)' : '');
+      if ((on || census.on) && (mainDepth > 0 || inSh)) {
+        const cat = (inSh ? 'SH' + shTag + ' ' : '') + topOf(obj) + (mat.transparent ? ' (T)' : '');
         if (census.on) { const row = census.rows[cat] || (census.rows[cat] = { draws: 0, tris: 0, inst: 0 }); row.draws++; const n = geo.index ? geo.index.count : geo.attributes.position?.count || 0; const ic = obj.isInstancedMesh ? obj.count : geo.isInstancedBufferGeometry ? geo.instanceCount : 1; row.tris += (geo.drawRange.count === Infinity ? n : Math.min(n, geo.drawRange.count)) / 3 * (ic === Infinity ? 1 : ic); if (ic > 1) row.inst++; }
         if (on && cat !== lastCat) { lastCat = cat; sec(String(cur).replace(/\|.*$/, '') + '|' + cat); }
         if (on) { const t0 = performance.now(); try { return rbd.apply(this, arguments); } finally { addCpu('D ' + cat, performance.now() - t0); } }
@@ -97,7 +103,8 @@
     for (const [k, v] of Object.entries(sections)) {
       let key;
       const m = /\|(.*)$/.exec(k);
-      if (/shadow#/.test(k)) key = 'shadow' + k.replace(/^.*shadow#/, '#') + (k.includes('U:') ? ' (' + k.split('>')[0] + ')' : '');
+      if (/\|SH#/.test(k)) key = 'shadow ' + k.replace(/^.*\|SH/, '');
+      else if (/shadow#/.test(k)) key = 'shadow' + k.replace(/^.*shadow#/, '#') + (k.includes('U:') ? ' (' + k.split('>')[0] + ')' : '');
       else if (m && /P:N8AO/.test(k)) key = 'main: ' + m[1];
       else if (m) key = 'scene(other ' + k.split('>').slice(-1)[0].split('|')[0] + '): ' + m[1];
       else key = k.replace(/^frame>?/, '');
@@ -112,7 +119,7 @@
     const tot = { calls: info.render.calls, tris: info.render.triangles, programs: info.programs?.length, geos: info.memory.geometries, tex: info.memory.textures };
     info.reset();
     const rows = Object.entries(census.rows).sort((a, b) => b[1].draws - a[1].draws).map(([k, v]) => [k, v.draws, Math.round(v.tris / 1000) + 'k', v.inst]);
-    return { tot, mainDraws: rows.reduce((a, r) => a + r[1], 0), rows };
+    return { tot, mainDraws: rows.filter(r => !r[0].startsWith('SH')).reduce((a, r) => a + r[1], 0), shadowDraws: rows.filter(r => r[0].startsWith('SH')).reduce((a, r) => a + r[1], 0), rows };
   };
   // CPU: mean ms per hooked update over n frames (hooks installed once; perf_drive's instrument() already wraps most)
   W.__cpuParts = async (frames = 60, move) => {

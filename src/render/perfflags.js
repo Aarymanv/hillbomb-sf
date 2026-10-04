@@ -1,0 +1,9 @@
+// (perf 10/4) runtime switches for the performance passes, so a single session can A/B them (dev/perf_ab.js flips them
+// between drive segments). Defaults on; ?no<name> in the URL turns one off at load, window.__perf.<name> = false at run time.
+//   maskcull   Google tiles wholly inside our near block are culled (world/v2/googletiles.js)
+//   extcull    interior-site exterior shells hidden past the near city (game/sys_interiors.js)
+//   shaderwarm first-use shaders compiled in the background, the object drawn once ready (render/shaderwarm.js)
+const q = typeof location !== 'undefined' ? location.search : '';
+export const PERF = globalThis.HB_PERF || (globalThis.HB_PERF = {});
+for (const k of ['maskcull', 'extcull', 'shaderwarm']) if (PERF[k] === undefined) PERF[k] = !new RegExp('[?&]no' + k + '(&|$)').test(q);
+if (typeof window !== 'undefined') window.__perf = PERF;

@@ -7,6 +7,7 @@ import { GoogleCloudAuthPlugin, GLTFExtensionsPlugin, TileCompressionPlugin, Til
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { toLatLon } from '../latlon.js';
 import { zoneAtV2, COMMERCIAL_ZONES_V2, COMMERCIAL_STREETS_V2 } from '../props/v2zones.js';
+import { PERF } from '../../render/perfflags.js';
 
 const GEOID_N = -32.2;              // SF geoid undulation: sea level sits ~32 m below the WGS84 ellipsoid
 const REANCHOR = 350;               // re-anchor the ENU frame when the player moves this far (curvature stays < 1 cm locally)
@@ -94,7 +95,7 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
   // the set (Mission: ~190 of ~280 tile draws, FiDi 109 of 119). Only within MASK_CULL_R of the focus (farthest box
   // corner): a mask cell is released at NEAR_KEEP (420 m), so a culled tile is back in view >= 80 m of travel before its
   // cell can hand over to the photos. ?nomaskcull = A/B.
-  const MASK_CULL = typeof location === 'undefined' || !/[?&]nomaskcull/.test(location.search), MASK_CULL_R = 340;
+  const MASK_CULL_R = 340;
   const _ob = new THREE.Box3(), _om = new THREE.Matrix4(), _oc = new THREE.Vector3();
   let fx = 0, fz = 0;
   const maskStats = { culled: 0 };
@@ -104,10 +105,10 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
     for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) if (((mask >> (j * 3 + i)) & 1) === 0) return false;
     return true;
   };
-  if (MASK_CULL) tiles.registerPlugin({
+  tiles.registerPlugin({
     name: 'HB_NEAR_MASK_CULL',
     calculateTileViewError(tile, target) {
-      if (!mask || api.nearRadius === 0) return false;
+      if (!PERF.maskcull || !mask || api.nearRadius === 0) return false;
       let a = tile.__hbXZ;
       if (!a || a[4] !== anchorVer) {
         const bv = tile.engineData?.boundingVolume; if (!bv) return false;

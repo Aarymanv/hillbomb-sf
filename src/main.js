@@ -22,6 +22,7 @@ import { loadCarAssets } from './vehicle/models.js';
 import { setMode, MODES } from './game/modes.js';
 import { resolveQuality, installQualityBenchmark, createDynRes } from './game/quality.js';
 import { initTexpack } from './world/texpack.js';
+import { installShaderWarm } from './render/shaderwarm.js';
 
 const params = new URLSearchParams(location.search);
 injectStyles();
@@ -269,6 +270,8 @@ try {
 // two real frames behind the loading screen: the water reflection, car probe and shadow passes compile their own
 // program variants and upload what only they see (100-160 ms hitches on the first frames of play otherwise)
 try { frame(1 / 60); frame(1 / 60); } catch (err) { console.warn('[boot] warm frames', err); }
+// no first-use shader stalls while playing (render/shaderwarm.js; after the boot precompile, which still blocks)
+window.__shaderWarm = installShaderWarm(renderer, { scene });
 setLoad(1, 'Ready');
 await frame2();
 boot.classList.add('out');

@@ -2,6 +2,7 @@
 // diner (Fisherman's Wharf), bodega (Mission), cafe (Hayes Valley).
 // Colliders + drivable decks are registered at install (cheap, permanent); meshes are built lazily within ~120 m
 // and disposed beyond ~175 m. Interactions use E (interact); door transitions fade to black.
+import { PERF } from '../render/perfflags.js';
 import * as THREE from 'three';
 import { SITE_DEFS, placeAll, lotsToSkip, keepClearZones, siteAnchor } from '../world/interiors/sites.js';
 import { Site } from '../world/interiors/site.js';
@@ -29,6 +30,7 @@ const BLIPS = {
   pizza: { icon: 'Z', color: '#ff4436', edge: false },
 };
 const BUILD_R = 140, HIDE_R = 170, DROP_R = 450;   // interior build / hide / dispose radii (exteriors are permanent)
+const EXT_HIDE_R = 650, EXT_SHOW_R = 600;   // exterior shells: hidden past the near city (perf 10/4)
 
 export function install(G) {
   const world = G.world;
@@ -121,6 +123,9 @@ export function install(G) {
         if (!s.built && d < BUILD_R && buildCooldown <= 0) { build(s); buildCooldown = 0.15; }
         else if (s.built && d > DROP_R) dropInterior(s);
         if (s.int) s.int.visible = d < HIDE_R;
+        // (perf 10/4) exterior shells past the near city: the photogrammetry draws the real block there and the ~90 shell
+        // draws (glass, signs, trim; every site in front of the camera) were drawn on top of it at any distance
+        if (s.ext) s.ext.visible = !PERF.extcull || d < (s.ext.visible ? EXT_HIDE_R : EXT_SHOW_R);
       }
       // site animation (doors, turntables) + which volume the player is in
       let active = null, activeVol = null;
