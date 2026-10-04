@@ -1,5 +1,6 @@
 // Fixed-step vehicle simulation (120 Hz) with car-vs-car contacts and sleeping.
 import { collideCars } from './physics.js';
+import { PERF } from '../render/perfflags.js';
 
 export class Sim {
   constructor(world) {
@@ -13,7 +14,15 @@ export class Sim {
   step(dt) {
     this.acc = Math.min(this.acc + dt, this.h * 8);
     const V = this.vehicles;
-    while (this.acc >= this.h) {
+    // (perf r3) catch-up smoothing: one slow frame (a 40 ms frame = 5 steps at 120 Hz) used to run all its steps at once,
+    // making the next frame slow too. Steps per frame are capped at the recent need (EMA of dt / h, rounded up, >= 2):
+    // the rest stays in the accumulator (<= 8 steps, as before) and is worked off over the next frames, so the sim keeps
+    // real time on average and the extra cost of a spike is spread. Interpolation shows the latest state while behind.
+    // ?nosimsmooth = every due step in the same frame.
+    let cap = Infinity;
+    if (PERF.simsmooth && dt > 0) { this.need = this.need === undefined ? dt / this.h : this.need + (dt / this.h - this.need) * 0.1; cap = Math.max(2, Math.ceil(this.need - 0.05)); }
+    let n = 0;
+    while (this.acc >= this.h && n++ < cap) {
       this.onPreStep?.();
       for (const v of V) {
         const b = v.body;
@@ -47,7 +56,7 @@ export class Sim {
       }
       this.acc -= this.h; this.time += this.h;
     }
-    const alpha = this.acc / this.h;
+    const alpha = Math.min(1, this.acc / this.h);
     for (const v of V) v.body.alpha = alpha;
     if (this.lastHit.size > 2000) this.lastHit.clear();
   }
