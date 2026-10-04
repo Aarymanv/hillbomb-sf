@@ -33,8 +33,28 @@ crowns, greenhouse ghIn/ghTaper; S.w + getModelSpec unchanged = physics identica
 -- <ids> [--big] (workbench, seconds). Rebuild: cars_export.mjs --hero <ids>, cars.py <ids>, cars.py --index, texpack --only cars/.
 In-car: CABIN {gain 3.2, lamp 2.5} (window-lit cabin from the probe / IBL, AO softened, gauges x2.5), camera.js eye = spec.seat, FOV 54.
 Silent harness: node dev/car3cdp.mjs <url+mute> <script.js> (own headless Chrome --mute-audio, parks on manifest); shots dev/car3shots.js.
-Baseline assets for A/B: public/assets/cars_p2 (untracked, ?carbase=cars_p2). Open: interior trim is still near-black plastic;
-EV tail light bar dim at night (pre-existing); the 45 non-hero ids keep the pass-2 loft shapes.
+Baseline assets for A/B: public/assets/cars_p2 (untracked, ?carbase=cars_p2). (pass-3 opens fixed in pass 4 below.)
+Cars pass 4 10/4 (commits cb8e3ac code, a156f3a assets): DOORS: tools/blender/car_door.py (cars.py, after car_hero + car_body) splits
+the front doors into <lv>_<kind>__dl/__dr nodes (outline = JS door-seam records: first vertical side seam behind the front axle + the
+next >= 0.55 m behind, bottom = seam bottom, belt = line fit through the side-glass bottoms; knife + per-face/island selection; shut
+faces both sides) and writes hinges to cars.json (doors.L/R.p, max 1.15 rad). No doors: bus, cablecar, picknick (outline over the arch),
+buggy / kestrel (doorless). Runtime: visual.openDoor(side, t) / hasDoor / doorHinge (models.js), Vehicle.openDoor / releaseDoor (cars.js:
+closes once `who` is clear of the arc, after 3.5 s, or when the car moves). player.js hooks (doorCurve): enter opens k .04-.28, shut
+k .86-1, carjack yanks it open at k 0 (NPC thrown out by sys_peds.spawnFleeing at the same moment); exit opens k 0-.22 then releaseDoor;
+the enter stand point moves 0.3 m back when the car has a door. Review: tools/blender/car_door_preview.py, car_glb_sheet.py (contact
+sheet of every GLB with the driver door open: shots/car4_glb_sheet.jpg). INTERIOR: car_hero FIN interior entries carry a class in
+metalness (3 soft-touch, 4 leather, 5 brushed alu, 6 piano black, 7 fabric, 8 carpet) -> models.js INTERIOR_MAT/NORMAL (grain bump,
+brushed streaks, piano lacquer, grazing sheen); parked instanced material zeroes them. CABIN.gain 6 (was 3.2), cabin AO x(1-0.7),
+centre screen dimmed + rough 0.5. LIGHT BARS: LAMP.BAR = 10 (TAILBAR art on 9 ids), u[10] 5.5 running night / 9 brake, carshade id 10
+= even LED strip. BODIES: SCULPT for 42 more ids (models.js, families), physics spec identical (node dev/car4_spec.mjs before/after diff).
+All 57 loft bodies go through the detail pass now (HERO_IDS = every garage body; traffic police / van / boxtruck / bus = L0 30k);
+assets 37 -> 81 MB (lazy), 2K AO. Build: node tools/blender/cars_export.mjs --hero <ids>; HB_STAGE=public/assets/cars_p4 cars.py <ids>
+(stage, A/B with ?carbase=cars_p4), copy into cars/, cars.py --index, texpack --only cars/. Shots: shots/car4_*_{before,after}.jpg
+(dev/car4shots.js + dev/car4_sheet.py). Open: door glass / A-pillar wrap faces on a few bodies stay on the body (slivers when open);
+people clip the door edge briefly while it swings (the stand point is at the rear edge); centre screen is a plain glow (no UI).
+Checks 10/4: regression views shots/car4_reg_sheet.jpg (w2 vs car4: unchanged); car2perf Market drive p50 35.3 -> 32.6 ms, GPU p50 26.5 -> 23.4
+(headless, noise); VRAM memspots 2.30-2.58 GB (was 2.28-2.66); flicker_rt cockpit / console / EV tail same as the pass-3 assets
+(cockpit regionMax spikes are street events in both; EV bar regionMax 7).
 
 Sky + night pass 9/29: physical sky by default (render/atmosphere.js Hillaire LUTs; ?sky=hdri = old photo sky). sky.js = dome + 1/3-res
 volumetric cumulus pass (createCloudPass) + cirrus, moon phase (env.state.moonAge), few stars, city skyglow; the dome bakes the IBL
