@@ -1,0 +1,954 @@
+{
+"fps": 30,
+"bones": [
+"Bip01 Pelvis",
+"Bip01 Spine",
+"Bip01 Spine1",
+"Bip01 Spine2",
+"Bip01 Neck",
+"Bip01 Head",
+"Bip01 L Clavicle",
+"Bip01 L UpperArm",
+"Bip01 L Forearm",
+"Bip01 L Hand",
+"Bip01 L Finger0",
+"Bip01 L Finger01",
+"Bip01 L Finger1",
+"Bip01 L Finger11",
+"Bip01 L Finger2",
+"Bip01 L Finger21",
+"Bip01 R Clavicle",
+"Bip01 R UpperArm",
+"Bip01 R Forearm",
+"Bip01 R Hand",
+"Bip01 R Finger0",
+"Bip01 R Finger01",
+"Bip01 R Finger1",
+"Bip01 R Finger11",
+"Bip01 R Finger2",
+"Bip01 R Finger21",
+"Bip01 L Thigh",
+"Bip01 L Calf",
+"Bip01 L Foot",
+"Bip01 L Toe0",
+"Bip01 R Thigh",
+"Bip01 R Calf",
+"Bip01 R Foot",
+"Bip01 R Toe0"
+],
+"parents": [
+-1,
+0,
+1,
+2,
+3,
+4,
+4,
+6,
+7,
+8,
+9,
+10,
+9,
+12,
+9,
+14,
+4,
+16,
+17,
+18,
+19,
+20,
+19,
+22,
+19,
+24,
+1,
+26,
+27,
+28,
+1,
+30,
+31,
+32
+],
+"stride": 139,
+"hip0": {
+"f": 0.9194467067718506,
+"m": 0.8951848149299622
+},
+"clips": {
+"f_cell_phone_talk_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 0
+},
+"f_cell_phone_talk_02": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 100080
+},
+"f_cell_phone_textmessage": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 309,
+"dur": 20.6,
+"off": 200160
+},
+"f_drink_idle": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 286062
+},
+"f_gestic_laugh_low": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 181,
+"dur": 12.066666666666666,
+"off": 386142
+},
+"f_gestic_listen_neutral_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 322,
+"dur": 21.466666666666665,
+"off": 436460
+},
+"f_gestic_listen_neutral_02": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 352,
+"dur": 23.466666666666665,
+"off": 525976
+},
+"f_gestic_listen_relaxed_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 623832
+},
+"f_gestic_talk_neutral_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 723912
+},
+"f_gestic_talk_neutral_02": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 823992
+},
+"f_gestic_talk_relaxed_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 924072
+},
+"f_headphones_idle": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 1024152
+},
+"f_hold_bag_idle_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 1124232
+},
+"f_idle_breathe_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 41,
+"dur": 2.7333333333333334,
+"off": 1224312
+},
+"f_idle_look_around_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 68,
+"dur": 4.533333333333333,
+"off": 1235710
+},
+"f_idle_look_around_02": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 56,
+"dur": 3.7333333333333334,
+"off": 1254614
+},
+"f_idle_neutral_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 234,
+"dur": 15.6,
+"off": 1270182
+},
+"f_idle_neutral_02": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 169,
+"dur": 11.266666666666667,
+"off": 1335234
+},
+"f_idle_neutral_03": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 251,
+"dur": 16.733333333333334,
+"off": 1382216
+},
+"f_idle_neutral_04": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 1451994
+},
+"f_idle_scratch_head_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 61,
+"dur": 4.066666666666666,
+"off": 1552074
+},
+"f_idle_touch_hair_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 73,
+"dur": 4.866666666666666,
+"off": 1569032
+},
+"f_idle_waiting_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 1589326
+},
+"f_idle_waiting_02": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 1689406
+},
+"f_run_fast_01": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 5.378641677307951,
+"loopErr": 0.0,
+"phase0": 0.14285714285714285,
+"frames": 21,
+"dur": 0.7,
+"off": 1789486
+},
+"f_run_neutral": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 3.1571868654227995,
+"loopErr": -0.0,
+"phase0": 0.24,
+"frames": 25,
+"dur": 0.8333333333333334,
+"off": 1795324
+},
+"f_run_neutral_01": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 2.76526727263701,
+"loopErr": -0.0,
+"phase0": 0.21739130434782608,
+"frames": 23,
+"dur": 0.7666666666666667,
+"off": 1802274
+},
+"f_run_slow_01": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 2.2694197493721457,
+"loopErr": 0.0,
+"phase0": 0.24,
+"frames": 25,
+"dur": 0.8333333333333334,
+"off": 1808668
+},
+"f_sit_chair_idle_look_around": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 108,
+"dur": 7.2,
+"off": 1815618
+},
+"f_sit_chair_idle_neutral_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 1845642
+},
+"f_sit_chair_idle_relaxed_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 1945722
+},
+"f_take_picture": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 127,
+"dur": 8.466666666666667,
+"off": 2045802
+},
+"f_umbrella_idle_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 2081108
+},
+"f_umbrella_idle_02": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 2181188
+},
+"f_walk_cool_01": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 0.8797018646232831,
+"loopErr": -0.0,
+"phase0": 0.2,
+"frames": 40,
+"dur": 1.3333333333333333,
+"off": 2281268
+},
+"f_walk_fast_01": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 1.5304927014912189,
+"loopErr": -0.0,
+"phase0": 0.16129032258064516,
+"frames": 31,
+"dur": 1.0333333333333334,
+"off": 2292388
+},
+"f_walk_fast_02": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 1.9177328077429527,
+"loopErr": 0.0,
+"phase0": 0.2857142857142857,
+"frames": 28,
+"dur": 0.9333333333333333,
+"off": 2301006
+},
+"f_walk_neutral": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 1.2945612023363733,
+"loopErr": -0.0,
+"phase0": 0.24324324324324326,
+"frames": 37,
+"dur": 1.2333333333333334,
+"off": 2308790
+},
+"f_walk_neutral_01": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 1.2137673240496483,
+"loopErr": 0.0002,
+"phase0": 0.19444444444444445,
+"frames": 36,
+"dur": 1.2,
+"off": 2319076
+},
+"f_walk_neutral_02": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 1.3219912177125794,
+"loopErr": -0.0,
+"phase0": 0.1891891891891892,
+"frames": 37,
+"dur": 1.2333333333333334,
+"off": 2329084
+},
+"f_walk_neutral_03": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 0.9346884414720297,
+"loopErr": -0.0,
+"phase0": 0.21951219512195122,
+"frames": 41,
+"dur": 1.3666666666666667,
+"off": 2339370
+},
+"f_walk_self-assured": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 1.1537149679854328,
+"loopErr": -0.0,
+"phase0": 0.19444444444444445,
+"frames": 36,
+"dur": 1.2,
+"off": 2350768
+},
+"f_walk_slow_01": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 0.8872590885718585,
+"loopErr": -0.0,
+"phase0": 0.2,
+"frames": 45,
+"dur": 1.5,
+"off": 2360776
+},
+"f_walk_slow_02": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 0.9376866542308316,
+"loopErr": -0.0,
+"phase0": 0.21951219512195122,
+"frames": 41,
+"dur": 1.3666666666666667,
+"off": 2373286
+},
+"f_walk_stroll_01": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 0.9261933505585387,
+"loopErr": -0.0,
+"phase0": 0.21428571428571427,
+"frames": 42,
+"dur": 1.4,
+"off": 2384684
+},
+"f_walk_stroll_02": {
+"g": "f",
+"fps": 30.0,
+"loop": true,
+"speed": 0.5079705639557532,
+"loopErr": -0.0,
+"phase0": 0.18461538461538463,
+"frames": 65,
+"dur": 2.1666666666666665,
+"off": 2396360
+},
+"f_wave_01": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 84,
+"dur": 5.6,
+"off": 2414430
+},
+"f_wave_02": {
+"g": "f",
+"fps": 15.0,
+"loop": true,
+"frames": 127,
+"dur": 8.466666666666667,
+"off": 2437782
+},
+"m_cell_phone_listen_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 2473088
+},
+"m_cell_phone_talk_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 2573168
+},
+"m_cell_phone_talk_02": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 2673248
+},
+"m_cell_phone_textmessage": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 2773328
+},
+"m_drink_idle": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 2873408
+},
+"m_gestic_laugh_low": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 169,
+"dur": 11.266666666666667,
+"off": 2973488
+},
+"m_gestic_listen_neutral_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 3020470
+},
+"m_gestic_listen_neutral_02": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 3120550
+},
+"m_gestic_listen_relaxed_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 3220630
+},
+"m_gestic_talk_neutral_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 3320710
+},
+"m_gestic_talk_neutral_02": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 3420790
+},
+"m_gestic_talk_relaxed_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 3520870
+},
+"m_headphones_idle": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 3620950
+},
+"m_hold_bag_idle": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 3721030
+},
+"m_idle_breathe_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 42,
+"dur": 2.8,
+"off": 3821110
+},
+"m_idle_look_around_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 70,
+"dur": 4.666666666666667,
+"off": 3832786
+},
+"m_idle_look_around_02": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 68,
+"dur": 4.533333333333333,
+"off": 3852246
+},
+"m_idle_neutral_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 176,
+"dur": 11.733333333333333,
+"off": 3871150
+},
+"m_idle_neutral_02": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 233,
+"dur": 15.533333333333333,
+"off": 3920078
+},
+"m_idle_neutral_03": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 3984852
+},
+"m_idle_neutral_04": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 4084932
+},
+"m_idle_scratch_head_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 75,
+"dur": 5.0,
+"off": 4185012
+},
+"m_idle_touch_hair_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 76,
+"dur": 5.066666666666666,
+"off": 4205862
+},
+"m_idle_waiting_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 4226990
+},
+"m_idle_waiting_02": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 4327070
+},
+"m_run_fast_01": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 5.839486509897926,
+"loopErr": -0.0,
+"phase0": 0.7222222222222222,
+"frames": 18,
+"dur": 0.6,
+"off": 4427150
+},
+"m_run_fast_02": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 5.910759112867663,
+"loopErr": 0.0,
+"phase0": 0.25,
+"frames": 16,
+"dur": 0.5333333333333333,
+"off": 4432154
+},
+"m_run_neutral": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 3.0747354415712698,
+"loopErr": -0.0,
+"phase0": 0.2608695652173913,
+"frames": 23,
+"dur": 0.7666666666666667,
+"off": 4436602
+},
+"m_run_neutral_01": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 2.8797243198357707,
+"loopErr": 0.0,
+"phase0": 0.7272727272727273,
+"frames": 22,
+"dur": 0.7333333333333333,
+"off": 4442996
+},
+"m_run_slow_01": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 2.4106251525608884,
+"loopErr": -0.0,
+"phase0": 0.7391304347826086,
+"frames": 23,
+"dur": 0.7666666666666667,
+"off": 4449112
+},
+"m_sit_chair_idle_look_around": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 131,
+"dur": 8.733333333333333,
+"off": 4455506
+},
+"m_sit_chair_idle_neutral_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 4491924
+},
+"m_sit_chair_idle_relaxed_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 4592004
+},
+"m_take_picture": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 128,
+"dur": 8.533333333333333,
+"off": 4692084
+},
+"m_umbrella_idle_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 4727668
+},
+"m_umbrella_idle_02": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 360,
+"dur": 24.0,
+"off": 4827748
+},
+"m_walk_cool_01": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 1.0479930700563875,
+"loopErr": 0.0,
+"phase0": 0.6578947368421053,
+"frames": 38,
+"dur": 1.2666666666666666,
+"off": 4927828
+},
+"m_walk_fast_01": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 1.495396563056463,
+"loopErr": -0.0,
+"phase0": 0.6875,
+"frames": 32,
+"dur": 1.0666666666666667,
+"off": 4938392
+},
+"m_walk_fast_02": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 2.0030409864684273,
+"loopErr": -0.0,
+"phase0": 0.2222222222222222,
+"frames": 27,
+"dur": 0.9,
+"off": 4947288
+},
+"m_walk_neutral": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 1.4023728865728597,
+"loopErr": -0.0,
+"phase0": 0.21875,
+"frames": 32,
+"dur": 1.0666666666666667,
+"off": 4954794
+},
+"m_walk_neutral_01": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 1.0117003424044682,
+"loopErr": 0.0,
+"phase0": 0.6388888888888888,
+"frames": 36,
+"dur": 1.2,
+"off": 4963690
+},
+"m_walk_neutral_02": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 1.3484062823586207,
+"loopErr": -0.0,
+"phase0": 0.1875,
+"frames": 32,
+"dur": 1.0666666666666667,
+"off": 4973698
+},
+"m_walk_neutral_03": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 1.4023728865728597,
+"loopErr": -0.0,
+"phase0": 0.21875,
+"frames": 32,
+"dur": 1.0666666666666667,
+"off": 4982594
+},
+"m_walk_slow_01": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 0.8209516744116595,
+"loopErr": -0.0,
+"phase0": 0.20454545454545456,
+"frames": 44,
+"dur": 1.4666666666666666,
+"off": 4991490
+},
+"m_walk_slow_02": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 0.8818598859229538,
+"loopErr": -0.0,
+"phase0": 0.3157894736842105,
+"frames": 38,
+"dur": 1.2666666666666666,
+"off": 5003722
+},
+"m_walk_stroll_01": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 0.6932136044282192,
+"loopErr": -0.0,
+"phase0": 0.7021276595744681,
+"frames": 47,
+"dur": 1.5666666666666667,
+"off": 5014286
+},
+"m_walk_stroll_02": {
+"g": "m",
+"fps": 30.0,
+"loop": true,
+"speed": 0.5918539569239366,
+"loopErr": -0.0,
+"phase0": 0.18181818181818182,
+"frames": 55,
+"dur": 1.8333333333333333,
+"off": 5027352
+},
+"m_wave_01": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 43,
+"dur": 2.8666666666666667,
+"off": 5042642
+},
+"m_wave_02": {
+"g": "m",
+"fps": 15.0,
+"loop": true,
+"frames": 94,
+"dur": 6.266666666666667,
+"off": 5054596
+}
+}
+}
