@@ -275,7 +275,7 @@ try {
 try { frame(1 / 60); frame(1 / 60); } catch (err) { console.warn('[boot] warm frames', err); }
 // no first-use shader stalls while playing (render/shaderwarm.js; after the boot precompile, which still blocks)
 window.__shaderWarm = installShaderWarm(renderer, { scene });
-setLoad(0.995, 'Uploading textures');
+setLoad(0.995, 'Decoding textures');
 try { await texWarm.flush(); } catch (err) { console.warn('[boot] texture warm', err); }
 setLoad(1, 'Ready');
 await frame2();

@@ -128,6 +128,36 @@ Perf round 2 10/4 (cars; 032b7e1..c1d20b8; 1080p High; all switches ?no<name>, r
   the >50 ms real-time spikes are tiles + streaming (ld:bld-col / up:terrain 5-11 ms). Chinatown main render (landmarks 251 draws) is the slowest
   district. Not done: wheel instancing at LOD 0/1, paint material sharing, static-caster shadow cache, tile draw batching.
 
+Perf round 3 10/4 (a3d8f4c..; 1080p High, real time at 45 m/s; switches ?no<name> in render/perfflags.js):
+- Tools: dev/perf_rt2.js (#d= #secs= #v= : rAF interval histogram, frame CPU / gap before the frame / GPU timer / draws per frame, physics steps,
+  per-part mean + max, slow frames attributed, slowExcess = parts of >= p90 CPU frames minus median ones), dev/trace_cdp.mjs (Chrome trace of
+  the drive: outside-frame tasks by kind; PROF=1 in/out of frame() V8 profile; SPIKE=1 samples per long frame; ALLOC=1 heap sampling),
+  dev/tiles_pan.js (tiles selection lag vs a full traversal per frame). Run-to-run spread is +-10 fps (laptop): compare interleaved runs only.
+- FINDING: rAF intervals bunch at 16.7 / 33 ms: a frame whose CPU (+ outside work) passes ~16.7 ms costs a whole extra interval, so p95 ~33-36
+  is "the slowest 5 % of frames are > 17 ms CPU", not single hitches. Main thread is ~100 % busy; ~10-20 % of it is OUTSIDE frame(): Google
+  tiles download / parse / fetch plumbing (gap before a frame p50 3 / p95 9 ms with tiles, 0.5 / 1 ms with ?tiles=0) and GC.
+- tilesphase (world/v2/tilesphase.js): tiles update = a generator cycle, ~1 ms slices (markUsedTiles / toggleTiles yield every 16 tiles,
+  visibility changes applied together at the end of the pass: no holes), cycle every 5 frames (gtiles.phCycle), allocation-free view error
+  (was the top allocation site, 8 MB/s); sharp turn / jump still finishes a cycle in one frame (gtiles max 9-14 ms on reversals).
+- intprobe: hero-interior probe with one kept PMREM generator + capture through shaderwarm (Hobart lobby 84-112 ms -> 8 ms). intkeep: walk-in
+  interiors stay built (bodega rebuild 56 ms on every approach). texwarm (render/texwarm.js): big (>= 1 Mpx) <img> textures converted to
+  ImageBitmap off the main thread as they load, so their first-draw upload is a copy (facade_nrm 130-196 -> 27-36 ms, 2-3K maps 26-90 -> 8-28 ms).
+  Uploading ahead of first draw was tried and dropped: +0.35-0.5 GB VRAM (library maps nothing draws); a scene scan for in-use textures
+  cost ~1 ms / frame. Memspots 2.36-2.80 GB (?notexwarm 2.37-2.80). simsmooth: physics steps / frame capped at the recent need (5-6 step frames 78 -> 5). streamslice: 2.5 ms
+  stream budget with per-provider cost EMA + bld-col colliders added in 1.2 ms slices; kit cell bounds from the worker. ctmerge: Chinatown
+  asphalt decal per 120 m cell (51 -> ~8 transparent draws).
+- Result (median of 3 interleaved runs each, r3 switches off -> on, same build). Set A (early afternoon, pre-upload texwarm): fps Mission
+  67.1 -> 67.1, FiDi 54.1 -> 59.9, Chinatown 48.5 -> 51.3, Sunset 75.2 -> 75.8, Twin Peaks 70.4 -> 71.4; CPU p95 -1.7..-3.5 ms; > 50 ms frames
+  FiDi 8-24 -> 6-7, Chinatown 7-18 -> 3-6. Set B (final code, the machine ~35 % slower all round: GPU p50 19-22 vs 12-17 ms in set A): fps
+  40.2 -> 45.9, 40.8 -> 43.7, 39.4 -> 42.7, 49.3 -> 51.5, 46.9 -> 50.3; rAF p95 -1.8..-6.5 ms; CPU p95 -1.6..-3.9 ms. rAF p95 stays 33-38 ms.
+- Open (measured): Chinatown hero blocks = ~2 ms CPU + 2.4 ms GPU at the route start (16 ct sites, 26 slots at LOD0 / 16 at LOD1, per-site
+  lightmapped materials: batching needs a lightmap atlas / array + per-vertex site params; LOD1 slots outside CT_LM_SLOTS already share
+  materials across sites -> cross-site BatchedMesh candidate); traffic physics 0.5 ms per 120 Hz step (32 awake bodies, ~15 us each: far
+  cars at half rate?); remaining > 50 ms frames = GC (major GC 15-50 ms; ~100 MB/s allocation, top: physics step / groundAt / three uniform
+  setValueV3f / stream _plan / Math.hypot), first water mirror, peds (sys9 up to 33 ms), props loads, NEAR kit apply (up to 39 ms; bounds
+  moved to the worker, rest unmeasured), bufferData of fresh geometry (4-35 ms GPU-process waits). Not done: near-car wheel instancing,
+  shared car paint, static-caster shadow cache, photo-tile draw batching (tiles = ~1.1 ms main-pass CPU at Chinatown, ~200 draws).
+
 World round 2 10/4 (01d64e8..): peds hot spots / tourist spots by real lat/lon (game/peds/nav.js SPOTS_LL, TOUR_LL; v2 had none),
 plaza footways at sights = walker paths; yard ground patchwork (grass/yard_glsl.js shared by terrainmat + grass blades, lot frames from
 v2/lotframe.js in BioWindow.lotTex, terrain aYard attr, Y_SEASON fall dryness; ?noyardground); yard fence / shed colliders (v6yard.js YCOL ->
