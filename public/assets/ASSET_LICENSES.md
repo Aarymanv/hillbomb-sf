@@ -335,6 +335,7 @@ CC0 PBR materials (ambientCG, Poly Haven) and Poly Haven furniture / decor model
   from NSF EIA-0196217), retargeted to the Rocketbox skeleton: 140_01 / 140_09 (get up from face down / from the back), 140_08, 90_16 (dive / fall
   on the face), 90_18 (rug-pull fall on the back), 105_39 (jump forward: take-off, air, landing).
 * `peds/props.glb` (phone, umbrellas, coffee cup, shopping bag, briefcase): original models built by `tools/blender/peds/build_props.py`, no third-party content.
+* `peds/crowd_{alb,nrm}.png|dds` + `crowd.json` (far-crowd impostor atlases): rendered from 16 of the Rocketbox avatars above (MIT) by `dev/crowd_bake.js` / `tools/crowd_bake.mjs`.
 
 ## Chinatown hero set (`landmarks/ct/`, `landmarks/ct_*`): fonts rendered into the sign atlas (SIL Open Font License 1.1)
 

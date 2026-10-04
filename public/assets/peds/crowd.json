@@ -1,0 +1,95 @@
+{
+ "cell": [
+  32,
+  64
+ ],
+ "box": [
+  1,
+  2
+ ],
+ "angles": 8,
+ "phases": 8,
+ "rows": 16,
+ "avatars": [
+  {
+   "id": "business_female_01",
+   "g": "f",
+   "rate": 0.8684
+  },
+  {
+   "id": "business_male_01",
+   "g": "m",
+   "rate": 0.9691
+  },
+  {
+   "id": "business_female_03",
+   "g": "f",
+   "rate": 0.9063
+  },
+  {
+   "id": "business_male_04",
+   "g": "m",
+   "rate": 0.9211
+  },
+  {
+   "id": "female_adult_02",
+   "g": "f",
+   "rate": 0.9211
+  },
+  {
+   "id": "business_male_07",
+   "g": "m",
+   "rate": 0.9317
+  },
+  {
+   "id": "female_adult_04",
+   "g": "f",
+   "rate": 0.9063
+  },
+  {
+   "id": "male_adult_03",
+   "g": "m",
+   "rate": 0.9375
+  },
+  {
+   "id": "female_adult_08",
+   "g": "f",
+   "rate": 0.9211
+  },
+  {
+   "id": "male_adult_06",
+   "g": "m",
+   "rate": 0.9375
+  },
+  {
+   "id": "female_adult_11",
+   "g": "f",
+   "rate": 0.9238
+  },
+  {
+   "id": "male_adult_09",
+   "g": "m",
+   "rate": 0.9375
+  },
+  {
+   "id": "female_adult_14",
+   "g": "f",
+   "rate": 0.915
+  },
+  {
+   "id": "male_adult_12",
+   "g": "m",
+   "rate": 0.9691
+  },
+  {
+   "id": "female_adult_17",
+   "g": "f",
+   "rate": 0.8979
+  },
+  {
+   "id": "male_adult_16",
+   "g": "m",
+   "rate": 0.9375
+  }
+ ]
+}

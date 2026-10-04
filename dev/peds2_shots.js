@@ -70,19 +70,47 @@
     W.__player.human.setVisible(true);
     return out;
   };
-  // Market St from 8 m up at 5th St, looking NE down Market toward the Ferry Building (people 150-1000 m away)
-  W.__p2Crowd = async (suf, h = 13.5) => {
-    const A = isect('Market Street', '5th Street'), B = isect('Market Street', 'Drumm Street');
-    const x = A.x, z = A.z;
-    await prep(h, 'clear', { x: x + 4, z: z - 4 }, 400);
-    const y = W.__world.groundAt(x, z, 999) + 8;
-    const tx = B.x, tz = B.z;
-    W.__look(x, y, z, tx, W.__world.groundAt(tx, tz, 999) + 1, tz);
+  // best telephoto street view near (x0, z0): road-centre cameras 4 m up looking along each street, scored by the far-crowd
+  // impostors (150-450 m) inside the 28-deg view with a clear line of sight
+  W.__p2CrowdFind = (x0, z0, R = 260) => {
+    const g = G().peds.crowd.mesh.geometry, a = g.attributes.aP.array, n = g.instanceCount;
+    const edges = G().world.graph.edges.filter(e => e.pts.some(p => Math.hypot(p[0] - x0, p[1] - z0) < R));
+    let best = null;
+    for (const e of edges) {
+      for (let k = 0; k < e.pts.length - 1; k += 2) {
+        const p = e.pts[k], q = e.pts[k + 1]; let dx = q[0] - p[0], dz = q[1] - p[1]; const L = Math.hypot(dx, dz); if (L < 20) continue; dx /= L; dz /= L;
+        for (const s of [1, -1]) {
+          const cx = (p[0] + q[0]) / 2, cz = (p[1] + q[1]) / 2, cy = W.__world.groundAt(cx, cz, 999) + 4;
+          let c = 0;
+          for (let i = 0; i < n; i += 2) {
+            const ax = a[i * 4] - cx, az = a[i * 4 + 2] - cz, d = Math.hypot(ax, az);
+            if (d < 150 || d > 450 || (ax * dx * s + az * dz * s) / d < 0.975) continue;
+            if (W.__pedClear(cx, cy, cz, a[i * 4], a[i * 4 + 1] + 1.2, a[i * 4 + 2])) c++;
+          }
+          if (!best || c > best.c) best = { c, cx, cy, cz, dx: dx * s, dz: dz * s, name: e.name };
+        }
+      }
+    }
+    return best;
+  };
+  // telephoto (28 deg) street view of the far crowd near Union Square / Market St: view = { cx, cy, cz, dx, dz } or found by
+  // __p2CrowdFind (the chosen view is kept in window.__p2CrowdView so the ?nocrowd 'before' run can reuse it)
+  W.__p2Crowd = async (suf, h = 13.5, view = W.__p2CrowdView) => {
+    const A = isect('Powell Street', 'Market Street') || isect('Market Street', '5th Street');
+    await prep(h, 'clear', { x: A.x + 4, z: A.z - 4 }, 400);
+    // default: a drone view 26 m over Powell St at Bush looking south over Union Square (crowd 150-400 m out)
+    const U0 = isect('Powell Street', 'Bush Street'), T0 = isect('Powell Street', 'Ellis Street');
+    let v = view;
+    if (!v) { const dx = T0.x - U0.x, dz = T0.z - U0.z, L = Math.hypot(dx, dz); v = { cx: U0.x, cz: U0.z, cy: W.__world.groundAt(U0.x, U0.z, 999) + 26, dx: dx / L, dz: dz / L, down: 60 }; }
+    W.__teleport(v.cx - v.dx * 3, v.cz - v.dz * 3, { foot: true }); await W.__settle?.(); W.__frames(450);
+    const tx = v.cx + v.dx * 400, tz = v.cz + v.dz * 400, ty = W.__world.groundAt(tx, tz, 999) + 1.5 - (v.down || 0);
     W.__player.human.setVisible(false);
+    G().cameraOverride = { update(cam) { cam.position.set(v.cx, v.cy, v.cz); cam.lookAt(tx, ty, tz); cam.fov = v.down ? 42 : 28; cam.updateProjectionMatrix(); } };
     W.__frames(30);
     const out = await W.__shot(`peds2_crowd_far_${suf}`, 1280, 720);
+    G().cameraOverride = null;
     W.__player.human.setVisible(true);
-    return out;
+    return out + ' ' + JSON.stringify(v);
   };
   // the player enters / leaves a car: frame strip from a fixed side camera
   const carCam = (v, back = 4.2, side = -3.6, hgt = 1.7) => {

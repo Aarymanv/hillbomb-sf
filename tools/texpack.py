@@ -21,6 +21,7 @@ JOBS = [
     ('trees/leaves_albedo.webp', 'srgb', True, True), ('trees/impostors_albedo.webp', 'srgb', True, True),
     ('cars/*_ao.jpg', 'lin', False, False),
     ('peds/*_alb.webp', 'srgb', True, False), ('peds/*_nrm.png', 'lin', True, False),   # pedestrians (tools/blender/peds): BC3 albedo+mask, BC3 DXT5nm normals
+    ('peds/crowd_alb.png', 'srgb', True, True), ('peds/crowd_nrm.png', 'lin', False, True),   # far-crowd impostors (tools/crowd_bake.mjs)
 ]
 
 

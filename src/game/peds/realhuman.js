@@ -892,6 +892,23 @@ const PHONE_ROT = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, Math
 
 export function createRealHuman(opts) { return new RealHuman(opts); }
 
+/** tooling (dev/crowd_bake.js): avatar list once loaded, and an unlit bake material for a human (uMode 0 = albedo, 1 = view normal) */
+export async function pedIndex() { await loadLib(); return IDX; }
+export function bakeMaterial(av) {
+  const m = new THREE.MeshLambertMaterial({ map: av.alb });
+  const U = { pedTint: { value: new THREE.Vector4(0, 1, 1, 0) }, uMode: { value: 0 } };
+  m.userData.U = U;
+  m.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, U);
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float uMode;\n' + PED_FRAG_PARS)
+      .replace('#include <map_fragment>', '#include <map_fragment>\n' + PED_MAP)
+      .replace('#include <opaque_fragment>', 'gl_FragColor = uMode < 0.5 ? vec4(diffuseColor.rgb, 1.0) : vec4(normalize(normal) * 0.5 + 0.5, 1.0);');
+  };
+  m.customProgramCacheKey = () => 'ped-bake-v1';
+  return m;
+}
+
 /** debug / tooling */
 export function realStats() {
   let n = 0; for (const a of AV.values()) if (a.ready) n++;

@@ -20,6 +20,7 @@ import { createNav, pathPos, OFF_MIN, OFF_MAX, NIGHTLIFE, LIFT_WALK, LIFT_ROAD }
 import { createHumanPool } from './peds/looks.js';
 import { createYeller, pickLine } from './peds/yell.js';
 import { setPedViewer, setPropNight } from './peds/realhuman.js';
+import { createFarCrowd } from './peds/crowd.js';
 
 const MAX_BY_QUALITY = { low: 22, medium: 34, high: 45 };
 const R_PED = 0.3;
@@ -34,6 +35,7 @@ const yawOf = (dx, dz) => Math.atan2(-dx, -dz);                // yaw facing dir
 // bone indices of src/player/human.js
 const BN = { hips: 0, spine: 1, chest: 2, neck: 3, head: 4, uaL: 5, laL: 6, hL: 7, uaR: 8, laR: 9, hR: 10 };
 
+let P_crowd = null;
 export function install(G) {
   const world = G.world, scene = G.scene, camera = G.camera;
   const colliders = world.colliders;
@@ -46,6 +48,10 @@ export function install(G) {
   const POOL_CAP = MAXP + 16;
   const pool = createHumanPool(group, { cap: POOL_CAP });
   const yell = createYeller(scene, 5);
+  // far crowds: impostor people on busy sidewalks 140-420 m out (?nocrowd = off)
+  const crowd = typeof location !== 'undefined' && /[?&]nocrowd/.test(location.search) ? null
+    : createFarCrowd(G, nav, group, { max: qName === 'low' ? 600 : qName === 'medium' ? 1400 : 2600 });
+  P_crowd = crowd;
   const list = [];
   const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = { x: 0, z: 0 }, _p = {}, _pp = {}, _pc = new THREE.Vector3();
   const _cand = [], _sph = new THREE.Sphere(), _frustum = new THREE.Frustum(), _pm = new THREE.Matrix4();
@@ -61,7 +67,7 @@ export function install(G) {
   const P = {
     list, density: 1, enabled: true, max: MAXP,     // max: crowd size cap (quality preset; the pool grows to max + 16)
     stats: { ms: 0, active: 0, visible: 0, updated: 0, pool: 0, target: 0, warmMs: Math.round(warmMs) },
-    spawnFleeing, update, panic, near, pedAhead, nav,
+    spawnFleeing, update, panic, near, pedAhead, nav, get crowd() { return P_crowd; },
     // dev: knock ped p over as if hit by a car at speed v moving along (dx, dz)
     debugKnock(p, v = 12, dx = 1, dz = 0) { const l = Math.hypot(dx, dz) || 1; knock(p, { sp: v, vx: dx / l * v, vz: dz / l * v, x: p.x - dx / l, z: p.z - dz / l, v: {}, player: false }, v, dx / l, dz / l); },
   };
@@ -1452,6 +1458,7 @@ export function install(G) {
     vehicleContacts(dt);
     playerShove();
     if (prof) { prof.veh += performance.now() - tp; }
+    if (crowd) { const tc = performance.now(); crowd.update(dt, camera, cx, cz); P.stats.crowd = crowd.count; P.stats.crowdMs = performance.now() - tc; }
     setPedViewer(camera.position); setPropNight(G.env?.night?.value ?? 0);
     let tStep = 0, tAnim = 0;
     let updated = 0, visible = 0;
