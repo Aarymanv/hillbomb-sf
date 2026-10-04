@@ -1,5 +1,6 @@
 // HILLBOMB: San Francisco. Boot, loading screen, title, main loop.
 import * as THREE from 'three';
+import { texWarm } from './render/texwarm.js';
 import { createEnvironment } from './render/environment.js';
 import { createPost } from './render/post.js';
 import { createStreetMirror } from './render/streetmirror.js';
@@ -39,6 +40,7 @@ if (params.has('memtrack')) { await import(/* @vite-ignore */ (location.port ===
 // presets low / medium / high / ultra (game/quality.js): ?q= > saved > GPU auto-detect on the first run
 const quality = resolveQuality(params);
 const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
+texWarm.install(renderer);      // (perf r3) textures uploaded in the background as they load, not on their first draw
 renderer.setPixelRatio(quality.pixelRatio);
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = quality.shadows > 0;
@@ -157,6 +159,7 @@ addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; cam
 const clock = new THREE.Clock();
 let titleT = 0, titlePadDir = 0;
 function frame(dt) {
+  texWarm.update();
   input.update();
   if (window.__autopilot) window.__autopilot(input, dt);
   if (G.state === 'title') {
@@ -272,6 +275,8 @@ try {
 try { frame(1 / 60); frame(1 / 60); } catch (err) { console.warn('[boot] warm frames', err); }
 // no first-use shader stalls while playing (render/shaderwarm.js; after the boot precompile, which still blocks)
 window.__shaderWarm = installShaderWarm(renderer, { scene });
+setLoad(0.995, 'Uploading textures');
+try { await texWarm.flush(); } catch (err) { console.warn('[boot] texture warm', err); }
 setLoad(1, 'Ready');
 await frame2();
 boot.classList.add('out');
