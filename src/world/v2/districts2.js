@@ -1,0 +1,22 @@
+// San Francisco neighbourhoods (real centres, radius in m) for the HUD location label on the 1:1 map.
+export const DISTRICTS2 = [
+  ['Financial District', 37.7946, -122.3999, 650], ['Union Square', 37.7880, -122.4075, 300], ['Chinatown', 37.7941, -122.4078, 380],
+  ['North Beach', 37.8008, -122.4103, 500], ['Telegraph Hill', 37.8025, -122.4058, 300], ["Fisherman's Wharf", 37.8080, -122.4177, 600],
+  ['Russian Hill', 37.8011, -122.4194, 600], ['Nob Hill', 37.7930, -122.4161, 450], ['Tenderloin', 37.7847, -122.4141, 450],
+  ['Civic Center', 37.7793, -122.4176, 450], ['SoMa', 37.7785, -122.4056, 1100], ['Rincon Hill', 37.7865, -122.3925, 400],
+  ['South Beach', 37.7810, -122.3895, 450], ['Mission Bay', 37.7706, -122.3920, 800], ['Dogpatch', 37.7609, -122.3874, 600],
+  ['Potrero Hill', 37.7599, -122.4015, 900], ['Mission', 37.7599, -122.4148, 1200], ['Castro', 37.7609, -122.4350, 650],
+  ['Noe Valley', 37.7502, -122.4337, 900], ['Hayes Valley', 37.7759, -122.4245, 500], ['Lower Haight', 37.7717, -122.4318, 450],
+  ['Haight-Ashbury', 37.7692, -122.4481, 700], ['Cole Valley', 37.7651, -122.4497, 450], ['Western Addition', 37.7810, -122.4330, 800],
+  ['Japantown', 37.7854, -122.4295, 350], ['Pacific Heights', 37.7925, -122.4382, 900], ['Cow Hollow', 37.7980, -122.4370, 500],
+  ['Marina', 37.8021, -122.4368, 750], ['Presidio', 37.7989, -122.4662, 1800], ['Presidio Heights', 37.7886, -122.4515, 600],
+  ['Laurel Heights', 37.7843, -122.4498, 500], ['Inner Richmond', 37.7802, -122.4642, 1000], ['Outer Richmond', 37.7778, -122.4930, 1300],
+  ['Sea Cliff', 37.7870, -122.4900, 500], ["Land's End", 37.7849, -122.5063, 700], ['Golden Gate Park', 37.7694, -122.4862, 1500],
+  ['Inner Sunset', 37.7602, -122.4677, 900], ['Outer Sunset', 37.7555, -122.4950, 1600], ['Parkside', 37.7406, -122.4927, 1100],
+  ['Twin Peaks', 37.7544, -122.4477, 700], ['Forest Hill', 37.7480, -122.4630, 700], ['Diamond Heights', 37.7417, -122.4430, 600],
+  ['Glen Park', 37.7340, -122.4336, 700], ['Bernal Heights', 37.7417, -122.4150, 900], ['Excelsior', 37.7246, -122.4250, 1100],
+  ['Visitacion Valley', 37.7153, -122.4040, 900], ['Bayview', 37.7310, -122.3880, 1500], ['Hunters Point', 37.7272, -122.3700, 1100],
+  ['Ingleside', 37.7230, -122.4520, 900], ['Lake Merced', 37.7250, -122.4930, 1200], ['Ocean Beach', 37.7594, -122.5107, 2200],
+  ['Treasure Island', 37.8235, -122.3706, 900], ['Yerba Buena Island', 37.8105, -122.3637, 500], ['Alcatraz', 37.8267, -122.4230, 300],
+  ['Marin Headlands', 37.8290, -122.4990, 2600], ['Golden Gate Bridge', 37.8199, -122.4783, 700], ['Bay Bridge', 37.7980, -122.3777, 900],
+].map(([name, lat, lon, r]) => ({ name, lat, lon, r }));
