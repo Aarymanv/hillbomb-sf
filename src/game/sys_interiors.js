@@ -121,7 +121,9 @@ export function install(G) {
       for (const s of sites) {
         const d = Math.hypot(pos.x - s.S.x, pos.z - s.S.z) - s.r;
         if (!s.built && d < BUILD_R && buildCooldown <= 0) { build(s); buildCooldown = 0.15; }
-        else if (s.built && d > DROP_R) dropInterior(s);
+        // (perf r3) ?nointkeep: interiors are dropped past DROP_R and rebuilt (40-60 ms: emit + vertex bake) on the next
+        // approach, a hitch while driving past. All of them are built at boot anyway; they now stay (hidden past HIDE_R).
+        else if (s.built && d > DROP_R && !PERF.intkeep) dropInterior(s);
         if (s.int) s.int.visible = d < HIDE_R;
         // (perf 10/4) exterior shells past the near city: the photogrammetry draws the real block there and the ~90 shell
         // draws (glass, signs, trim; every site in front of the camera) were drawn on top of it at any distance
