@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HILLBOMB Spotify bench</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  body { margin: 0; min-height: 100vh; background: radial-gradient(120% 90% at 80% 0%, #2a1838, #0b0c12 60%); color: #f6f3ee; font: 14px/1.45 Inter, system-ui, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 20px 380px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+  h1 { grid-column: 1 / -1; margin: 0; font: italic 800 40px/1 'Barlow Condensed', sans-serif; text-transform: uppercase; }
+  h1 i { color: #ff2e7e; }
+  section { background: rgba(9, 10, 16, .78); border-radius: 6px; padding: 14px 16px; box-shadow: inset 0 0 0 1px rgba(246, 243, 238, .12); }
+  section h2 { margin: 0 0 10px; font: 700 13px/1 'Barlow Condensed', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: rgba(246, 243, 238, .62); }
+  .wide { grid-column: 1 / -1; }
+  button { font: 600 13px/1 Inter, sans-serif; color: #f6f3ee; background: rgba(255, 255, 255, .08); border: 0; border-radius: 4px; padding: 8px 11px; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(246, 243, 238, .16); margin: 0 6px 6px 0; }
+  button:hover { box-shadow: inset 0 0 0 2px #f6f3ee; }
+  button.primary { background: #ff2e7e; box-shadow: none; }
+  label { display: flex; gap: 8px; align-items: center; margin: 6px 0; color: rgba(246, 243, 238, .75); }
+  input[type=range] { flex: 1; accent-color: #ff2e7e; }
+  pre { margin: 0; white-space: pre-wrap; word-break: break-all; font: 12px/1.4 ui-monospace, Consolas, monospace; color: #cfd6df; max-height: 340px; overflow: auto; }
+  .pass { color: #39e07a; font-weight: 700; } .fail { color: #ff4d5e; font-weight: 700; }
+  kbd { display: inline-block; min-width: 18px; padding: 2px 6px; border-radius: 4px; background: rgba(255, 255, 255, .14); font: 700 12px/1.2 Inter, sans-serif; text-align: center; }
+  #fakehud { position: fixed; left: 30px; bottom: 26px; width: 236px; height: 236px; border-radius: 50%; background: #0d1e26; box-shadow: inset 0 0 0 3px rgba(255,255,255,.08); display: none; }
+  #fakehud .slot { position: absolute; left: 250px; bottom: 4px; max-width: 340px; }
+  #fakehud .slot:empty { display: none; }
+  #fakehud::after { content: 'fake minimap'; position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255,255,255,.3); font: 700 12px Inter; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Spotify radio bench<i>.</i></h1>
+  <section>
+    <h2>Radio (mock of the G.audio.radio contract)</h2>
+    <button id="on" class="primary">Radio on / off</button>
+    <button id="toSpotify">Tune to Spotify</button><br>
+    <button id="prevSt">Station &lt; (Shift+Y)</button><button id="nextSt">Station &gt; (Shift+T)</button><br>
+    <button id="prevTr">Track &lt; (Y)</button><button id="nextTr">Track &gt; (T)</button>
+    <label><input type="checkbox" id="menus"> Game menus open (setPaused)</label>
+    <label>Volume <input type="range" id="vol" min="0" max="1" step="0.05" value="0.6"><span id="volv">0.60</span></label>
+    <label><input type="checkbox" id="foot"> Player on foot (no car)</label>
+    <p style="margin:6px 0 0;color:rgba(246,243,238,.6)">Keys: <kbd>T</kbd> <kbd>Y</kbd> track, <kbd>Shift</kbd>+<kbd>T</kbd>/<kbd>Y</kbd> station, <kbd>O</kbd> Spotify panel (when on the Spotify station).</p>
+  </section>
+  <section>
+    <h2>Spotify</h2>
+    <button id="panel" class="primary">Open Spotify panel</button>
+    <button id="authurl">Build authorize URL (dry run)</button>
+    <label><input type="checkbox" id="dry" checked> Dry run: the panel's Connect shows the URL instead of leaving the page</label>
+    <button id="slot">Add a HUD radio slot (G.ui.slots.radio)</button>
+    <p style="margin:6px 0 0;color:rgba(246,243,238,.6)">Browser PKCE self-check: <span id="pkce">running...</span></p>
+  </section>
+  <section class="wide">
+    <h2>Authorize URL</h2>
+    <pre id="url">(press "Build authorize URL")</pre>
+  </section>
+  <section class="wide">
+    <h2>G.spotify.state</h2>
+    <pre id="state"></pre>
+  </section>
+  <section class="wide">
+    <h2>Log</h2>
+    <pre id="log"></pre>
+  </section>
+</main>
+<div id="fakehud"><div class="slot"></div></div>
+<script type="module" src="./audio.spotify.js"></script>
+</body>
+</html>
