@@ -1,0 +1,468 @@
+{
+  "stations": [
+    {
+      "id": "chill",
+      "name": "Fog City Beats 88.3",
+      "genre": "Lo-fi hip-hop",
+      "ident": "music/idents/chill.mp3",
+      "tracks": [
+        {
+          "file": "music/chill/01-city-in-the-rearview.mp3",
+          "title": "City In The Rearview",
+          "artist": "Holizna",
+          "duration": 104.8,
+          "lufs": -16.0,
+          "peak": -4.22,
+          "sources": [
+            {
+              "site": "opengameart",
+              "page": "https://opengameart.org/content/chill-beats-collection",
+              "file": "https://opengameart.org/sites/default/files/chill_beats.zip",
+              "title": "Chill Beats (Collection) / Chill Beats/01 HoliznaCC0 - City In The Rearview.mp3",
+              "author": "Holizna",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Warm, full lo-fi hip-hop mix (320 kbps source, clean master: no clipped runs, 12.7 dB crest) with a real intro and a natural fade ending; the title fits a driving game. [splice 50.4s->120.7s (section match 0.92, waveform corr 0.96)]"
+        },
+        {
+          "file": "music/chill/02-chills.mp3",
+          "title": "Chills",
+          "artist": "Holizna",
+          "duration": 94.7,
+          "lufs": -16.0,
+          "peak": -3.89,
+          "sources": [
+            {
+              "site": "opengameart",
+              "page": "https://opengameart.org/content/chills",
+              "file": "https://opengameart.org/sites/default/files/01_holiznacc0_-_chills_0.mp3",
+              "title": "Chills",
+              "author": "Holizna",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Noir chillhop with sax, wide stereo and a steady head-nod groove; adds a jazzier colour to the station and edits seamlessly (repeated 8-bar sections). [splice 79.7s->159.7s (section match 0.98, waveform corr 1.00)]"
+        },
+        {
+          "file": "music/chill/03-keepin-the-pace.mp3",
+          "title": "Keepin' the Pace",
+          "artist": "noel.wav",
+          "duration": 104.4,
+          "lufs": -16.0,
+          "peak": -3.77,
+          "sources": [
+            {
+              "site": "freesound",
+              "page": "https://freesound.org/s/680399/",
+              "file": "https://cdn.freesound.org/previews/680/680399_13511351-hq.mp3",
+              "title": "Lofi - keepin the pace.wav",
+              "author": "noel.wav",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Guitar-led lo-fi from a well-rated Freesound producer (4.8/5); a different artist and timbre so the station does not feel single-source; clean master with no overs. [splice 48.3s->145.7s (section match 0.90, waveform corr 0.85)]"
+        },
+        {
+          "file": "music/chill/04-windows-down.mp3",
+          "title": "Windows Down",
+          "artist": "Holizna",
+          "duration": 87.2,
+          "lufs": -16.0,
+          "peak": -1.58,
+          "sources": [
+            {
+              "site": "opengameart",
+              "page": "https://opengameart.org/content/lo-fi-and-chill-collection",
+              "file": "https://opengameart.org/sites/default/files/lo-fi_and_chill_lofi_collection.zip",
+              "title": "Lo-Fi and Chill (Collection) / Lo-Fi And Chill (Lofi Collection)/02 HoliznaCC0 - Windows Down.mp3.mp3",
+              "author": "Holizna",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Breezy, wide-stereo lo-fi (L/R corr 0.68, the widest on the station) with a warm sub and a moderately dynamic master (15.4 dB crest); the title suits cruising with the windows down. [splice 64.2s->142.7s (section match 0.97, waveform corr 1.00)]"
+        }
+      ]
+    },
+    {
+      "id": "synth",
+      "name": "Sutro Nightwave 100.9",
+      "genre": "Synthwave / retro electronic",
+      "ident": "music/idents/synth.mp3",
+      "tracks": [
+        {
+          "file": "music/synth/01-fires-uptown.mp3",
+          "title": "Fires Uptown",
+          "artist": "Holizna",
+          "duration": 102.2,
+          "lufs": -16.6,
+          "peak": -1.6,
+          "sources": [
+            {
+              "site": "opengameart",
+              "page": "https://opengameart.org/content/retro-wave-collection",
+              "file": "https://opengameart.org/sites/default/files/retro_wave_1.zip",
+              "title": "Retro Wave (Collection) / Retro Wave 1/05 HoliznaCC0 - Fires Uptown.mp3",
+              "author": "Holizna",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Driving retrowave with bright arps, wide stereo and a dynamic master (17.6 dB crest); clear intro, break and natural ending. [splice 87.0s->175.2s (section match 0.95, waveform corr 0.98)]"
+        },
+        {
+          "file": "music/synth/02-eyeless.mp3",
+          "title": "Eyeless",
+          "artist": "Never Sleep",
+          "duration": 97.0,
+          "lufs": -16.0,
+          "peak": -4.05,
+          "sources": [
+            {
+              "site": "opengameart",
+              "page": "https://opengameart.org/content/eyeless-retrowave",
+              "file": "https://opengameart.org/sites/default/files/eyeless.flac",
+              "title": "Eyeless (Retrowave)",
+              "author": "Never Sleep",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Calm, moody night-drive synthwave from a lossless FLAC source; the darkest track on the station, which balances the two brighter Holizna cuts. [radio edit: first 97.0s, 6s fade ending on a section boundary]"
+        },
+        {
+          "file": "music/synth/03-all-the-fight-left.mp3",
+          "title": "All The Fight Left",
+          "artist": "Holizna",
+          "duration": 94.0,
+          "lufs": -17.0,
+          "peak": -1.77,
+          "sources": [
+            {
+              "site": "opengameart",
+              "page": "https://opengameart.org/content/all-the-fight-left",
+              "file": "https://opengameart.org/sites/default/files/01_holiznacc0_-_all_the_fight_left.mp3",
+              "title": "All The Fight Left!",
+              "author": "Holizna",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Emotional, nostalgic synthwave with a clean, unclipped master (0 clipped runs, 17.6 dB crest) and a proper ending; the splice is near-perfect (loop sections repeat exactly). [splice 34.6s->110.6s (section match 0.99, waveform corr 1.00)]"
+        },
+        {
+          "file": "music/synth/04-machines-with-feelings.mp3",
+          "title": "Machines With Feelings",
+          "artist": "Holizna",
+          "duration": 99.2,
+          "lufs": -17.6,
+          "peak": -1.55,
+          "sources": [
+            {
+              "site": "opengameart",
+              "page": "https://opengameart.org/content/retro-wave-collection",
+              "file": "https://opengameart.org/sites/default/files/retro_wave_2.zip",
+              "title": "Retro Wave (Collection) / Retro Wave 2/09 HoliznaCC0 - Machines With Feelings.mp3",
+              "author": "Holizna",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Big, sub-heavy retrowave with a real arrangement (sparse intro, full sections, breakdown, outro; 10.8 LU range) and an essentially clean master (1 clipped run). [splice 49.7s->145.7s (section match 0.95, waveform corr 0.90)]"
+        }
+      ]
+    },
+    {
+      "id": "funk",
+      "name": "Cable Car Funk 103.3",
+      "genre": "Funk / jazz-fusion",
+      "ident": "music/idents/funk.mp3",
+      "tracks": [
+        {
+          "file": "music/funk/01-wednesday-night.mp3",
+          "title": "Wednesday Night",
+          "artist": "Zane Little",
+          "duration": 98.7,
+          "lufs": -16.0,
+          "peak": -2.62,
+          "sources": [
+            {
+              "site": "opengameart",
+              "page": "https://opengameart.org/content/wednesday-night-funk-fusion",
+              "file": "https://opengameart.org/sites/default/files/wednesday_night.wav",
+              "title": "Wednesday Night [Funk Fusion]",
+              "author": "Zane Little Music",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Composition-first funk fusion (chords, bass and melody) from a lossless WAV with a clean -0.6 dBFS master and wide stereo; upbeat but relaxed cruising energy. [splice 34.2s->109.6s (section match 0.90, waveform corr 0.60)]"
+        },
+        {
+          "file": "music/funk/02-midnight-cruiser.mp3",
+          "title": "Midnight Cruiser",
+          "artist": "Zane Little",
+          "duration": 89.4,
+          "lufs": -16.0,
+          "peak": -4.37,
+          "sources": [
+            {
+              "site": "opengameart",
+              "page": "https://opengameart.org/content/midnight-cruiser",
+              "file": "https://opengameart.org/sites/default/files/midnight_cruiser.wav",
+              "title": "Midnight Cruiser",
+              "author": "Zane Little Music",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Jazz-funk racing tune with busy funk bass (commenters single out the bass lines; used in a Steam game trailer); lossless source, clean -1.6 dBFS master. [radio edit: first 89.4s, 6s fade ending on a section boundary]"
+        },
+        {
+          "file": "music/funk/03-raspberry-jam.mp3",
+          "title": "Raspberry Jam",
+          "artist": "congusbongus",
+          "duration": 97.0,
+          "lufs": -16.4,
+          "peak": -1.92,
+          "sources": [
+            {
+              "site": "opengameart",
+              "page": "https://opengameart.org/content/raspberry-jam",
+              "file": "https://opengameart.org/sites/default/files/raspberry_jam.ogg",
+              "title": "Raspberry Jam",
+              "author": "congusbongus",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "New-jack-swing funk with a bright, punchy mix; one of the best-liked CC0 funk tracks on OpenGameArt (24 favourites, very positive comments). [radio edit: first 97.0s, 6s fade ending on a section boundary]"
+        }
+      ]
+    },
+    {
+      "id": "ambient",
+      "name": "Ocean Beach Drift 87.9",
+      "genre": "Ambient / downtempo",
+      "ident": "music/idents/ambient.mp3",
+      "tracks": [
+        {
+          "file": "music/ambient/01-daylight.mp3",
+          "title": "Daylight",
+          "artist": "Andrew kn",
+          "duration": 122.6,
+          "lufs": -16.2,
+          "peak": -1.52,
+          "sources": [
+            {
+              "site": "freesound",
+              "page": "https://freesound.org/s/496204/",
+              "file": "https://cdn.freesound.org/previews/496/496204_7038073-hq.mp3",
+              "title": "Daylight",
+              "author": "Andrewkn",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Gently pulsing pads with a natural build and fade; complete track, no edit needed (4.7/5, 1.6k downloads)."
+        },
+        {
+          "file": "music/ambient/02-drops.mp3",
+          "title": "Drops",
+          "artist": "Andrew kn",
+          "duration": 92.7,
+          "lufs": -16.3,
+          "peak": -1.57,
+          "sources": [
+            {
+              "site": "freesound",
+              "page": "https://freesound.org/s/404460/",
+              "file": "https://cdn.freesound.org/previews/404/404460_7038073-hq.mp3",
+              "title": "Drops",
+              "author": "Andrewkn",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Warm downtempo at 70 BPM with piano and a soft beat; one of the most downloaded CC0 ambient tracks on Freesound (4.8/5, 2.2k downloads). [radio edit: first 92.7s, 8s fade ending on a section boundary]"
+        },
+        {
+          "file": "music/ambient/03-cosmic-glow.mp3",
+          "title": "Cosmic Glow",
+          "artist": "Andrew kn",
+          "duration": 96.4,
+          "lufs": -16.2,
+          "peak": -1.55,
+          "sources": [
+            {
+              "site": "freesound",
+              "page": "https://freesound.org/s/391438/",
+              "file": "https://cdn.freesound.org/previews/391/391438_7038073-hq.mp3",
+              "title": "Cosmic Glow",
+              "author": "Andrewkn",
+              "license": "CC0 1.0"
+            }
+          ],
+          "why": "Spacious piano-and-pad downtempo (4.7/5, 4.3k downloads); unclipped with a wide, stable stereo image. [radio edit: first 96.4s, 8s fade ending on a section boundary]"
+        }
+      ]
+    }
+  ],
+  "idents": [
+    {
+      "file": "music/idents/chill.mp3",
+      "sources": [
+        {
+          "site": "freesound",
+          "page": "https://freesound.org/s/169087/",
+          "file": "https://cdn.freesound.org/previews/169/169087_2514850-hq.mp3",
+          "title": "Piano Transition [ 1 ]",
+          "author": "NenadSimic",
+          "license": "CC0 1.0"
+        }
+      ]
+    },
+    {
+      "file": "music/idents/synth.mp3",
+      "sources": [
+        {
+          "site": "freesound",
+          "page": "https://freesound.org/s/122077/",
+          "file": "https://cdn.freesound.org/previews/122/122077_2220589-hq.mp3",
+          "title": "Generic 1.wav",
+          "author": "Lisnmusic",
+          "license": "CC0 1.0"
+        }
+      ]
+    },
+    {
+      "file": "music/idents/funk.mp3",
+      "sources": [
+        {
+          "site": "freesound",
+          "page": "https://freesound.org/s/122080/",
+          "file": "https://cdn.freesound.org/previews/122/122080_2220589-hq.mp3",
+          "title": "Generic 4.wav",
+          "author": "Lisnmusic",
+          "license": "CC0 1.0"
+        }
+      ]
+    },
+    {
+      "file": "music/idents/ambient.mp3",
+      "sources": [
+        {
+          "site": "freesound",
+          "page": "https://freesound.org/s/827121/",
+          "file": "https://cdn.freesound.org/previews/827/827121_13504080-hq.mp3",
+          "title": "Minimalist news transition",
+          "author": "xkeril",
+          "license": "CC0 1.0"
+        }
+      ]
+    }
+  ],
+  "rejected": [
+    {
+      "title": "Foggy Headed (Holizna, Lo-Fi and Chill 3)",
+      "page": "https://opengameart.org/content/lo-fi-and-chill-collection",
+      "reason": "Perfect SF title but a crushed master: -8.2 LUFS, 1.1 LU loudness range, 10.8 dB crest and 2,000+ runs of full-scale samples."
+    },
+    {
+      "title": "Snow Drift (Holizna, Lo-Fi and Chill)",
+      "page": "https://opengameart.org/content/lo-fi-and-chill-collection",
+      "reason": "Clipped, over-limited master: -8.4 LUFS, 2,283 full-scale runs."
+    },
+    {
+      "title": "Make Funk (Holizna, Funk collection)",
+      "page": "https://opengameart.org/content/funk-collection",
+      "reason": "Clipped master (-8.7 LUFS, 1,353 full-scale runs, 9.9 dB crest). The other tracks in the collection are clean but flat (1-4 LU range)."
+    },
+    {
+      "title": "Mutant Club / Lost In The Jungle (Holizna, Retro Wave)",
+      "page": "https://opengameart.org/content/retro-wave-collection",
+      "reason": "Squashed masters (-7.9 / -9.4 LUFS, 9-10 dB crest, under 2 LU range)."
+    },
+    {
+      "title": "Funky House (Of Far Different Nature)",
+      "page": "https://opengameart.org/content/funky-house",
+      "reason": "Only 69 s long, and -6.8 LUFS with an 8 dB crest (heavily clipped)."
+    },
+    {
+      "title": "Pacific Ocean (josepharaoh99)",
+      "page": "https://opengameart.org/content/pacific-ocean",
+      "reason": "LICENSING: the uploader says he did not make the music (credits Dan Alan), so the CC0 is not the author's. Excluded."
+    },
+    {
+      "title": "Cyberpunk Moonlight Sonata",
+      "page": "https://opengameart.org/content/cyberpunk-moonlight-sonata",
+      "reason": "An arrangement of a very famous melody. The brief excludes obvious copies of famous songs."
+    },
+    {
+      "title": "Calm Relax 1 (Synthwave 421k) / Calm Ambient 2 (Synthwave 15k) / Another August (cynicmusic)",
+      "page": "https://opengameart.org/content/calm-relax-1-synthwave-421k",
+      "reason": "The L/R correlation is about -0.1 (an anti-phase, super-wide image), so it collapses in mono. Synthwave 15k also has a 14.6 s silent tail."
+    },
+    {
+      "title": "Hypnotic Chill (Extended 4 minute mix) (cynicmusic)",
+      "page": "https://opengameart.org/content/hypnotic-chill-extended-4-minute-mix",
+      "reason": "The MP3 source decodes to +1.8 dBFS (overs). It is busy DnB that fits neither the ambient nor the synth station."
+    },
+    {
+      "title": "Chill lofi inspired / lofi hip hop / Lofi again / Funky Hip Hop Lofi Jam (omfgdude)",
+      "page": "https://opengameart.org/content/chill-lofi-inspired",
+      "reason": "One-take arranger-keyboard recordings (Yamaha CVP/Motif/Triton styles), so they sound like auto-accompaniment. Very quiet (-19 to -23 LUFS); two are pure mono and one is under 90 s."
+    },
+    {
+      "title": "Since 2 A.M. / Iced Village / The Past (TAD)",
+      "page": "https://opengameart.org/content/since-2-am",
+      "reason": "8-bit lo-fi with chiptune square-wave leads."
+    },
+    {
+      "title": "Bossa Nova (Joth)",
+      "page": "https://opengameart.org/content/bossa-nova",
+      "reason": "8-bit / chiptune instrumentation."
+    },
+    {
+      "title": "Kenney Music Jingles (all 85)",
+      "page": "https://kenney.nl/assets/music-jingles",
+      "reason": "All are mono game-UI jingles of 0.3-1.8 s. The only ones over 1.5 s (SAX07/NES00) play the descending 'fail' motif F-E-D#-D, and the rising motifs are all under 1 s, too short for a 1-4 s ident. Radio stingers from Freesound were used instead."
+    },
+    {
+      "title": "Cool Highway / Hot Roadway / Neon sign Circuit / Sunny City (MintoDog)",
+      "page": "https://opengameart.org/content/cool-highway",
+      "reason": "Game-BGM racing loops of 80-120 s. Cool Highway and Hot Roadway are squashed (-8 LUFS, 9-10 dB crest), Neon sign Circuit is very bright and harsh (33% of energy in 2-6 kHz), and Sunny City is only 80 s."
+    },
+    {
+      "title": "Midnight Drive (congusbongus)",
+      "page": "https://opengameart.org/content/midnight-drive",
+      "reason": "A near-mono tracker mix (side channel -25 dB below mid)."
+    },
+    {
+      "title": "80s Mysterywave music (DesertDev)",
+      "page": "https://opengameart.org/content/80s-mysterywave-music",
+      "reason": "Phasey stereo (L/R correlation 0.17) and 74% of its energy sits below 60 Hz."
+    },
+    {
+      "title": "Detour / Barriers / Freeway Fumes / Empty Stretch (Zane Little Music)",
+      "page": "https://opengameart.org/content/detour",
+      "reason": "The same 'Road Trip Adventure' set as Midnight Cruiser, but narrower (L/R corr 0.97-0.98) with sequenced PS2/MIDI-style arrangements and no clean edit point. Two Zane Little tracks per station is enough."
+    },
+    {
+      "title": "Chill Lofi piano music (ZHRO, Freesound 688675)",
+      "page": "https://freesound.org/s/688675/",
+      "reason": "The description says the piano part was written by ChatGPT. Skipped out of caution about quality and provenance."
+    },
+    {
+      "title": "Wandering / Road In The Forest / Parallel Universe (Andrew kn)",
+      "page": "https://freesound.org/s/455855/",
+      "reason": "Good, but they build slowly over 4-7 minutes and have no repeated section to cut, so a 100 s edit would lose the build. Wandering's preview is also band-limited to 12 kHz."
+    },
+    {
+      "title": "ALTERNATE - Glad To Be Stuck Inside (Holizna)",
+      "page": "https://opengameart.org/content/lo-fi-and-chill-collection",
+      "reason": "Strong lo-fi alternate (clean master, splice match 0.95); left out to stay inside the 20 MB budget (Windows Down was preferred for its driving title and wider stereo)."
+    },
+    {
+      "title": "ALTERNATE - Lost in the Snow Wave (hatmix)",
+      "page": "https://opengameart.org/content/lost-in-the-snow-wave",
+      "reason": "Nice Vital-synth synthwave (rebalanced 'lower basslead' mix exists); its 47 s pad intro makes a ~96 s edit awkward; left out for budget."
+    },
+    {
+      "title": "ALTERNATE - Rhythm Garden (congusbongus)",
+      "page": "https://opengameart.org/content/rhythm-garden",
+      "reason": "Good funky electronic alternate, but its 16.6 dB peak-to-loudness ratio means it would sit about 2 dB under the -16 LUFS target; left out for budget."
+    }
+  ]
+}
