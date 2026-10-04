@@ -135,7 +135,7 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
     },
   });
   const api = {
-    tiles, stats, maskStats, phased, nearRadius: null, get ready() { return ready; }, get nearMask() { return mask; },
+    tiles, stats, maskStats, phased, phCycle: 5, nearRadius: null, get ready() { return ready; }, get nearMask() { return mask; },
     // is (x, z) inside our near block (or are the photos not ready yet)? (buildings kit cells follow it)
     ours: (x, z) => !ready || api.nearRadius !== 0 && inMask(x, z),
     update(dt, focus) {
@@ -209,10 +209,12 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
         const urgent = turned || jumped || camera.fov !== tLast.fov || camera.aspect !== tLast.aspect || !tiles.cameras.length;
         // (perf r3) the traversal runs as three phases on consecutive frames (world/v2/tilesphase.js): one third of the
         // cost every frame instead of all of it every 3rd frame; a sharp turn / jump finishes the running cycle at once
-        // and starts the next. ?notilesphase = the library's whole update() every TSKIP frames.
+        // and starts the next. A cycle starts every phCycle (5) frames: A, B, C, two idle frames (pan test dev/tiles_pan.js,
+        // 120 deg/s vs a full traversal every frame on the real camera: differing cells below the A/A noise at 3 and 5).
+        // ?notilesphase = the library's whole update() every TSKIP frames.
         const usePh = PERF.tilesphase && phased.ready();
         if (usePh && phased.busy) { if (urgent) phased.finish(); else phased.next(); }
-        if (!(usePh && phased.busy) && (++tLast.n >= TSKIP || urgent)) {
+        if (!(usePh && phased.busy) && (++tLast.n >= (usePh ? api.phCycle : TSKIP) || urgent)) {
           tLast.n = 0; tLast.fwd.copy(_tf); tLast.pos.copy(camera.position); tLast.fov = camera.fov; tLast.aspect = camera.aspect;
           tcam.fov = camera.fov + 2 * TPAD; tcam.aspect = camera.aspect; tcam.near = camera.near; tcam.far = camera.far; tcam.zoom = camera.zoom; tcam.updateProjectionMatrix();
           tcam.matrixWorld.copy(camera.matrixWorld); tcam.matrixWorldInverse.copy(camera.matrixWorldInverse); tcam.position.setFromMatrixPosition(camera.matrixWorld);
