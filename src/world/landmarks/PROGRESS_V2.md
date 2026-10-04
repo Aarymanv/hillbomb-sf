@@ -174,3 +174,15 @@ shelving in Mayfield's and Saxton, hotel flowers + luggage carts + armchair grou
 pedestals + benches, office reception + security gates, market crates with produce; free() avoids builder colliders and props, door
 lanes stay clear. Glasshouses use the game's own trees ('tree:<species>' props on the shared leaf atlas). Alcatraz cells have bedding,
 books, cups, shoes, paper. Legion = five real-size galleries; office lobbies and the galleria at real proportions.
+
+## Interiors round 3 (10/03-04): Davies floor, Alcatraz cell lights, sparse halls (sheet shots/int_sheet_v5.jpg, v4 vs v5)
+Davies (hero_int_w6.py): the hall shell has no floor, orchestra treads stopped 0.3 m short of the side walls (the green strip = the
+ground under the side tiers): full-width treads, a carpet floor under / in front of the rows, a landing behind the top row.
+Alcatraz (hero_int_w5.py): a bare ceiling bulb (fixture + emitter) in every cell, ~80 % lit at 18-26 W (some out), skylight sky_k 3.6 -> 4.6.
+Dressing (hero_int_dress.py) new kinds: library (built oak reading tables, Poly Haven chairs, books, lamps, bookcase pairs, book walls),
+cafe (bistro tables + chairs + cakes), lobby (rug seating groups, planters, benches, reception), foyer (classic chairs + flowers),
+science (hands-on exhibit benches + stools); wall art for lobby / foyer / cafe. DRESS: library, transamerica, salesforce, exploratorium,
+ghirardelli, opera, jwMarriott (hotel 1.5 + atrium), legion (museum 1.4). New Poly Haven models (int_assets.py round 3): book sets,
+worn bookshelf, WoodenChair_01, coffee tables, clay planter, painted chair, metal stool, school desk. Rebuilt + packed + indexed:
+davies alcatraz exploratorium legion ghirardelli library transamerica salesforce opera jwMarriott.
+Testing note: after a rebake clear the browser cache (CDP Network.clearBrowserCache): a cached old lightmap .dds on a new glb renders black.

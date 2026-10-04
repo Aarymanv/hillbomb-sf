@@ -192,14 +192,22 @@ def davies_int(O):
     # orchestra seating: raked rows facing the stage
     nrow = 24; rise = 0.16; row_d = 0.95
     ur0 = SA0 - 2.5
+    # hall floor (the shell has none): in front of the stage, under the rows, behind the last row
+    g.quad_sub('x_carpet_red', g.P(HA0, y0, B0), g.P(SA0, y0, B0), g.P(SA0, y0, B1), g.P(HA0, y0, B1), C('#5a1c22'), (0, 1, 0))
+    u_last, y_last = ur0, y0
     for r in range(nrow):
         u = ur0 - r * row_d; yr = y0 + r * rise
         if u < HA0 + 3.0: break
-        # tread (carpet) for this row + riser
-        g.lbox('x_carpet_red', u - row_d / 2, u + row_d / 2, y0, yr, B0 + 0.3, B1 - 0.3, C('#5a1c22'), top=True, sides=True)
+        u_last, y_last = u, yr
+        # tread (carpet) for this row + riser, wall to wall (a 0.3 m strip at the walls showed the ground below)
+        g.lbox('x_carpet_red', u - row_d / 2, u + row_d / 2, y0, yr, B0, B1, C('#5a1c22'), top=True, sides=True)
         for (w0_, w1_) in ((B0 + 2.0, cw - 1.0), (cw + 1.0, B1 - 2.0)):
             seat_row_u(g, u, w0_, w1_, yr, 1)
         if r % 4 == 1: g.spot(u, yr, B0 + 2.0 + (r * 3.7) % (cw - B0 - 4.0), HA1, cw, 'sit')
+    # behind the last row up to the back wall: a landing at the top row's height (was an open pit to the ground)
+    if u_last - row_d / 2 > HA0:
+        g.lbox('x_carpet_red', HA0, u_last - row_d / 2, y0, y_last, B0, B1, C('#5a1c22'), top=True, sides=True)
+        g.deck_rect(HA0 + 0.2, u_last - row_d / 2, B0 + 0.4, B1 - 0.4, y_last)
     yrear = y0 + (nrow - 1) * rise
     for r in range(nrow - 1):
         u = ur0 - r * row_d - row_d / 2; ya, yb = y0 + r * rise, y0 + (r + 1) * rise

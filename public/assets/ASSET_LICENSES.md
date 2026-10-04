@@ -173,6 +173,16 @@ CC0 PBR materials (ambientCG, Poly Haven) and Poly Haven furniture / decor model
 
 | Asset | Source | Used as | Licence |
 |---|---|---|---|
+| SchoolDesk_01 | https://polyhaven.com/a/SchoolDesk_01 | interior prop model | CC0 1.0 |
+| metal_stool_02 | https://polyhaven.com/a/metal_stool_02 | interior prop model | CC0 1.0 |
+| painted_wooden_chair_01 | https://polyhaven.com/a/painted_wooden_chair_01 | interior prop model | CC0 1.0 |
+| industrial_coffee_table | https://polyhaven.com/a/industrial_coffee_table | interior prop model | CC0 1.0 |
+| planter_pot_clay | https://polyhaven.com/a/planter_pot_clay | interior prop model | CC0 1.0 |
+| modern_coffee_table_02 | https://polyhaven.com/a/modern_coffee_table_02 | interior prop model | CC0 1.0 |
+| WoodenTable_02 | https://polyhaven.com/a/WoodenTable_02 | interior prop model | CC0 1.0 |
+| WoodenChair_01 | https://polyhaven.com/a/WoodenChair_01 | interior prop model | CC0 1.0 |
+| wooden_bookshelf_worn | https://polyhaven.com/a/wooden_bookshelf_worn | interior prop model | CC0 1.0 |
+| book_encyclopedia_set_01 | https://polyhaven.com/a/book_encyclopedia_set_01 | interior prop model | CC0 1.0 |
 | Marble012 | https://ambientcg.com/view?id=Marble012 | interior material marble_white | CC0 1.0 |
 | Marble014 | https://ambientcg.com/view?id=Marble014 | interior material marble_cream | CC0 1.0 |
 | Marble016 | https://ambientcg.com/view?id=Marble016 | interior material marble_black | CC0 1.0 |
@@ -319,6 +329,16 @@ CC0 PBR materials (ambientCG, Poly Haven) and Poly Haven furniture / decor model
 | old_bed_frame | https://polyhaven.com/a/old_bed_frame | interior prop model | CC0 1.0 |
 | can_rusted | https://polyhaven.com/a/can_rusted | interior prop model | CC0 1.0 |
 | plastic_crate_01 | https://polyhaven.com/a/plastic_crate_01 | interior prop model | CC0 1.0 |
+| book_encyclopedia_set_01 | https://polyhaven.com/a/book_encyclopedia_set_01 | interior prop model | CC0 1.0 |
+| wooden_bookshelf_worn | https://polyhaven.com/a/wooden_bookshelf_worn | interior prop model | CC0 1.0 |
+| WoodenChair_01 | https://polyhaven.com/a/WoodenChair_01 | interior prop model | CC0 1.0 |
+| WoodenTable_02 | https://polyhaven.com/a/WoodenTable_02 | interior prop model | CC0 1.0 |
+| modern_coffee_table_02 | https://polyhaven.com/a/modern_coffee_table_02 | interior prop model | CC0 1.0 |
+| planter_pot_clay | https://polyhaven.com/a/planter_pot_clay | interior prop model | CC0 1.0 |
+| industrial_coffee_table | https://polyhaven.com/a/industrial_coffee_table | interior prop model | CC0 1.0 |
+| painted_wooden_chair_01 | https://polyhaven.com/a/painted_wooden_chair_01 | interior prop model | CC0 1.0 |
+| metal_stool_02 | https://polyhaven.com/a/metal_stool_02 | interior prop model | CC0 1.0 |
+| SchoolDesk_01 | https://polyhaven.com/a/SchoolDesk_01 | interior prop model | CC0 1.0 |
 
 ## Pedestrians and the player on foot (`peds/`, MIT)
 

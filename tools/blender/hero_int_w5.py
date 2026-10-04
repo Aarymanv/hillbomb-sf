@@ -187,7 +187,7 @@ def fort_int(O):
 def alcatraz_int(O):
     L = W5.alc_frame(); yF = W5.alc_cell_y()
     F = (L.xz(0, 0), L.u, L.v)
-    g = IGeo(O, F); g.name = 'Alcatraz - Broadway'; g.sky_k = 3.6
+    g = IGeo(O, F); g.name = 'Alcatraz - Broadway'; g.sky_k = 4.6
     g.floor_y = yF
     A0, A1, AT = -24.0, 27.0, 33.0          # Broadway runs a = A0..A1, Times Square A1..AT
     BW, CD, BK, SC = 2.3, 2.74, 8.9, 13.5    # half corridor, cell depth, block outer face, side corridor outer wall
@@ -287,8 +287,12 @@ def alcatraz_int(O):
                 if Rc.random() < 0.5: g.lbox('d_fabric', a + 0.45, a + 0.75, y0 + 1.25, y0 + 1.85, f(BW + CD - 0.06), f(BW + CD - 0.02), C('#7c8a9a'), top=True)
                 if Rc.random() < 0.12:
                     cx, cz = g.xz(a + 0.45, f(BW + 1.6)); g.box('d_paint', cx - 0.18, cx + 0.18, y0 + 0.62, y0 + 0.64, cz - 0.18, cz + 0.18, C('#d8c9a8'))
-            for i in range(1, ncell, 4):   # a dim bulb in every fourth cell
-                g.light('POINT', A0 + (i + 0.5) * CELLW, y1 - 0.25, f(BW + CD * 0.55), 12, (1.0, 0.86, 0.66), radius=0.08)
+            for i in range(ncell):   # every cell has its bare ceiling bulb (warm, low): the cells read as rooms, the corridor keeps its gloom
+                cu, cw_ = A0 + (i + 0.5) * CELLW, f(BW + CD * 0.62)
+                g.llathe('metal', cu, cw_, [(0.05, y1), (0.05, y1 - 0.06), (0.0, y1 - 0.06)], C('#3a3a36'), n=6)
+                g.llathe('lampI', cu, cw_, [(0.0, y1 - 0.06), (0.035, y1 - 0.08), (0.03, y1 - 0.12), (0.0, y1 - 0.13)], (1.0, 0.82, 0.55, 1.0), n=8)
+                lit = (i * 7 + k * 3 + (s > 0)) % 5 != 0          # a few bulbs out
+                if lit: g.light('POINT', cu, y1 - 0.2, cw_, 26 if (i + k) % 3 else 18, (1.0, 0.8, 0.55), radius=0.05)
             if k:   # catwalk + railing (tiers 2 and 3)
                 g.lbox('metal', A0 - 0.2, A1c + 0.2, y0 - 0.14, y0 + 0.01, f(BW - 1.05), f(BW), C('#7c7b74'), top=True, bottom=True)
                 rail(g, [(A0 - 0.2, f(BW - 1.0)), (A1c + 0.2, f(BW - 1.0))], y0, 1.05, col=C('#c9c2aa'), post=1.52)

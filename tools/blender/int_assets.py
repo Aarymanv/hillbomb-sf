@@ -52,7 +52,10 @@ MODELS = ['ArmChair_01', 'GreenChair_01', 'Sofa_01', 'sofa_02', 'sofa_03', 'mode
           'wooden_bowl_01', 'cardboard_box_01', 'horse_statue_01', 'bronze_whale_statue', 'bronze_shark_statue', 'bronze_ray_statue',
           'mantel_clock_01', 'lion_head', 'chess_set', 'wooden_stool_01', 'round_wooden_table_02', 'small_wooden_table_01',
           'painted_wooden_cabinet', 'vintage_cabinet_01', 'chinese_screen_panels', 'wicker_basket_02', 'GothicCabinet_01', 'ClassicNightstand_01',
-          'wooden_bucket_01', 'vintage_grandfather_clock_01', 'old_bed_frame', 'metal_trash_can', 'can_rusted', 'plastic_crate_01']
+          'wooden_bucket_01', 'vintage_grandfather_clock_01', 'old_bed_frame', 'metal_trash_can', 'can_rusted', 'plastic_crate_01',
+          # round 3 (10/03): reading rooms, cafes, lobbies (dress kinds library / cafe / lobby / foyer / science)
+          'book_encyclopedia_set_01', 'wooden_bookshelf_worn', 'WoodenChair_01', 'WoodenTable_02', 'modern_coffee_table_02', 'planter_pot_clay',
+          'industrial_coffee_table', 'painted_wooden_chair_01', 'metal_stool_02', 'SchoolDesk_01']
 
 
 def get(url, timeout=120):

@@ -245,7 +245,8 @@ def dress_room(g, ri, kind, seed=1, density=1.0):
     u0, u1, w0, w1, y0, y1 = room_frame(g, g.rooms[ri])
     lanes = _door_lane(g)
     um, wm = (u0 + u1) / 2, (w0 + w1) / 2
-    step = {'store': 3.6, 'lux': 4.6, 'hotel': 6.5, 'church': 7.0, 'museum': 5.0, 'office': 6.0, 'market': 3.0, 'apple': 5.5}[kind] / max(0.4, density)
+    step = {'store': 3.6, 'lux': 4.6, 'hotel': 6.5, 'church': 7.0, 'museum': 5.0, 'office': 6.0, 'market': 3.0, 'apple': 5.5,
+            'library': 4.2, 'cafe': 3.2, 'lobby': 5.0, 'foyer': 5.0, 'science': 4.0}[kind] / max(0.4, density)
     placed = 0
 
     def ok(u, w, r):
@@ -291,6 +292,77 @@ def dress_room(g, ri, kind, seed=1, density=1.0):
             elif kind == 'office':
                 if not ok(u, w, 1.0) or placed >= 3: continue
                 prop(g, ['potted_plant_02', 'pachira_aquatica_01', 'horse_statue_01'][placed % 3], u, y0, w, fit=(None, 1.8 if placed % 3 < 2 else 0.9, None)); placed += 1
+            elif kind == 'library':
+                # reading tables with green-shaded lamps, chairs, open books; every third spot a free-standing bookcase pair
+                if not ok(u, w, 1.5): continue
+                if (i + j) % 3 == 2:
+                    for s_ in (-1, 1): prop(g, 'wooden_bookshelf_worn', u + s_ * 0.55, y0, w, face=(u + s_ * 5, w), fit=(None, 2.0, None))
+                    g.spot(u, y0, w + 1.2, u, w, 'stand'); placed += 1; continue
+                # long oak reading table (built: the Poly Haven tables come in odd proportions)
+                g.lbox('x_veneer', u - 1.15, u + 1.15, y0 + 0.72, y0 + 0.77, w - 0.48, w + 0.48, C('#6b4428'), top=True, bottom=True)
+                for (lu, lw) in ((-1.05, -0.38), (1.05, -0.38), (-1.05, 0.38), (1.05, 0.38)):
+                    g.lbox('x_veneer', u + lu - 0.04, u + lu + 0.04, y0, y0 + 0.72, w + lw - 0.04, w + lw + 0.04, C('#5a3820'), top=False)
+                g.lbox('d_metal', u - 1.0, u + 1.0, y0 + 0.77, y0 + 0.79, w - 0.04, w + 0.04, C('#3c4a3a'))      # brass-and-green lamp rail
+                g.collider(u - 1.15, u + 1.15, w - 0.48, w + 0.48, y0, y0 + 0.8)
+                for s_ in (-1, 1):
+                    for q in (-0.55, 0.55):
+                        prop(g, 'WoodenChair_01', u + q, y0, w + s_ * 0.85, face=(u + q, w), fit=(None, 0.95, None), collide=False)
+                    prop(g, ['book_encyclopedia_set_01', 'decorative_book_set_01'][R.randint(0, 1)], u + s_ * 0.4, y0 + 0.76, w + s_ * 0.15, yaw=R.random() * 3, fit=(0.3, None, None), collide=False)
+                prop(g, 'desk_lamp_arm_01', u, y0 + 0.76, w, fit=(None, 0.42, None), collide=False)
+                g.light('POINT', u, y0 + 1.1, w, 25, (1.0, 0.85, 0.6), radius=0.08)
+                g.spot(u - 0.55, y0, w + 0.85, u - 0.55, w, 'sit'); g.spot(u + 0.55, y0, w - 0.85, u + 0.55, w, 'sit'); placed += 1
+            elif kind == 'cafe':
+                # bistro tables with two or three chairs, cake / coffee on the table
+                if not ok(u, w, 1.0): continue
+                prop(g, ['round_wooden_table_01', 'round_wooden_table_02', 'gallinera_table'][R.randint(0, 2)], u, y0, w, fit=(0.8, None, None))
+                n_ = R.randint(2, 3)
+                for q in range(n_):
+                    a_ = 2 * math.pi * q / n_ + R.random() * 0.5
+                    cu_, cw_ = u + math.cos(a_) * 0.68, w + math.sin(a_) * 0.68
+                    prop(g, ['gallinera_chair', 'painted_wooden_chair_01', 'dining_chair_02'][R.randint(0, 2)], cu_, y0, cw_, face=(u, w), fit=(None, 0.9, None), collide=False)
+                prop(g, ['strawberry_chocolate_cake', 'tea_set_01', 'croissant', 'carrot_cake'][R.randint(0, 3)], u, y0 + 0.74, w, fit=(0.22, None, None), collide=False)
+                g.spot(u + 0.68, y0, w, u, w, 'sit'); placed += 1
+            elif kind in ('lobby', 'foyer'):
+                # seating groups on a rug, planters, a bench; foyers get classic chairs + flowers, lobbies modern pieces
+                if not ok(u, w, 1.6): continue
+                pick = R.random()
+                if pick < 0.5:
+                    rug = C('#3a3f46') if kind == 'lobby' else C('#6a2e2a')
+                    g.lbox('x_carpet_red', u - 1.7, u + 1.7, y0, y0 + 0.015, w - 1.3, w + 1.3, rug)
+                    if kind == 'lobby':
+                        prop(g, ['Sofa_01', 'sofa_03'][R.randint(0, 1)], u, y0 + 0.015, w - 0.95, face=(u, w), fit=(2.0, None, None))
+                        for s_ in (-1, 1): prop(g, ['modern_arm_chair_01', 'mid_century_lounge_chair'][R.randint(0, 1)], u + s_ * 1.25, y0 + 0.015, w + 0.3, face=(u, w), fit=(None, 0.85, None))
+                        prop(g, ['modern_coffee_table_02', 'modern_coffee_table_01', 'industrial_coffee_table'][R.randint(0, 2)], u, y0 + 0.015, w, fit=(1.0, None, None))
+                    else:
+                        for s_ in (-1, 1): prop(g, ['ArmChair_01', 'GreenChair_01'][R.randint(0, 1)], u + s_ * 0.95, y0 + 0.015, w, face=(u, w), fit=(None, 1.0, None))
+                        prop(g, 'side_table_01', u, y0 + 0.015, w, fit=(None, 0.55, None)); flowers(g, u, w, y0 + 0.57, s=0.6, seed=R.randint(0, 99))
+                    g.spot(u + 0.9, y0, w + 1.0, u, w, 'stand'); g.spot(u, y0, w - 0.9, u, w, 'sit')
+                elif pick < 0.75:
+                    prop(g, ['planter_box_01', 'planter_box_02', 'planter_pot_clay', 'pachira_aquatica_01'][R.randint(0, 3)], u, y0, w, yaw=R.random() * 3, fit=(None, 1.6, None))
+                    g.spot(u + 1.0, y0, w + 0.6, u, w, 'stand')
+                elif pick < 0.9:
+                    prop(g, 'painted_wooden_bench' if kind == 'foyer' else 'painted_wooden_bench', u, y0, w, yaw=0.0 if R.random() < 0.5 else math.pi / 2, fit=(1.7, None, None))
+                    g.spot(u, y0, w + 0.4, u, w + 3, 'sit')
+                else:
+                    prop(g, 'side_table_tall_01', u, y0, w, fit=(None, 0.85, None)); flowers(g, u, w, y0 + 0.85, s=0.9, seed=R.randint(0, 99))
+                    g.spot(u + 0.9, y0, w, u, w, 'stand')
+                placed += 1
+            elif kind == 'science':
+                # hands-on exhibit benches: a tabletop with coloured apparatus (spheres, rings, prisms), stools, a label
+                if not ok(u, w, 1.2): continue
+                L_, D_ = R.uniform(1.4, 2.2), R.uniform(0.9, 1.2)
+                base = [C('#e6e2d8'), C('#2d5f8a'), C('#c8462e'), C('#e2b13c'), C('#3d7a4a')][R.randint(0, 4)]
+                g.lbox('x_veneer', u - L_ / 2, u + L_ / 2, y0, y0 + 0.86, w - D_ / 2, w + D_ / 2, base, top=True)
+                g.collider(u - L_ / 2, u + L_ / 2, w - D_ / 2, w + D_ / 2, y0, y0 + 1.0)
+                for q in range(R.randint(2, 4)):
+                    cu_, cw_ = u - L_ / 2 + 0.3 + R.random() * (L_ - 0.6), w - D_ / 2 + 0.25 + R.random() * (D_ - 0.5)
+                    col = [C('#f2f2f0'), C('#1e6fd9'), C('#e8452c'), C('#f5c518'), C('#2fae5a'), C('#9b59b6')][R.randint(0, 5)]
+                    r_ = R.uniform(0.06, 0.18); x_, z_ = g.xz(cu_, cw_)
+                    if R.random() < 0.5: g.lathe('d_paint', x_, z_, [(0.0, y0 + 0.86), (r_ * 0.8, y0 + 0.86 + r_ * 0.3), (r_, y0 + 0.86 + r_), (r_ * 0.8, y0 + 0.86 + r_ * 1.7), (0.0, y0 + 0.86 + r_ * 2)], col, n=12)
+                    else: g.lathe('d_paint', x_, z_, [(0.0, y0 + 0.86), (r_, y0 + 0.86), (r_, y0 + 0.86 + r_ * 2.5), (0.0, y0 + 0.86 + r_ * 2.5)], col, n=10)
+                g.lbox('lampI', u - 0.25, u + 0.25, y0 + 0.86, y0 + 0.9, w + D_ / 2 - 0.08, w + D_ / 2 - 0.02, (0.95, 0.95, 1.0, 1.0))
+                for s_ in (-1, 1): prop(g, 'metal_stool_02', u + s_ * 0.5, y0, w + D_ / 2 + 0.45, fit=(None, 0.65, None), collide=False)
+                g.spot(u, y0, w + D_ / 2 + 0.7, u, w, 'stand'); g.spot(u + L_ / 2 + 0.6, y0, w, u, w, 'stand'); placed += 1
             elif kind == 'market':
                 if not ok(u, w, 0.8): continue
                 for q in range(R.randint(1, 3)):
@@ -309,20 +381,32 @@ def dress_room(g, ri, kind, seed=1, density=1.0):
         if free(g, um, w0 + 2.0, 1.2, y0): reception(g, um, w0 + 2.0, y0, L=3.2, face_w=1)
         wt = w0 + (w1 - w0) * 0.45
         if free(g, um, wt, 1.5, y0): turnstiles(g, um - 2.0, um + 2.0, wt, y0, n=4)
-    if kind in ('hotel', 'office'):
+    if kind in ('hotel', 'office', 'lobby', 'foyer', 'cafe'):
+        na = 2 if kind in ('hotel', 'office') else max(2, int((u1 - u0) / 4.5))
         for (wv, face) in ((w0 + 0.05, 1), (w1 - 0.05, -1)):
-            if free(g, um, wv + face * 0.3, 0.2, y0 + 1.6): wall_art(g, um - min(6.0, (u1 - u0) / 3), um + min(6.0, (u1 - u0) / 3), wv, face, y0 + 1.7, n=2, seed=int(wv) % 3)
+            half = min(6.0, (u1 - u0) / 3) if na == 2 else (u1 - u0) / 2 - 1.5
+            if free(g, um, wv + face * 0.3, 0.2, y0 + 1.6): wall_art(g, um - half, um + half, wv, face, y0 + 1.7, n=na, seed=int(wv) % 3)
+    if kind == 'library':     # book walls along both long sides
+        for (wv, face) in ((w0 + 0.05, 1), (w1 - 0.05, -1)):
+            for q in range(int((u1 - u0 - 3) / 3.0)):
+                uq = u0 + 1.5 + q * 3.0
+                if free(g, uq + 1.3, wv + face * 0.5, 0.3, y0) and _clear(lanes, uq + 1.3, wv + face * 0.5, 0.3):
+                    shelf_wall(g, uq, uq + 2.8, wv, face, y0, rows=6, kind='books', seed=q + 3, h=2.5)
+    if kind == 'lobby':
+        if free(g, um, w0 + 2.0, 1.2, y0): reception(g, um, w0 + 2.0, y0, L=3.6, face_w=1, slot='x_marble_white', col=C('#e8e4dc'))
     return placed
 
 
 # per-interior dressing plan: (room index, kind, density); applied by run_interior after the builder
 DRESS = {
     'macys': [(0, 'store', 1.0)], 'saks': [(0, 'lux', 1.0)], 'apple': [(0, 'apple', 1.0)],
-    'stFrancis': [(0, 'hotel', 1.0)], 'grandHyatt': [(0, 'hotel', 1.2)], 'fairmont': [(0, 'hotel', 1.0)], 'jwMarriott': [(0, 'hotel', 0.8)],
+    'stFrancis': [(0, 'hotel', 1.0)], 'grandHyatt': [(0, 'hotel', 1.2)], 'fairmont': [(0, 'hotel', 1.0)], 'jwMarriott': [(0, 'hotel', 1.5), (1, 'foyer', 0.8)],
     'markHopkins': [(0, 'hotel', 0.7)], 'palace': [(0, 'hotel', 0.4)],
     'grace': [(0, 'church', 1.0)], 'ssPeterPaul': [(0, 'church', 1.0)], 'missionDolores': [(0, 'church', 1.0)],
-    'asianArt': [(0, 'museum', 1.0)], 'legion': [(i, 'museum', 0.8) for i in range(5)],
-    'library': [(0, 'museum', 0.6)], 'deYoung': [(0, 'museum', 0.7)],
-    'hobart': [(0, 'office', 1.0)], 'mills': [(0, 'office', 1.0)], 'phelan': [(0, 'office', 1.0)], 'transamerica': [(0, 'office', 1.0)], 'salesforce': [(0, 'office', 1.0)],
+    'asianArt': [(0, 'museum', 1.0)], 'legion': [(i, 'museum', 1.4) for i in range(5)],
+    'library': [(0, 'foyer', 0.8), (1, 'library', 1.0)], 'deYoung': [(0, 'museum', 0.7)],
+    'hobart': [(0, 'office', 1.0)], 'mills': [(0, 'office', 1.0)], 'phelan': [(0, 'office', 1.0)], 'transamerica': [(0, 'lobby', 1.0)], 'salesforce': [(0, 'lobby', 1.0)],
+    # round 3 (10/03): the sparse halls of int_sheet_v4
+    'exploratorium': [(0, 'science', 1.0)], 'ghirardelli': [(0, 'cafe', 1.0)], 'opera': [(0, 'foyer', 1.0)],
     'pier39': [(0, 'market', 0.7)], 'ferry': [(0, 'market', 0.5)], 'embCenter': [(0, 'market', 0.4)],
 }
