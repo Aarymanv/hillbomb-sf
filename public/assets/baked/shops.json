@@ -1,0 +1,122 @@
+[
+ {
+  "index": 0,
+  "name": "pizzeria",
+  "type": "pizzeria",
+  "label": "Pizzeria",
+  "col": 0,
+  "row": 0,
+  "tint": [
+   0.5602,
+   0.3673,
+   0.2705
+  ],
+  "tintHex": "#8f5e45",
+  "litFraction": 0.7258
+ },
+ {
+  "index": 1,
+  "name": "diner",
+  "type": "diner",
+  "label": "Diner",
+  "col": 1,
+  "row": 0,
+  "tint": [
+   0.4454,
+   0.3679,
+   0.3077
+  ],
+  "tintHex": "#725e4e",
+  "litFraction": 0.7019
+ },
+ {
+  "index": 2,
+  "name": "bodega",
+  "type": "bodega",
+  "label": "Corner Bodega",
+  "col": 0,
+  "row": 1,
+  "tint": [
+   0.6167,
+   0.5528,
+   0.5125
+  ],
+  "tintHex": "#9d8d83",
+  "litFraction": 0.8147
+ },
+ {
+  "index": 3,
+  "name": "laundromat",
+  "type": "laundromat",
+  "label": "Laundromat",
+  "col": 1,
+  "row": 1,
+  "tint": [
+   0.6152,
+   0.582,
+   0.5523
+  ],
+  "tintHex": "#9d948d",
+  "litFraction": 0.8687
+ },
+ {
+  "index": 4,
+  "name": "cafe",
+  "type": "cafe",
+  "label": "Cafe",
+  "col": 0,
+  "row": 2,
+  "tint": [
+   0.5613,
+   0.4041,
+   0.2949
+  ],
+  "tintHex": "#8f674b",
+  "litFraction": 0.8331
+ },
+ {
+  "index": 5,
+  "name": "bookstore",
+  "type": "bookstore",
+  "label": "Bookstore",
+  "col": 1,
+  "row": 2,
+  "tint": [
+   0.3976,
+   0.2537,
+   0.1478
+  ],
+  "tintHex": "#654126",
+  "litFraction": 0.4759
+ },
+ {
+  "index": 6,
+  "name": "taqueria",
+  "type": "taqueria",
+  "label": "Taqueria",
+  "col": 0,
+  "row": 3,
+  "tint": [
+   0.5776,
+   0.3658,
+   0.2246
+  ],
+  "tintHex": "#935d39",
+  "litFraction": 0.7932
+ },
+ {
+  "index": 7,
+  "name": "dimsum",
+  "type": "dimsum",
+  "label": "Dim Sum / Chinese Bakery",
+  "col": 1,
+  "row": 3,
+  "tint": [
+   0.6133,
+   0.3913,
+   0.2899
+  ],
+  "tintHex": "#9c644a",
+  "litFraction": 0.827
+ }
+]
