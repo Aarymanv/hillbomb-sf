@@ -35,6 +35,7 @@ import { mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometr
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { packedUrl, loadPacked } from '../world/texpack.js';
+import { PERF } from '../render/perfflags.js';
 
 export const MODEL_IDS = ['hatch', 'sedan', 'taxi', 'police', 'muscle', 'coupe', 'super', 'suv', 'pickup', 'van', 'boxtruck', 'bus', 'ev', 'rally', 'cablecar',
   'brawler', 'vandal', 'stallion18', 'hellion', 'comet', 'rz7', 'kaminari', 'raiden', 'senkou', 'hachi', 'sora', 'classic9', 'coupeGT', 'k5', 'k3', 'sovereign', 'vanguard',
@@ -5310,10 +5311,27 @@ function requestCar(id) {
     });
     // body pass 2: hero-only level H (player / showroom), L0 for traffic up close
     const A = { id, lods, hero: heroL, caliper, ao: t, details: makeDetailsMat(t, (A_cab = cabinBox(id))), cab: A_cab, parked: [null, null, null], parkedMat: null, doors: carIndex?.[id]?.doors || null };
+    A.lean = lods.map(leanLevel);
     ASSET.set(id, A);
     for (const cb of WAIT.get(id) || []) { try { cb(A); } catch (e) { console.warn('[cars] onCarAsset', e); } }
     WAIT.delete(id);
   }).finally(() => LOADING.delete(id));
+}
+// (perf r2) street cars (traffic / parked-hit / AI): a body level with its closed front doors merged in per material
+// (the door nodes sit at the identity transform while shut): 4-6 meshes per level instead of 10-12. A street car whose
+// door opens (carjack, the player getting in) remounts with the hinged split levels (buildCarModel).
+function leanLevel(L) {
+  if (!L.doors) return L;
+  const out = { wheel: L.wheel };
+  for (const k of ['paint', 'paint2', 'details', 'lamps', 'lens', 'glass']) {
+    const parts = [L[k], L.doors.L?.[k], L.doors.R?.[k]].filter(Boolean);
+    if (!parts.length) continue;
+    let g = parts.length > 1 ? mergeGeometries(parts, false) : parts[0];
+    if (!g) { console.warn('[cars] lean merge failed', k); return L; }
+    if (g !== parts[0]) { g.name = 'car:' + k; g.computeBoundingSphere(); }
+    out[k] = g;
+  }
+  return out;
 }
 /** cb(asset) once the baked asset of id is in (immediately if it already is; never if the id has no asset). */
 export function onCarAsset(id, cb) {
@@ -5696,6 +5714,10 @@ function splitterGeom(P) {
 export function buildCarModel(id, opts = {}) {
   const G = getGeoms(id), P = G.P, S = shared();
   const hero = !!(opts.hero || opts.look);
+  // (perf r2) street cars: doors merged into the body while shut (asset.lean), only the current LOD level attached to the
+  // graph, static nodes without per-frame matrix recompose. ?nocarlean = off
+  const lean = !hero && !!opts.lean && PERF.carlean;
+  let split = false;
   let paintHex = opts.paint;
   if (paintHex == null && opts.seed != null && !['taxi', 'police', 'bus', 'cablecar', 'van'].includes(id)) {
     let s = (opts.seed * 2654435761) >>> 0; s ^= s >>> 15; paintHex = streetPaint((s % 10007) / 10007);
@@ -5751,6 +5773,7 @@ export function buildCarModel(id, opts = {}) {
   }
   function setDoor(sd, t) {
     doorOpen[sd] = t;
+    if (lean && !split && t > 0 && asset?.doors) { split = true; mountBody(); return; }   // remount with the hinged doors
     const sg = sd === 'L' ? -1 : 1, e = t * t * (3 - 2 * t);
     for (const pv of doorPivots[sd]) pv.rotation.y = pv.userData.hinged ? sg * e * pv.userData.max : 0;
   }
@@ -5769,10 +5792,11 @@ export function buildCarModel(id, opts = {}) {
     if (hero) { addBodyLevel(body, asset.hero || asset.lods[0]); lodLevel = 0; }
     else {
       const lod = new THREE.LOD(); lod.name = 'lod';
-      asset.lods.forEach((L, i) => { const grp = new THREE.Group(); addBodyLevel(grp, L); lod.addLevel(grp, CAR_LOD_DIST[i], i ? 0.08 : 0); });
+      (lean && !split ? asset.lean : asset.lods).forEach((L, i) => { const grp = new THREE.Group(); addBodyLevel(grp, L); lod.addLevel(grp, CAR_LOD_DIST[i], i ? 0.08 : 0); });
       const upd = lod.update.bind(lod);
-      lod.update = (cam) => { upd(cam); const l = lod.getCurrentLevel(); if (l !== lodLevel) { lodLevel = l; syncWheels(); } };
+      lod.update = (cam) => { upd(cam); const l = lod.getCurrentLevel(); if (l !== lodLevel) { lodLevel = l; syncWheels(); } if (lean) attachLevel(lod, l); };
       body.add(lod);
+      if (lean) { freeze(body); for (const L of lod.levels) freeze(L.object); attachLevel(lod, lod.getCurrentLevel()); }
     }
     if (needCal()) addCalipers();
     if (asset.caliper) for (const c of calipers) c.geometry = asset.caliper;
@@ -5783,7 +5807,16 @@ export function buildCarModel(id, opts = {}) {
     if (calipers.length || P.custom) return;
     mkCal();
     const g = asset?.caliper || caliperGeom(P);
-    wheels.forEach((w, i) => { const c = new THREE.Mesh(g, calMat); c.scale.copy(wheelMeshes[i].scale); c.castShadow = false; w.pivot.add(c); calipers.push(c); });
+    wheels.forEach((w, i) => { const c = new THREE.Mesh(g, calMat); c.scale.copy(wheelMeshes[i].scale); c.castShadow = false; w.pivot.add(c); calipers.push(c); if (lean) { c.updateMatrix(); c.matrixAutoUpdate = false; } });
+  }
+  // lean: static sub-nodes keep their matrix (the door hinge pivots, which swing, still recompose)
+  function freeze(o) { o.traverse((n) => { if (n.name === 'doorL' || n.name === 'doorR') return; n.updateMatrix(); n.matrixAutoUpdate = false; }); }
+  // lean: only the LOD level being drawn hangs in the graph (scene.updateMatrixWorld walked all three every frame)
+  function attachLevel(lod, l) {
+    const o = lod.levels[l]?.object; if (!o) return;
+    if (lod.children.length === 1 && lod.children[0] === o) return;
+    for (let i = lod.children.length - 1; i >= 0; i--) if (lod.children[i] !== o) lod.remove(lod.children[i]);
+    if (o.parent !== lod) { lod.add(o); o.updateWorldMatrix(false, true); }
   }
   for (const [x, z, w] of pos) {
     const pivot = new THREE.Object3D(), spin = new THREE.Object3D();
@@ -5792,6 +5825,7 @@ export function buildCarModel(id, opts = {}) {
     const m = new THREE.Mesh(G.wheel, S.details);
     m.scale.set((x < 0 ? -1 : 1) * (w / P.ww), 1, 1);
     m.castShadow = true; m.receiveShadow = true;
+    if (lean) { m.updateMatrix(); m.matrixAutoUpdate = false; }
     spin.add(m); root.add(pivot);
     wheels.push({ pivot, spin }); wheelMeshes.push(m);
   }
@@ -5870,7 +5904,7 @@ export function buildCarModel(id, opts = {}) {
     /** cars pass 4: swing a front door open (side -1 = driver / left, +1 = right; t 0 shut .. 1 fully open, eased) */
     openDoor(side, t) { setDoor(side < 0 ? 'L' : 'R', Math.max(0, Math.min(1, t))); },
     doorOpenness(side) { return doorOpen[side < 0 ? 'L' : 'R']; },
-    hasDoor(side) { return doorPivots[side < 0 ? 'L' : 'R'].some((p) => p.userData.hinged); },
+    hasDoor(side) { const sd = side < 0 ? 'L' : 'R'; if (lean && !split) return !!(asset?.doors?.[sd] && asset.lods.some((L) => L.doors?.[sd])); return doorPivots[sd].some((p) => p.userData.hinged); },
     doorHinge(side) { const h = asset?.doors?.[side < 0 ? 'L' : 'R']; return h ? h.p : null; },
     setPaint(hex) { paint.color.setHex(hex); },
     setPaint2(hex) { if (paint2) paint2.color.setHex(hex); },

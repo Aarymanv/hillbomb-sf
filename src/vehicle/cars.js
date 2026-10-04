@@ -356,7 +356,7 @@ export class Vehicle {
     const look = this.build?.look || null;
     const rnd = (Math.sin(seed * 91.7 + this.uid) * 43758.5453) % 1;
     this.paint = look?.paint ?? paint ?? (id === 'taxi' || id === 'police' || id === 'bus' ? undefined : role === 'npc' || role === 'parked' ? (id === 'boxtruck' ? (Math.abs(rnd) < 0.7 ? 0xf0f0ee : PAINTS[Math.floor(Math.abs(rnd) * 97) % PAINTS.length]) : M.streetPaint(Math.abs(rnd))) : CARS[id].paint);
-    this.visual = buildModel(this.def.model, { paint: this.paint ?? this.spec.defaultPaint, paint2: CARS[id].paint2, seed: this.uid, look, wing: this.def.wing, hero: role === 'player' });
+    this.visual = buildModel(this.def.model, { paint: this.paint ?? this.spec.defaultPaint, paint2: CARS[id].paint2, seed: this.uid, look, wing: this.def.wing, hero: role === 'player', lean: role !== 'player' });
     this.root = this.visual.root;
     this.body = new CarBody(this.spec, this.params);
     this.scene = scene;
