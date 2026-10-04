@@ -6,12 +6,14 @@ import { ll } from '../world/latlon.js';
 const _ring = [];
 
 const UNITS = [2, 2, 3, 5, 7, 9];      // cop cars wanted per star level (0 = patrols)
+// pursuit spawns: the legal road route to the suspect must be drivable in ARRIVE_S at a town pursuit pace
+const PURSUIT_V = 12, ARRIVE_S = 14;
 // v1 positions (hand-built map) + the real stations' lat/lon for the 1:1 map
 const STATIONS_V1 = [{ name: 'Mission Station', x: 760, z: 1010, ll: [37.7627, -122.4219] }, { name: 'Central Station', x: 1480, z: -700, ll: [37.7985, -122.4100] },
   { name: 'Richmond Station', x: -1060, z: 120, ll: [37.7800, -122.4643] }, { name: 'Park Station', x: -260, z: 700, ll: [37.7676, -122.4553] }];
 const HOSPITAL_V1 = { x: 1250, z: 1300, name: 'SF General', ll: [37.7556, -122.4046] };
 const at = (p, v2) => (v2 ? (([x, z]) => ({ ...p, x, z }))(ll(p.ll[0], p.ll[1])) : p);
-const _f = new THREE.Vector3();
+const _f = new THREE.Vector3(), _lp = {}, _cq = [];
 
 export function install(G) {
   const { world, audio } = G;
@@ -94,11 +96,14 @@ export function install(G) {
     let ring = edgesInRing(world.graph, p.x, p.z, R0, R1, _ring);
     if (!ring.length && pursuit) ring = edgesInRing(world.graph, p.x, p.z, R0, 200, _ring);
     if (!ring.length) return null;
-    for (let tries = 0; tries < 30; tries++) {
+    let best = null, found = 0;
+    for (let tries = 0; tries < (pursuit ? 60 : 30); tries++) {
       const e = ring[(rnd() * ring.length) | 0];
       if (e.kind === 'crooked' || e.len < 25) continue;
       if (pursuit && (e.deck || e.kind === 'alley' || e.kind === 'plaza' || e.kind === 'park' || e.kind === 'mountain' || e.kind === 'highway')) continue;   // streets a unit can leave quickly
-      const dir = rnd() < 0.5 ? 1 : -1;
+      // one-way streets: only the legal direction (a random dir put units nose-first against the flow on downtown one-ways,
+      // their "short legal drive" then started by driving the block the wrong way)
+      let dir = e.oneway ? 1 : rnd() < 0.5 ? 1 : -1;
       let s = 10 + rnd() * (e.len - 20);
       if (pursuit) {   // the lane point nearest the ring (long edges cross it far from their midpoint)
         const a = e.a, b = e.b, ex = b.x - a.x, ez = b.z - a.z, l2 = ex * ex + ez * ez || 1;
@@ -106,6 +111,13 @@ export function install(G) {
         const want = (R0 + R1) / 2 + (rnd() - 0.5) * (R1 - R0) * 0.8, off = Math.sqrt(Math.max(0, want * want - dn * dn));
         const sab = Math.max(10, Math.min(e.len - 10, t * e.len + (rnd() < 0.5 ? -off : off)));
         s = dir > 0 ? sab : e.len - sab;   // (lanePoint / Driver.start measure s from the travel-direction start)
+      }
+      // two-way streets: face the end with the shorter legal road route to the suspect (s is measured along dir, so flip it)
+      if (pursuit && pn && !e.oneway) {
+        const sAB = dir > 0 ? s : e.len - s, lenTo = nd => { const r = nd === pn ? [] : findRoute(world.graph, nd, pn); if (!r) return Infinity; let L = 0; for (const st of r) L += (st.edge ?? st).len; return L; };
+        const lb = e.len - sAB + lenTo(e.b), la = sAB + lenTo(e.a);
+        const want = lb <= la ? 1 : -1;
+        if (want !== dir) { dir = want; s = e.len - s; }
       }
       const q0 = lanePoint(e, dir, 0, s, {});
       const d = Math.hypot(q0.x - p.x, q0.z - p.z);
@@ -116,27 +128,38 @@ export function install(G) {
       } else if (((q0.x - p.x) * _f.x + (q0.z - p.z) * _f.z) / d > 0.6 && d < 220) continue;
       const q = q0;
       if (pursuit && world.colliders.pointHit(q.x, world.heightAt(q.x, q.z) + 1, q.z, 1.6)) continue;   // not inside a parked car / prop
-      // and a short legal drive to the suspect (not the far side of a one-way block / freeway): road route <= 1.6x + 40 m
+      // and a short legal drive to the suspect (not the far side of a one-way block / freeway): the A* road route (one-ways
+      // respected) <= 1.4x + 30 m and <= ARRIVE_S at pursuit pace
+      // the first leg must be drivable: building colliders overhanging a narrow SoMa street (Falmouth St) pinned a unit
+      // against a wall for 8 s right after it spawned
+      if (pursuit) { let blocked = false; for (let t = s + 5; t < Math.min(e.len, s + 120) && !blocked; t += 5) { const lp = lanePoint(e, dir, 0, t, _lp); blocked = world.colliders.query(lp.x, lp.z, 2.5, _cq).some(c => c.kind === 'building' && Math.abs(c.c * (lp.x - c.x) - c.s * (lp.z - c.z)) < c.hx + 1.3 && Math.abs(c.s * (lp.x - c.x) + c.c * (lp.z - c.z)) < c.hz + 1.3); } if (blocked) continue; }
+      let routeL = null;
       if (pursuit && pn) {
         const fn = dir > 0 ? e.b : e.a, path = fn === pn ? [] : findRoute(world.graph, fn, pn);
         if (!path) continue;
         let L = e.len - s; for (const st of path) L += (st.edge ?? st).len;
-        if (L > d * 1.6 + 40) continue;
+        if (L > d * 1.4 + 30 || L / PURSUIT_V > ARRIVE_S) continue;
+        routeL = L;
       }
       if (G.vehicles().some(v => (v.pos.x - q.x) ** 2 + (v.pos.z - q.z) ** 2 < 144)) continue;
-      const v = G.spawnVehicle('police', q.x, q.z, Math.atan2(-q.hx, -q.hz), { y: e.deck ? q.y : undefined, role: 'cop' });
-      v.driver = 'cop'; v.role = 'cop';
-      // pursuit tuning: a little extra grip and power so they keep up on the hills
-      v.params = { ...v.params, torque: v.params.torque * 1.12, grip: (v.params.grip || 1) * 1.05 }; v.body.P = v.params;
-      const d2 = new Driver(v, world.graph, { mode: 'traffic', rnd });
-      d2.start(e, dir, 0, s);
-      v.ai = d2;
-      const c = { v, d: d2, born: G.time };
-      P.cops.push(c);
-      if (pursuit) setPursuit(c, true);
-      return c;
+      // pursuit: keep the shortest legal drive among the first few valid spots
+      if (pursuit && pn) { if (!best || routeL < best.routeL) best = { e, dir, s, q, d, routeL }; if (++found < 4) continue; break; }
+      return place(e, dir, s, q, d, routeL, pursuit);
     }
-    return null;
+    return best ? place(best.e, best.dir, best.s, best.q, best.d, best.routeL, pursuit) : null;
+  }
+  function place(e, dir, s, q, d, routeL, pursuit) {
+    const v = G.spawnVehicle('police', q.x, q.z, Math.atan2(-q.hx, -q.hz), { y: e.deck ? q.y : undefined, role: 'cop' });
+    v.driver = 'cop'; v.role = 'cop';
+    // pursuit tuning: a little extra grip and power so they keep up on the hills
+    v.params = { ...v.params, torque: v.params.torque * 1.12, grip: (v.params.grip || 1) * 1.05 }; v.body.P = v.params;
+    const d2 = new Driver(v, world.graph, { mode: 'traffic', rnd });
+    d2.start(e, dir, 0, s);
+    v.ai = d2;
+    const c = { v, d: d2, born: G.time, spawn: { x: q.x, z: q.z, edge: e.id, oneway: !!e.oneway, dir, d, routeL } };   // (spawn: dev probe stats)
+    P.cops.push(c);
+    if (pursuit) setPursuit(c, true);
+    return c;
   }
   function despawnCop(c) {
     const i = P.cops.indexOf(c); if (i >= 0) P.cops.splice(i, 1);
