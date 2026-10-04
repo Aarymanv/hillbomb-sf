@@ -1,0 +1,142 @@
+{
+ "passby": [
+  {
+   "file": "sfx/passby_1.mp3",
+   "peak": 2.8,
+   "dur": 5.0,
+   "lufsCore": -15,
+   "src": [
+    {
+     "site": "freesound",
+     "id": 237337,
+     "page": "https://freesound.org/s/237337/",
+     "file": "https://cdn.freesound.org/previews/237/237337_4166234-hq.mp3",
+     "title": "Car by slow DonFX.wav",
+     "author": "Donmann",
+     "license": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "file": "sfx/passby_2.mp3",
+   "peak": 2.8,
+   "dur": 5.0,
+   "lufsCore": -15,
+   "src": [
+    {
+     "site": "freesound",
+     "id": 237338,
+     "page": "https://freesound.org/s/237338/",
+     "file": "https://cdn.freesound.org/previews/237/237338_4166234-hq.mp3",
+     "title": "Car by slow Civic and Volvo DonFX.wav",
+     "author": "Donmann",
+     "license": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "file": "sfx/passby_3.mp3",
+   "peak": 2.8,
+   "dur": 5.0,
+   "lufsCore": -15,
+   "src": [
+    {
+     "site": "freesound",
+     "id": 553259,
+     "page": "https://freesound.org/s/553259/",
+     "file": "https://cdn.freesound.org/previews/553/553259_5620304-hq.mp3",
+     "title": "passing car",
+     "author": "NachtmahrTV",
+     "license": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "file": "sfx/passby_4.mp3",
+   "peak": 2.8,
+   "dur": 5.0,
+   "lufsCore": -15,
+   "src": [
+    {
+     "site": "freesound",
+     "id": 128124,
+     "page": "https://freesound.org/s/128124/",
+     "file": "https://cdn.freesound.org/previews/128/128124_707115-hq.mp3",
+     "title": "Car_passing_by.wav",
+     "author": "Framefive",
+     "license": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "file": "sfx/passby_5.mp3",
+   "peak": 2.8,
+   "dur": 5.0,
+   "lufsCore": -15,
+   "src": [
+    {
+     "site": "freesound",
+     "id": 441881,
+     "page": "https://freesound.org/s/441881/",
+     "file": "https://cdn.freesound.org/previews/441/441881_1933193-hq.mp3",
+     "title": "car passing by.wav",
+     "author": "brunobegot",
+     "license": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "file": "sfx/passby_6.mp3",
+   "peak": 2.8,
+   "dur": 5.0,
+   "lufsCore": -15,
+   "src": [
+    {
+     "site": "freesound",
+     "id": 180324,
+     "page": "https://freesound.org/s/180324/",
+     "file": "https://cdn.freesound.org/previews/180/180324_84709-hq.mp3",
+     "title": "car pass fast 4 times.wav",
+     "author": "martian",
+     "license": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "file": "sfx/passby_7.mp3",
+   "peak": 2.8,
+   "dur": 5.0,
+   "lufsCore": -15,
+   "src": [
+    {
+     "site": "freesound",
+     "id": 180324,
+     "page": "https://freesound.org/s/180324/",
+     "file": "https://cdn.freesound.org/previews/180/180324_84709-hq.mp3",
+     "title": "car pass fast 4 times.wav",
+     "author": "martian",
+     "license": "CC0 1.0"
+    }
+   ]
+  }
+ ],
+ "passby_wet": [
+  {
+   "file": "sfx/passby_wet_1.mp3",
+   "peak": 2.595,
+   "dur": 4.795,
+   "lufsCore": -15,
+   "src": [
+    {
+     "site": "freesound",
+     "id": 462862,
+     "page": "https://freesound.org/s/462862/",
+     "file": "https://cdn.freesound.org/previews/462/462862_9159316-hq.mp3",
+     "title": "Passing Car (Wet road)",
+     "author": "Breviceps",
+     "license": "CC0 1.0"
+    }
+   ]
+  }
+ ]
+}
