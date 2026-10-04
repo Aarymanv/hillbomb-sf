@@ -1,0 +1,821 @@
+{
+"v": 1,
+"player": "male_adult_17",
+"avatars": [
+{
+"id": "business_female_01",
+"g": "f",
+"h": 1.74,
+"hip": 0.924,
+"tris": [
+8966,
+3204,
+1186
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "business_female_02",
+"g": "f",
+"h": 1.729,
+"hip": 0.923,
+"tris": [
+8640,
+2929,
+1251
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "business_female_03",
+"g": "f",
+"h": 1.743,
+"hip": 0.924,
+"tris": [
+8438,
+3266,
+1235
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "business_female_04",
+"g": "f",
+"h": 1.733,
+"hip": 0.927,
+"tris": [
+8270,
+3264,
+1230
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "business_male_01",
+"g": "m",
+"h": 1.806,
+"hip": 0.896,
+"tris": [
+7435,
+3390,
+1385
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "business_male_02",
+"g": "m",
+"h": 1.823,
+"hip": 0.896,
+"tris": [
+7448,
+3482,
+1525
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "business_male_03",
+"g": "m",
+"h": 1.819,
+"hip": 0.896,
+"tris": [
+7810,
+3387,
+1389
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "business_male_04",
+"g": "m",
+"h": 1.801,
+"hip": 0.896,
+"tris": [
+7326,
+3600,
+1700
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "business_male_05",
+"g": "m",
+"h": 1.802,
+"hip": 0.896,
+"tris": [
+7164,
+3600,
+1700
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "business_male_06",
+"g": "m",
+"h": 1.81,
+"hip": 0.896,
+"tris": [
+6950,
+3598,
+1700
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "business_male_07",
+"g": "m",
+"h": 1.796,
+"hip": 0.896,
+"tris": [
+6722,
+3600,
+1699
+],
+"tags": [
+"business",
+"generic"
+],
+"w": 1
+},
+{
+"id": "construction_male_07",
+"g": "m",
+"h": 1.839,
+"hip": 0.896,
+"tris": [
+8058,
+3081,
+1233
+],
+"tags": [
+"generic"
+],
+"w": 0.35
+},
+{
+"id": "delivery_male_01",
+"g": "m",
+"h": 1.816,
+"hip": 0.896,
+"tris": [
+6800,
+3599,
+1699
+],
+"tags": [
+"generic"
+],
+"w": 0.4
+},
+{
+"id": "female_adult_01",
+"g": "f",
+"h": 1.743,
+"hip": 0.928,
+"tris": [
+8732,
+3174,
+1196
+],
+"tags": [
+"generic",
+"tourist"
+],
+"w": 1
+},
+{
+"id": "female_adult_02",
+"g": "f",
+"h": 1.735,
+"hip": 0.928,
+"tris": [
+8940,
+3418,
+1454
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "female_adult_03",
+"g": "f",
+"h": 1.739,
+"hip": 0.923,
+"tris": [
+9208,
+2964,
+1229
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "female_adult_04",
+"g": "f",
+"h": 1.766,
+"hip": 0.927,
+"tris": [
+9284,
+2833,
+1252
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "female_adult_05",
+"g": "f",
+"h": 1.736,
+"hip": 0.924,
+"tris": [
+8288,
+3014,
+1242
+],
+"tags": [
+"generic",
+"tourist"
+],
+"w": 1
+},
+{
+"id": "female_adult_07",
+"g": "f",
+"h": 1.723,
+"hip": 0.924,
+"tris": [
+8308,
+3249,
+1207
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "female_adult_08",
+"g": "f",
+"h": 1.735,
+"hip": 0.924,
+"tris": [
+8276,
+3119,
+1217
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "female_adult_09",
+"g": "f",
+"h": 1.735,
+"hip": 0.924,
+"tris": [
+9032,
+3262,
+1244
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "female_adult_11",
+"g": "f",
+"h": 1.736,
+"hip": 0.924,
+"tris": [
+8896,
+3246,
+1220
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "female_adult_12",
+"g": "f",
+"h": 1.727,
+"hip": 0.924,
+"tris": [
+8774,
+3299,
+1289
+],
+"tags": [
+"generic",
+"tourist"
+],
+"w": 1
+},
+{
+"id": "female_adult_13",
+"g": "f",
+"h": 1.752,
+"hip": 0.924,
+"tris": [
+8708,
+3122,
+1208
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "female_adult_14",
+"g": "f",
+"h": 1.744,
+"hip": 0.928,
+"tris": [
+8724,
+3080,
+1216
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "female_adult_15",
+"g": "f",
+"h": 1.739,
+"hip": 0.924,
+"tris": [
+9832,
+2984,
+1212
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "female_adult_17",
+"g": "f",
+"h": 1.751,
+"hip": 0.923,
+"tris": [
+8516,
+3258,
+1226
+],
+"tags": [
+"generic",
+"tourist"
+],
+"w": 1
+},
+{
+"id": "female_party_01",
+"g": "f",
+"h": 1.753,
+"hip": 0.924,
+"tris": [
+10254,
+2943,
+2108
+],
+"tags": [
+"generic",
+"tourist"
+],
+"w": 0.5
+},
+{
+"id": "female_party_02",
+"g": "f",
+"h": 1.79,
+"hip": 0.925,
+"tris": [
+9874,
+2806,
+1650
+],
+"tags": [
+"generic"
+],
+"w": 0.6
+},
+{
+"id": "male_adult_01",
+"g": "m",
+"h": 1.824,
+"hip": 0.896,
+"tris": [
+7440,
+3325,
+1290
+],
+"tags": [
+"generic",
+"tourist"
+],
+"w": 1
+},
+{
+"id": "male_adult_02",
+"g": "m",
+"h": 1.823,
+"hip": 0.896,
+"tris": [
+7312,
+3204,
+1222
+],
+"tags": [
+"generic",
+"tourist"
+],
+"w": 1
+},
+{
+"id": "male_adult_03",
+"g": "m",
+"h": 1.807,
+"hip": 0.896,
+"tris": [
+7200,
+3493,
+1537
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_04",
+"g": "m",
+"h": 1.869,
+"hip": 0.896,
+"tris": [
+8684,
+3162,
+1200
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_05",
+"g": "m",
+"h": 1.812,
+"hip": 0.896,
+"tris": [
+7836,
+3384,
+1386
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_06",
+"g": "m",
+"h": 1.831,
+"hip": 0.896,
+"tris": [
+7456,
+3231,
+1210
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_07",
+"g": "m",
+"h": 1.821,
+"hip": 0.896,
+"tris": [
+7588,
+3470,
+1510
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_08",
+"g": "m",
+"h": 1.826,
+"hip": 0.896,
+"tris": [
+7364,
+3439,
+1456
+],
+"tags": [
+"generic",
+"tourist"
+],
+"w": 1
+},
+{
+"id": "male_adult_09",
+"g": "m",
+"h": 1.822,
+"hip": 0.896,
+"tris": [
+7426,
+3452,
+1480
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_10",
+"g": "m",
+"h": 1.831,
+"hip": 0.898,
+"tris": [
+6732,
+3510,
+1556
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_11",
+"g": "m",
+"h": 1.803,
+"hip": 0.896,
+"tris": [
+6740,
+3600,
+1699
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_12",
+"g": "m",
+"h": 1.807,
+"hip": 0.896,
+"tris": [
+6722,
+3600,
+1700
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_13",
+"g": "m",
+"h": 1.806,
+"hip": 0.896,
+"tris": [
+6710,
+3600,
+1699
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_14",
+"g": "m",
+"h": 1.796,
+"hip": 0.896,
+"tris": [
+6842,
+3600,
+1700
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_16",
+"g": "m",
+"h": 1.809,
+"hip": 0.895,
+"tris": [
+7064,
+3600,
+1700
+],
+"tags": [
+"generic",
+"tourist"
+],
+"w": 1
+},
+{
+"id": "male_adult_17",
+"g": "m",
+"h": 1.812,
+"hip": 0.895,
+"tris": [
+7084,
+3600,
+1700
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_18",
+"g": "m",
+"h": 1.813,
+"hip": 0.896,
+"tris": [
+6434,
+3600,
+1698
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "male_adult_20",
+"g": "m",
+"h": 1.805,
+"hip": 0.896,
+"tris": [
+7120,
+3600,
+1699
+],
+"tags": [
+"generic"
+],
+"w": 1
+},
+{
+"id": "medical_female_01",
+"g": "f",
+"h": 1.739,
+"hip": 0.926,
+"tris": [
+8328,
+3260,
+1224
+],
+"tags": [
+"generic"
+],
+"w": 0.3
+},
+{
+"id": "medical_male_04",
+"g": "m",
+"h": 1.82,
+"hip": 0.898,
+"tris": [
+8240,
+2765,
+1304
+],
+"tags": [
+"generic"
+],
+"w": 0.2
+},
+{
+"id": "police_male_06",
+"g": "m",
+"h": 1.811,
+"hip": 0.896,
+"tris": [
+7492,
+3599,
+1700
+],
+"tags": [
+"police"
+],
+"w": 1
+},
+{
+"id": "police_male_07",
+"g": "m",
+"h": 1.818,
+"hip": 0.896,
+"tris": [
+7597,
+3599,
+1699
+],
+"tags": [
+"police"
+],
+"w": 1
+},
+{
+"id": "sports_female_02",
+"g": "f",
+"h": 1.737,
+"hip": 0.928,
+"tris": [
+8580,
+3278,
+1256
+],
+"tags": [
+"jogger"
+],
+"w": 1
+},
+{
+"id": "sports_male_04",
+"g": "m",
+"h": 1.804,
+"hip": 0.893,
+"tris": [
+7520,
+3600,
+1700
+],
+"tags": [
+"jogger"
+],
+"w": 1
+}
+]
+}
