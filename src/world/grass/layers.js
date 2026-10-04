@@ -2,7 +2,7 @@
 // instance) and the materials (MeshStandardMaterial + onBeforeCompile; placement, wind and colour are in glsl.js).
 import * as THREE from 'three';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
-import { COMMON_V, BODY, COMMON_F, TRANSLUCENT_F, ALPHA_F } from './glsl.js';
+import { COMMON_V, BODY, COMMON_F, TRANSLUCENT_F, ALPHA_F, FLOWER_F } from './glsl.js';
 
 // ------------------------------------------------------------------ templates: { pos, nrm?, tpl?, uv?, idx }
 function bladeTpl(segs) {
@@ -126,7 +126,7 @@ export function coverMaterial(kind, U, { depth = false, alpha = null, std = {} }
     sh.vertexShader = v.replace('#include <project_vertex>', '#include <project_vertex>\nif (cK) gl_Position = vec4(0.0, 0.0, 2.0, 1.0);');
     if (!depth) {
       let f = sh.fragmentShader.replace('#include <common>', '#include <common>\n' + COMMON_F)
-        .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= vGC;' + (alpha ? ALPHA_F[alpha] : ''));
+        .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= vGC;' + (alpha ? ALPHA_F[alpha] : '') + (kind === 'flower' ? FLOWER_F : ''));
       if (kind !== 'rock') f = f.replace('#include <lights_physical_pars_fragment>', '#include <lights_physical_pars_fragment>\n' + TRANSLUCENT_F);
       // night: sky / IBL fill fades (street lamps and the moon are direct lights and still reach the ground cover)
       f = f.replace('#include <aomap_fragment>', '#include <aomap_fragment>\nreflectedLight.indirectDiffuse *= 1.0 - 0.88 * uNight; reflectedLight.indirectSpecular *= 1.0 - 0.9 * uNight;');

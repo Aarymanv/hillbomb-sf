@@ -88,7 +88,7 @@ float iceAt(int c, vec3 p) {
   if (c == 8 && p.x < -6500.0) return smoothstep(0.52, 0.64, n);
   return 0.0;
 }
-const vec3 FL_POPPY = vec3(0.95, 0.28, 0.015), FL_LUPINE = vec3(0.26, 0.2, 0.52), FL_YELLOW = vec3(0.95, 0.72, 0.04), FL_WHITE = vec3(0.85, 0.85, 0.8);
+const vec3 FL_POPPY = vec3(0.95, 0.28, 0.015), FL_LUPINE = vec3(0.3, 0.17, 0.66), FL_YELLOW = vec3(0.95, 0.72, 0.04), FL_WHITE = vec3(0.85, 0.85, 0.8);
 `;
 
 // ------------------------------------------------------------------ per-layer vertex bodies: void coverMain(out P, out N, out kill)
@@ -100,18 +100,21 @@ void coverMain(out vec3 P, out vec3 N, out bool kill) {
   float t = position.y, side = position.x;
   uint s = S.s;
   float icef = iceAt(S.cls, S.p);
-  float target0 = min(110.0, 110.0 * pow(8.5 / max(S.d, 0.5), 1.8)) * max(grassDens(S.cls), icef) * uDensMul;
+  float target0 = min(110.0, 110.0 * pow(8.5 / max(S.d, 0.5), 1.8)) * max(grassDens(S.cls), icef * 1.6) * uDensMul;   // (ice plant: closed mats)
   if (!S.ok || S.rank * uLayer.z >= target0 || S.d < uLayer.x || S.d >= uLayer.y) { kill = true; P = vec3(0.0); N = vec3(0.0, 1.0, 0.0); vGC = vec3(0.0); vCov = vec4(0.0); return; }
   float r1 = rnd(s), r2 = rnd(s), r3 = rnd(s), r4 = rnd(s), r5 = rnd(s), r6 = rnd(s), r7 = rnd(s);
   float patchN = fbm(S.p.xz * 0.03 + 11.0), n1 = vnoise(S.p.xz * 0.13);
   float dry = dryness(S.bio, patchN, S.p.xz);
   int c = S.cls;
-  float dens = max(grassDens(c), icef);
+  float dens = max(grassDens(c), icef * 1.6);
   bool ice = r7 < icef * 0.97;
   bool lawn = c == 9 || (c == 3 && S.bio.g > 0.6 && patchN < 0.6);
   bool forest = c == 7;
   float H, W, stiff = 1.0;
-  if (ice) { H = mix(0.07, 0.15, r1); W = 0.034; stiff = 4.0; }            // fleshy finger leaves, low mats
+  // ice plant: fleshy finger leaves in low closed mats; flowering patches (spring) carry the odd broad magenta flower
+  float iceFl = ice ? smoothstep(0.5, 0.68, fbm(S.p.xz * 0.09 + 9.0)) : 0.0;
+  bool iceFlower = ice && r6 > 1.0 - 0.07 * iceFl - 0.006;
+  if (ice) { H = mix(0.09, 0.17, r1) + (iceFlower ? 0.03 : 0.0); W = iceFlower ? 0.11 : 0.072; stiff = 4.0; }
   else if (lawn) { H = mix(0.06, 0.16, r1); W = 0.028; stiff = 2.2; }
   else if (forest) { H = mix(0.1, 0.3, r1 * r1); W = 0.02; }
   else {
@@ -156,14 +159,19 @@ void coverMain(out vec3 P, out vec3 N, out bool kill) {
   vec3 col = grassCol(dry, n1, r4);
   if (forest) col = mix(vec3(0.16, 0.25, 0.06), vec3(0.26, 0.33, 0.1), n1);
   if (lawn) col = mix(col, vec3(0.07, 0.19, 0.025), 0.55);
-  if (ice) {   // succulent green, bronze-red tips in the dry season, the odd magenta flower
-    col = mix(vec3(0.09, 0.3, 0.05), vec3(0.19, 0.42, 0.08), n1);
-    col = mix(col, vec3(0.34, 0.1, 0.06), t * t * 0.8 * smoothstep(0.55, 0.8, fbm(S.p.xz * 0.05 + 3.0)));
-    if (r6 > 0.975 && t > 0.8) col = vec3(0.75, 0.08, 0.42);
+  if (ice) {   // Carpobrotus: fleshy yellow-green to blue-green mats, red-tinged (stressed) leaves and whole bronze-red mats
+    float m = fbm(S.p.xz * 0.05 + 3.0), bg = vnoise(S.p.xz * 0.07 + 2.0);
+    col = mix(vec3(0.17, 0.43, 0.09), vec3(0.3, 0.55, 0.13), n1);
+    col = mix(col, vec3(0.12, 0.38, 0.2), bg * 0.6);                              // glaucous blue-green leaves
+    col = mix(col, vec3(0.6, 0.12, 0.16), t * t * 0.9 * smoothstep(0.42, 0.62, m));   // red tips
+    col = mix(col, vec3(0.5, 0.16, 0.13), 0.7 * smoothstep(0.66, 0.8, m));            // whole red-bronze mats
+    if (iceFlower && t > 0.62) col = vec3(0.92, 0.1, 0.56);                        // magenta (C. chilensis) flowers
   }
   col *= 0.8 + 0.4 * r6;
-  float ao = mix(0.35, 1.0, smoothstep(0.0, 0.75, t));
-  col = mix(col * ao, col * (1.15 + 0.25 * dry), t * t);
+  // (succulent mats: shallow base shade and no dry-grass tip bleaching: the old 0.35 base AO under warm golden-hour light
+  // read the mats as olive-brown)
+  float ao = mix(ice ? 0.62 : 0.35, 1.0, smoothstep(0.0, 0.75, t));
+  col = mix(col * ao, col * (ice ? 1.08 : 1.15 + 0.25 * dry), t * t);
   if (litter) { col = mix(vec3(0.17, 0.1, 0.04), vec3(0.3, 0.2, 0.08), r1) * (0.7 + 0.4 * r2); N = S.n; }
   if (moss) { col = mix(vec3(0.09, 0.16, 0.03), vec3(0.2, 0.26, 0.07), r1) * (0.75 + 0.4 * r2) * mix(0.7, 1.0, t); N = normalize(mix(S.n, nb, 0.3)); }
   // far flower speckle: tips of distant blades take the colour of wildflower patches
@@ -175,7 +183,7 @@ void coverMain(out vec3 P, out vec3 N, out bool kill) {
   }
   col *= 1.0 + 0.28 * g * wAmt;
   col *= 1.0 - 0.3 * uWind.w;
-  vGC = col; vCov = vec4(t, litter ? 0.15 : moss ? 0.3 : ice ? 0.35 : 0.6, side, t);
+  vGC = col; vCov = vec4(t, litter ? 0.15 : moss ? 0.3 : ice ? 0.5 : 0.6, side, t);
 }`;
 
 BODY.flower = /* glsl */`
@@ -192,8 +200,8 @@ void coverMain(out vec3 P, out vec3 N, out bool kill) {
   kill = !S.ok || S.rank * uLayer.z >= target || d < uLayer.x || d >= uLayer.y;
   // species: 0 poppy, 1 lupine, 2 yellow, 3 white
   float pick = r1 * fs; int sp = pick < fw.x ? 0 : pick < fw.x + fw.y ? 1 : pick < fw.x + fw.y + fw.z ? 2 : 3;
-  float Hs = sp == 0 ? mix(0.22, 0.38, r2) : sp == 1 ? mix(0.35, 0.6, r2) : sp == 2 ? mix(0.1, 0.24, r2) : mix(0.06, 0.16, r2);
-  float R = sp == 0 ? 0.035 : sp == 1 ? 0.028 : sp == 2 ? 0.024 : 0.022;
+  float Hs = sp == 0 ? mix(0.22, 0.38, r2) : sp == 1 ? mix(0.2, 0.36, r2) : sp == 2 ? mix(0.1, 0.24, r2) : mix(0.06, 0.16, r2);
+  float R = sp == 0 ? 0.035 : sp == 1 ? 0.017 : sp == 2 ? 0.024 : 0.022;
   float big = clamp(d / 14.0, 1.0, 2.2); R *= big; Hs *= mix(1.0, 1.25, big - 1.0);
   Hs *= smoothstep(uLayer.y, uLayer.y * 0.8, d);
   float g = gustAt(S.p.xz), wAmt = uWind.z;
@@ -219,16 +227,16 @@ void coverMain(out vec3 P, out vec3 N, out bool kill) {
     vec2 rc = vec2(cos(ang), sin(ang));
     vec3 c0, c1, c2;   // (radius, height) of centre, ring1, ring2 in head units
     if (sp == 0) { c0 = vec3(0.0, 0.0, 0.0); c1 = vec3(0.55, 0.4, 0.0); c2 = vec3(1.15, 1.05, 0.0); }
-    else if (sp == 1) { float wob = 0.8 + 0.4 * hash12(vec2(position.y * 7.0, r4 * 13.0)); c0 = vec3(0.0, 4.8, 0.0); c1 = vec3(0.42 * wob, 3.9, 0.0); c2 = vec3(0.6 * wob, 0.4, 0.0); }
+    // lupine: a slender spindle-shaped raceme (~16 x 2 cm), widest a third of the way up, whorls of florets in the fragment
+    else if (sp == 1) { float wob = 0.9 + 0.2 * hash12(vec2(position.y * 7.0, r4 * 13.0)); c0 = vec3(0.0, 9.5, 0.0); c1 = vec3(0.62 * wob, 3.4, 0.0); c2 = vec3(0.4 * wob, 0.0, 0.0); }
     else if (sp == 2) { c0 = vec3(0.0, 0.35, 0.0); c1 = vec3(0.6, 0.3, 0.0); c2 = vec3(1.15, 0.1, 0.0); }
     else { c0 = vec3(0.0, 0.2, 0.0); c1 = vec3(0.3, 0.18, 0.0); c2 = vec3(1.2, 0.05, 0.0); }
     vec3 cr = ring < 0.5 ? c0 : ring < 1.5 ? c1 : c2;
     P = tip + vec3(rc.x * cr.x, cr.y, rc.y * cr.x) * R;
-    N = normalize(vec3(rc.x * cr.x, 0.8, rc.y * cr.x));
+    N = normalize(vec3(rc.x * cr.x, sp == 1 ? 0.25 : 0.8, rc.y * cr.x));
     vec3 col = fcol;
-    if (ring < 0.5) col = sp == 0 ? vec3(0.9, 0.55, 0.05) : sp == 3 ? vec3(0.9, 0.7, 0.05) : sp == 1 ? vec3(0.55, 0.45, 0.8) : fcol * 0.8;
-    if (sp == 1) col *= mix(1.25, 0.8, ring * 0.5);
-    vGC = col; vCov = vec4(1.0, 0.85, 0.0, 1.0);
+    if (ring < 0.5) col = sp == 0 ? vec3(0.9, 0.55, 0.05) : sp == 3 ? vec3(0.9, 0.7, 0.05) : sp == 1 ? vec3(0.52, 0.42, 0.84) : fcol * 0.8;   // lupine: paler buds at the tip
+    vGC = col; vCov = vec4(1.0, sp == 1 ? 0.45 : 0.85, sp == 1 ? 2.0 : 0.0, sp == 1 ? cr.y / 9.5 : 1.0);   // z = 2: lupine spike, w = height up it
   }
   vGC *= 1.0 - 0.25 * uWind.w;
 }`;
@@ -346,3 +354,13 @@ export const ALPHA_F = {
     for (int k = 0; k < 5; k++) { vec2 dq = q - C[k]; float an = float(k) * 1.3; dq = mat2(cos(an), -sin(an), sin(an), cos(an)) * dq; a = max(a, 1.0 - dot(dq * vec2(1.0, 2.0), dq * vec2(1.0, 2.0)) / 0.2); }
     if (a <= 0.0) discard; }`,
 };
+
+// flower heads (fragment, after diffuseColor *= vGC): lupine spikes = whorls of small pea flowers (bright florets, dark gaps
+// between the whorls, a pale banner fleck on each), smaller and closer toward the tip
+export const FLOWER_F = /* glsl */`
+  if (vCov.z > 1.5) {
+    float h = clamp(vCov.w, 0.0, 1.0), q = h * (9.0 + 5.0 * h), wh = fract(q);
+    float fl = smoothstep(0.0, 0.3, wh) * smoothstep(1.0, 0.62, wh);
+    diffuseColor.rgb *= mix(0.42, 1.12, fl);
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.86, 0.84, 0.92), 0.25 * smoothstep(0.55, 0.75, wh) * smoothstep(0.95, 0.75, wh) * (1.0 - h));
+  }`;
