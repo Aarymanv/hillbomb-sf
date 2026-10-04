@@ -14,6 +14,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { packedUrl, loadPacked } from '../../world/texpack.js';
+import { Ragdoll } from './ragdoll.js';
 
 const BASE = (import.meta.env?.BASE_URL || './') + 'assets/peds/';
 const OFF = typeof location !== 'undefined' && /[?&]peds=(v1|proc|0)/.test(location.search);
@@ -53,7 +54,7 @@ function loadLib() {
       }
       let my = 0; for (let k = 0; k < n; k++) my += d[k * S + 1]; my /= n;
       lib[name] = { name, g: c.g, fps: c.fps, n, dur: n / c.fps, loop: c.loop && c.speed !== undefined, speed: c.speed || 0,
-        phase0: c.phase0 || 0, stride: (c.speed || 0) * (n / c.fps), d, S, hip0: cj.hip0[c.g], meanY: my };
+        phase0: c.phase0 || 0, stride: (c.speed || 0) * (n / c.fps), d, S, hip0: cj.hip0[c.g], meanY: my, turn: c.turn || 0 };
     }
     LIB = lib; IDX = idx;
   })().catch(e => { console.warn('[peds] realistic humans unavailable, procedural fallback', e); failed = true; throw e; });
@@ -82,7 +83,9 @@ function loadAvatar(id) {
   AV.set(id, a);
   a.promise = (async () => {
     const info = IDX.avatars.find(x => x.id === id);
-    const [g, alb, nrm] = await Promise.all([gltfLoader.loadAsync(BASE + id + '.glb'), tex(BASE + id + '_alb.webp', true), tex(BASE + id + '_nrm.png', false)]);
+    // retried: under load (boot streams hundreds of requests) Chrome can drop fetches with net errors
+    const retry = async (f) => { for (let k = 0; ; k++) { try { return await f(); } catch (e) { if (k >= 3) throw e; await new Promise(r => setTimeout(r, 800 * (k + 1))); } } };
+    const [g, alb, nrm] = await Promise.all([retry(() => gltfLoader.loadAsync(BASE + id + '.glb')), retry(() => tex(BASE + id + '_alb.webp', true)), retry(() => tex(BASE + id + '_nrm.png', false))]);
     const lods = [];
     let skel = null;
     g.scene.traverse(o => { if (o.isSkinnedMesh) { lods[+o.name.replace(/\D/g, '') || 0] = o.geometry; skel = o.skeleton; if (o.material) o.material.dispose(); } });
@@ -305,6 +308,28 @@ const DUMMY_INV = [];
 const IDENT = new THREE.Matrix4();
 
 const PROC_STATES = new Set(['drive', 'knocked', 'getup', 'jump', 'fall', 'land', 'enterCar', 'exitCar']);
+// mocap one-shots (tools/blender/peds/build_clips_extra.py); the procedural animator stays the fallback
+const ONE_STATES = new Set(['jump', 'fall', 'land', 'knocked', 'getup', 'enterCar', 'exitCar']);
+const ONE_CLIP = { jump: 'jump_up', fall: 'jump_air', land: 'jump_land', knocked: 'getup_back', getup: 'getup_back', enterCar: 'sit_down_chair_right', exitCar: 'sit_stand_up_chair_left' };
+const ANCHORED = new Set(['knocked', 'getup', 'enterCar', 'exitCar']);
+const FADE_IN = { jump: 0.1, fall: 0.25, land: 0.08, knocked: 1e-3, getup: 0.45, enterCar: 0.2, exitCar: 0.05, clip: 0.2 };
+const GETUP_T0 = 0.15, ENTER_T0 = 1.15, ENTER_RATE = 2.2, EXIT_RATE = 2.3;
+const _mA = new THREE.Matrix4(), _mB = new THREE.Matrix4();
+/** FK without matrices / additives: rig-space bone world rotations + positions (avatar units) of pose P */
+function fkPos(av, P, WQ, WP) {
+  const T = av.T;
+  for (let b = 0; b < NB; b++) {
+    const p = PAR[b], k = 3 + b * 4;
+    if (p < 0) { WQ[0] = P[k]; WQ[1] = P[k + 1]; WQ[2] = P[k + 2]; WQ[3] = P[k + 3]; WP[0] = P[0]; WP[1] = P[1]; WP[2] = P[2]; continue; }
+    const ax = WQ[p * 4], ay = WQ[p * 4 + 1], az = WQ[p * 4 + 2], aw = WQ[p * 4 + 3];
+    qmul(ax, ay, az, aw, P[k], P[k + 1], P[k + 2], P[k + 3], WQ, b * 4);
+    const vx = T[b * 3], vy = T[b * 3 + 1], vz = T[b * 3 + 2];
+    const tx = 2 * (ay * vz - az * vy), ty = 2 * (az * vx - ax * vz), tz = 2 * (ax * vy - ay * vx);
+    WP[b * 3] = WP[p * 3] + vx + aw * tx + (ay * tz - az * ty);
+    WP[b * 3 + 1] = WP[p * 3 + 1] + vy + aw * ty + (az * tx - ax * tz);
+    WP[b * 3 + 2] = WP[p * 3 + 2] + vz + aw * tz + (ax * ty - ay * tx);
+  }
+}
 const LOCO_STATES = new Set(['walk', 'run', 'sprint', 'flee']);
 const LISTS = {
   idle: ['idle_neutral_01', 'idle_neutral_02', 'idle_neutral_03', 'idle_neutral_04', 'idle_breathe_01', 'idle_neutral_01', 'idle_neutral_02', 'idle_look_around_01', 'idle_touch_hair_01', 'idle_scratch_head_01', 'idle_waiting_01'],
@@ -474,23 +499,33 @@ export class RealHuman {
     this.vs += (speed - this.vs) * Math.min(1, dt * 6);
     // ---- choose the mode
     let mode;
-    if (PROC_STATES.has(state)) mode = 'proc';
+    if (s.clip) mode = 'clip';               // debug / tooling: play one named clip (s.clip, s.rate), hold the last frame
+    else if (ONE_STATES.has(state) && clipFor(ONE_CLIP[state], this.g)) mode = state;   // mocap one-shots (car, jump, knockdown)
+    else if (PROC_STATES.has(state)) mode = 'proc';
     else if (LOCO_STATES.has(state) || (state === 'idle' && speed > 0.3)) mode = 'loco';
     else if (state === 'phone') mode = s.gesture === 'photo' ? 'photo' : 'phone';
     else if (state === 'wave') mode = 'wave';
     else if (state === 'sit') mode = 'sit';
     else mode = s.gesture && LISTS[s.gesture] ? s.gesture : 'idle';
+    this._rootWorld();
     if (mode !== this.mode) {
-      const fromProc = this.mode === 'proc' || mode === 'proc';
-      if (this.mode !== null) this._startFade(fromProc ? 0.22 : mode === 'loco' || this.mode === 'loco' ? 0.3 : 0.45);
+      const prev = this.mode;
+      const fromProc = prev === 'proc' || mode === 'proc';
+      if (prev !== null) this._startFade(FADE_IN[mode] ?? (fromProc ? 0.22 : mode === 'loco' || prev === 'loco' ? 0.3 : 0.45));
+      if (prev === 'knocked' && mode !== 'getup') this.rag = null;
+      if (ANCHORED.has(prev) && !ANCHORED.has(mode)) this.anchor = null;   // the owner has adopted getupRoot / exitYaw by now
       this.mode = mode;
-      if (mode === 'phone') { this.clip = this.phoneClip || clipFor('cell_phone_textmessage', this.g); this.ct = this.r() * 4; this.clipEnd = this.clip.dur - 0.05; }
+      if (mode === 'clip') this._clipName = null;
+      else if (ONE_STATES.has(mode)) this._startOne(mode, s, prev);
+      else if (mode === 'phone') { this.clip = this.phoneClip || clipFor('cell_phone_textmessage', this.g); this.ct = this.r() * 4; this.clipEnd = this.clip.dur - 0.05; }
       else if (mode !== 'loco' && mode !== 'proc') this._play(LISTS[mode]);
       if (mode === 'loco' && this.vs < 0.2) this.vs = speed;
     }
     const P = this.pose, T = this.tmp;
     const hs = av.hip;
-    if (mode === 'loco') {
+    if (ONE_STATES.has(mode)) {
+      this._onePose(mode, dt, s, T);
+    } else if (mode === 'loco') {
       const G = this.gait, v = Math.max(this.vs, 0.05);
       let i = 0; while (i < G.length - 1 && G[i + 1].speed < v) i++;
       const a = G[i], b = G[Math.min(i + 1, G.length - 1)];
@@ -502,6 +537,11 @@ export class RealHuman {
       normPose(T);
     } else if (mode === 'proc') {
       this._procPose(dt, s, T);
+    } else if (mode === 'clip') {
+      if (this._clipName !== s.clip) { this._clipName = s.clip; this.clip = clipFor(s.clip, this.g); this.ct = s.clipT || 0; }
+      const c = this.clip;
+      if (c) { this.ct = Math.min(c.dur - 0.01, this.ct + dt * (s.rate || 1)); sampleInto(c, this.ct, T, 1, true, hs / c.hip0); normPose(T); }
+      else T.set(this.pose);
     } else {
       this.ct += dt;
       if (this.ct >= this.clipEnd) {
@@ -541,6 +581,8 @@ export class RealHuman {
       add.neck.setFromAxisAngle(Y_AXIS, ly * 0.4); add.head.setFromAxisAngle(Y_AXIS, ly * 0.6);
     }
     this._fk(add);
+    this._applyAnchor();
+    this._prevRig = this._rigWorld(this._prevRig || {});
     this._props(mode, dt);
     // mesh LOD by camera distance (hysteresis)
     if (!this.lockLod0 && viewer && this.mesh) {
@@ -549,6 +591,169 @@ export class RealHuman {
       if (d < 13) l = 0; else if (d > 15 && d < 38) l = 1; else if (d > 42) l = 2;
       if (l !== this.lod) { this.lod = l; this.mesh.geometry = av.lods[l]; }
     }
+  }
+
+  // ---------------------------------------------------------------------------------------------- one-shots + anchor
+  // Mocap one-shots (enter / exit a car seat, jump / fall / land, knockdown ragdoll + get up) may place the body away
+  // from the owner's root: `this.anchor` = { x, y, z, yaw } is then the rig's world transform (the rig is re-parented
+  // relative to the root every frame). Owners adopt getupRoot / exitYaw so the anchor coincides with the root when
+  // the one-shot ends.
+  _rootWorld() {
+    const r = this.root;
+    r.updateWorldMatrix(true, false);
+    const e = r.matrixWorld.elements;
+    this.rw = this.rw || { x: 0, y: 0, z: 0, yaw: 0 };
+    this.rw.x = e[12]; this.rw.y = e[13]; this.rw.z = e[14]; this.rw.yaw = Math.atan2(e[8], e[10]);
+    return this.rw;
+  }
+  _applyAnchor() {
+    const rig = this.rig, A = this.anchor;
+    if (!A) {
+      if (this._anchored) { rig.position.set(0, 0, 0); rig.quaternion.identity(); rig.scale.setScalar(this.scale); this._anchored = false; }
+      return;
+    }
+    this._anchored = true;
+    _mA.compose(_va.set(A.x, A.y, A.z), _qa.setFromAxisAngle(Y_AXIS, A.yaw), _vb.setScalar(this.scale));
+    _mB.copy(this.root.matrixWorld).invert().multiply(_mA);
+    _mB.decompose(rig.position, rig.quaternion, rig.scale);
+  }
+  /** current rig world transform as an anchor record (no anchor = the root) */
+  _rigWorld(out = {}) {
+    if (this.anchor) return Object.assign(out, this.anchor);
+    const r = this.rw; out.x = r.x; out.y = r.y; out.z = r.z; out.yaw = r.yaw; return out;
+  }
+  /** pelvis + head positions (avatar units, rig space) of clip c at time t */
+  _clipFrame(c, t) {
+    const T = this.tmp2, WQ = this._cfq || (this._cfq = new Float32Array(NB * 4)), WP = this._cfp || (this._cfp = new Float32Array(NB * 3));
+    sampleInto(c, t, T, 1, true, this.av.hip / c.hip0); normPose(T);
+    fkPos(this.av, T, WQ, WP);
+    return { px: WP[0], py: WP[1], pz: WP[2], hx: WP[BN.Head * 3] - WP[0], hz: WP[BN.Head * 3 + 2] - WP[2] };
+  }
+  /** seconds the get-up takes at playback rate `rate` (owners size their knockdown timers with it) */
+  getupTime(rate = 1.3) { const c = LIB && this.g && clipFor('getup_back', this.g); return c ? (c.dur - GETUP_T0) / rate : 1.25; }
+  /** seconds of the car one-shots ('enter' = door -> seat, 'exit' = seat -> standing outside) */
+  carTime(kind) {
+    const c = LIB && this.g && this.av && clipFor(kind === 'enter' ? 'sit_down_chair_right' : 'sit_stand_up_chair_left', this.g);
+    if (!c) return kind === 'enter' ? 0.55 : 0;
+    return kind === 'enter' ? (c.dur - ENTER_T0) / ENTER_RATE : c.dur / EXIT_RATE;
+  }
+
+  _startOne(mode, s, prev) {
+    const g = this.g, o = this.one = { mode, clip: clipFor(ONE_CLIP[mode], g), t: 0, rate: s.rate || 1, end: 0 };
+    const sc = this.scale, rw = this.rw;
+    if (mode === 'jump') { o.t = 0.16; }
+    else if (mode === 'fall') { o.pp = true; o.rate = 0.55; o.t = 0.1; }
+    else if (mode === 'land') { o.t = 0.12; o.rate = s.rate || 1.25; }
+    else if (mode === 'knocked') {
+      // ragdoll from the current pose (world space); the anchor holds the rig still while the root flies
+      this.anchor = { ...(this._prevRig || this._rigWorld({})) };   // last frame's rig: the owner may have turned the root this frame
+      this.rag = this.rag || new Ragdoll(BN, PAR, NB);
+      const WQ = this._kq || (this._kq = new Float32Array(NB * 4)), WP = this._kp || (this._kp = new Float32Array(NB * 3));
+      const A = this.anchor; _qb.setFromAxisAngle(Y_AXIS, A.yaw);
+      for (let b = 0; b < NB; b++) {
+        _qa.fromArray(this.WQ, b * 4).premultiply(_qb).toArray(WQ, b * 4);
+        _va.fromArray(this.WP, b * 3).multiplyScalar(sc).applyQuaternion(_qb); WP[b * 3] = _va.x + A.x; WP[b * 3 + 1] = _va.y + A.y; WP[b * 3 + 2] = _va.z + A.z;
+      }
+      const v = s.vel || { x: 0, y: 1.5, z: 0 };
+      this.rag.start(WQ, WP, v, s.spin || 0);
+      this.fade = 1;
+    } else if (mode === 'getup') {
+      // pick the clip by how the body lies, then place the clip's first frame onto the body (pelvis + head line)
+      const back = this.rag ? this.rag.onBack() : true;
+      o.clip = clipFor(back ? 'getup_back' : 'getup_front', g); o.t = GETUP_T0; o.rate = s.rate || 1.3;
+      const A0 = this._rigWorld({});
+      _qb.setFromAxisAngle(Y_AXIS, A0.yaw);
+      // current pelvis / head in world (from the last FK)
+      _va.fromArray(this.WP, 0).multiplyScalar(sc).applyQuaternion(_qb); const pwx = _va.x + A0.x, pwz = _va.z + A0.z;
+      _vb.fromArray(this.WP, BN.Head * 3).multiplyScalar(sc).applyQuaternion(_qb); const hwx = _vb.x + A0.x - pwx, hwz = _vb.z + A0.z - pwz;
+      const f = this._clipFrame(o.clip, o.t);
+      const yaw = Math.atan2(-hwx, -hwz) - Math.atan2(-f.hx, -f.hz);
+      const c = Math.cos(yaw), sn = Math.sin(yaw);
+      const ox = (f.px * c + f.pz * sn) * sc, oz = (-f.px * sn + f.pz * c) * sc;
+      const gy = s.ground ? s.ground.y : rw.y;
+      this.anchor = { x: pwx - ox, y: gy, z: pwz - oz, yaw };
+      this.getupRoot = { ...this.anchor };
+      // re-express the current (ragdoll) pose in the new anchor frame for the blend
+      this._poseInAnchor(this.from, A0, this.anchor);
+      this.fade = 0; this.fadeDur = 0.45;
+      this.getupDur = (o.clip.dur - o.t) / o.rate;
+    } else if (mode === 'enterCar' || mode === 'exitCar') {
+      const side = s.side === 1 ? 1 : -1;     // -1 = the car's left (driver) door
+      if (mode === 'enterCar') { o.clip = clipFor(side < 0 ? 'sit_down_chair_right' : 'sit_down_chair_left', g); o.t = ENTER_T0; o.rate = s.rate || ENTER_RATE; }
+      else { o.clip = clipFor(side < 0 ? 'sit_stand_up_chair_left' : 'sit_stand_up_chair_right', g); o.t = 0; o.rate = s.rate || EXIT_RATE; }
+      o.f0 = this._clipFrame(o.clip, o.t); o.f1 = this._clipFrame(o.clip, o.clip.dur - 0.01);
+      const cy = s.carYaw ?? rw.yaw;
+      o.yaw = mode === 'enterCar' ? cy - o.clip.turn : cy;
+      this.exitYaw = mode === 'exitCar' ? cy + o.clip.turn : null;
+      this.anchor = { x: rw.x, y: rw.y, z: rw.z, yaw: o.yaw };
+      this.carDur = (o.clip.dur - o.t) / o.rate;
+    }
+    o.t0 = o.t;
+  }
+
+  _onePose(mode, dt, s, T) {
+    const o = this.one, c = o.clip, hs = this.av.hip, sc = this.scale;
+    if (mode === 'knocked' && this.rag) {
+      const rw = this.rw;
+      this.rag.step(dt, s.ground || { y: rw.y, gx: 0, gz: 0, x: rw.x, z: rw.z }, s.follow === false ? null : { x: rw.x, z: rw.z, k: 0.04 });
+      this._ragPose(T);
+      return;
+    }
+    o.t += dt * o.rate;
+    let t = o.t;
+    if (o.pp) { const L = c.dur - 0.02, u = (t % (2 * L)); t = u < L ? u : 2 * L - u; }
+    else t = Math.min(c.dur - 0.01, t);
+    sampleInto(c, t, T, 1, true, hs / c.hip0); normPose(T);
+    if (mode === 'enterCar' || mode === 'exitCar') {
+      // the anchor glides so that the pelvis starts over the door point and ends on the seat (or the reverse)
+      const k = (t - o.t0) / Math.max(1e-3, c.dur - 0.01 - o.t0);
+      // entering: turn at the door first, then slide in while sitting down; exiting: out of the seat early
+      const u = mode === 'enterCar' ? smooth((k - 0.3) / 0.6) : smooth(k / 0.7);
+      const seat = s.seat, rw = this.rw, cs = Math.cos(o.yaw), sn = Math.sin(o.yaw);
+      const off = (f) => [(f.px * cs + f.pz * sn) * sc, (-f.px * sn + f.pz * cs) * sc];
+      const [ax, az] = off(o.f0), [bx, bz] = off(o.f1);
+      let A, B;
+      if (mode === 'enterCar') {
+        A = [rw.x - ax, rw.y, rw.z - az];
+        B = seat ? [seat.x - bx, seat.y - o.f1.py * sc, seat.z - bz] : A;
+      } else {
+        A = seat ? [seat.x - ax, seat.y - o.f0.py * sc, seat.z - az] : [rw.x - ax, rw.y, rw.z - az];
+        B = [rw.x - bx, rw.y, rw.z - bz];
+      }
+      const an = this.anchor;
+      an.x = A[0] + (B[0] - A[0]) * u; an.y = A[1] + (B[1] - A[1]) * u; an.z = A[2] + (B[2] - A[2]) * u; an.yaw = o.yaw;
+    }
+    if (mode === 'jump' || mode === 'fall' || mode === 'land') { T[0] *= 0.3; T[2] *= 0.3; }
+  }
+
+  /** ragdoll bone world rotations + pelvis -> pose (rig space of the anchor) */
+  _ragPose(out) {
+    const R = this.rag, A = this.anchor, W = R.W, sc = this.scale;
+    _qb.setFromAxisAngle(Y_AXIS, -A.yaw);
+    const WR = this._rq2 || (this._rq2 = new Float32Array(NB * 4));
+    for (let b = 0; b < NB; b++) { _qa.fromArray(W, b * 4).premultiply(_qb).toArray(WR, b * 4); }
+    for (let b = 0; b < NB; b++) {
+      const p = PAR[b], k = 3 + b * 4;
+      if (p < 0) { out[k] = WR[b * 4]; out[k + 1] = WR[b * 4 + 1]; out[k + 2] = WR[b * 4 + 2]; out[k + 3] = WR[b * 4 + 3]; continue; }
+      qmul(-WR[p * 4], -WR[p * 4 + 1], -WR[p * 4 + 2], WR[p * 4 + 3], WR[b * 4], WR[b * 4 + 1], WR[b * 4 + 2], WR[b * 4 + 3], out, k);
+    }
+    R.pelvis(_va); _va.x -= A.x; _va.y -= A.y; _va.z -= A.z; _va.applyQuaternion(_qb).multiplyScalar(1 / sc);
+    out[0] = _va.x; out[1] = _va.y; out[2] = _va.z;
+  }
+
+  /** the current pose (rig frame A0) re-expressed in rig frame A1 (both {x,y,z,yaw}) -> out */
+  _poseInAnchor(out, A0, A1) {
+    out.set(this.pose);
+    const dy = A0.yaw - A1.yaw, sc = this.scale;
+    _qa.setFromAxisAngle(Y_AXIS, dy);
+    // pelvis rotation
+    _qb.fromArray(out, 3).premultiply(_qa).toArray(out, 3);
+    // pelvis position: world = A0 + R0 p sc ; local1 = R1^-1 (world - A1) / sc
+    _va.fromArray(out, 0).multiplyScalar(sc).applyAxisAngle(Y_AXIS, A0.yaw);
+    _va.x += A0.x - A1.x; _va.y += A0.y - A1.y; _va.z += A0.z - A1.z;
+    _va.applyAxisAngle(Y_AXIS, -A1.yaw).multiplyScalar(1 / sc);
+    out[0] = _va.x; out[1] = _va.y; out[2] = _va.z;
+    return out;
   }
 
   _procPose(dt, s, out) {

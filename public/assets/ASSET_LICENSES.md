@@ -329,6 +329,11 @@ CC0 PBR materials (ambientCG, Poly Haven) and Poly Haven furniture / decor model
   Modified: skeleton reduced to 34 bones, meshes decimated to LODs, textures re-packed into atlases, clips resampled and cut to cycles.
   MIT notice: "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files ... THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND."
   (full text: https://github.com/microsoft/Microsoft-Rocketbox/blob/master/LICENSE.md)
+* `peds/clips.*` extras (`tools/blender/peds/build_clips_extra.py`, 10/3): Rocketbox (MIT, as above) `sit_down_chair_left/right`,
+  `sit_stand_up_chair_left/right`, `crouch_in/out`, `try_door_outwards` (f_ + m_) for getting into / out of car seats; and motion capture
+  from the **CMU Graphics Lab Motion Capture Database** (http://mocap.cs.cmu.edu, "free for all uses", the database was created with funding
+  from NSF EIA-0196217), retargeted to the Rocketbox skeleton: 140_01 / 140_09 (get up from face down / from the back), 140_08, 90_16 (dive / fall
+  on the face), 90_18 (rug-pull fall on the back), 105_39 (jump forward: take-off, air, landing).
 
 ## Chinatown hero set (`landmarks/ct/`, `landmarks/ct_*`): fonts rendered into the sign atlas (SIL Open Font License 1.1)
 

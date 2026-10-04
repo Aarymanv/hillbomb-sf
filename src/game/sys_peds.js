@@ -62,6 +62,8 @@ export function install(G) {
     list, density: 1, enabled: true, max: MAXP,     // max: crowd size cap (quality preset; the pool grows to max + 16)
     stats: { ms: 0, active: 0, visible: 0, updated: 0, pool: 0, target: 0, warmMs: Math.round(warmMs) },
     spawnFleeing, update, panic, near, pedAhead, nav,
+    // dev: knock ped p over as if hit by a car at speed v moving along (dx, dz)
+    debugKnock(p, v = 12, dx = 1, dz = 0) { const l = Math.hypot(dx, dz) || 1; knock(p, { sp: v, vx: dx / l * v, vz: dz / l * v, x: p.x - dx / l, z: p.z - dz / l, v: {}, player: false }, v, dx / l, dz / l); },
   };
   G.peds = P;
   G.systems.push({ update: dt => P.update(dt) });
@@ -620,7 +622,7 @@ export function install(G) {
     startTumble(p, ux * hs, vy, uz * hs, -ux, -uz, (chance(0.5) ? 1 : -1) * rand(1.5, 2.5 + v * 0.22), clamp(1.4 + v * 0.12, 1.5, 4.5), 'hit');
     p.fx = m.x; p.fz = m.z;
     // feedback: a light thump for the car
-    const b = m.v.body;
+    const b = m.v?.body;
     if (b && b.vel) b.vel.multiplyScalar(m.player ? 0.975 : 0.985);
     if (m.player) { G.rig?.addShake?.(Math.min(0.35, v / 60)); G.input?.rumble?.(0.4, 0.3, 120); }
     if (p.dCam < 70) G.audio?.impact?.(Math.min(0.7, v / 30), 'body');
@@ -649,7 +651,7 @@ export function install(G) {
       T.gT += dt;
       T.pitch *= Math.max(0, 1 - dt * 8); T.roll *= Math.max(0, 1 - dt * 8);
       p.lying = 0; p.anim = 'getup'; p.aSpeed = 0;
-      if (T.gT > 1.25) { p.tb = null; afterTumble(p, T.why); }
+      if (T.gT > (T.getupDur || 1.25)) { p.tb = null; afterTumble(p, T.why); }
       return;
     }
     if (!T.ground) {
@@ -1303,6 +1305,7 @@ export function install(G) {
 
   // ------------------------------------------------------------------------------------------ animation + pose
   const _ha = { state: 'idle', speed: 0, turn: 0, lying: 0 };
+  const _hv = { x: 0, y: 0, z: 0 }, _hg = { x: 0, y: 0, z: 0, gx: 0, gz: 0 };
   function animate(p, dt) {
     const h = p.human, r = h.root;
     _ha.state = p.anim; _ha.speed = p.aSpeed; _ha.turn = p.turn; _ha.lying = p.lying;
@@ -1350,10 +1353,26 @@ export function install(G) {
     _ha.lean = p.tb ? 0 : 0.42 * a + (a > 0 ? 0.42 * a : 0.22 * a); _ha.leanSide = 0.3 * al;
     if (p.umb === undefined) p.umb = p.style !== 'jogger' && Math.random() < 0.65;
     _ha.umbrella = p.umb && (G.weather?.rain || 0) > 0.12 && !p.tb && p.fear <= 0;
-    h.update(dt, _ha);
+    // knocked down: the human runs a ragdoll (world space) that follows the tumble; then a mocap get-up placed on
+    // the body (it hands back where it will stand: getupRoot). The root stays upright for it (set before update).
+    _ha.vel = null; _ha.ground = null; _ha.rate = 1;
+    if (p.tb) {
+      const T = p.tb;
+      if (!T.ragStarted) { T.ragStarted = true; _hv.x = T.vx; _hv.y = T.vy; _hv.z = T.vz; _ha.vel = _hv; _ha.spin = T.spin; }
+      const gy = nav.standY(p.x, p.z, p.y + 1.2);
+      _hg.x = p.x; _hg.z = p.z; _hg.y = gy;
+      _hg.gx = (world.heightAt(p.x + 1, p.z) - world.heightAt(p.x - 1, p.z)) / 2; _hg.gz = (world.heightAt(p.x, p.z + 1) - world.heightAt(p.x, p.z - 1)) / 2;
+      _ha.ground = _hg; _ha.rate = T.why === 'eject' ? 1.6 : 1.35;
+    }
     r.position.set(p.x, p.y, p.z);
-    if (p.tb) r.rotation.set(p.tb.pitch, p.yaw, p.tb.roll);
-    else r.rotation.set(0.42 * a, p.yaw, -0.35 * al);
+    r.rotation.set(p.tb ? 0 : 0.42 * a, p.yaw, p.tb ? 0 : -0.35 * al);
+    h.update(dt, _ha);
+    if (h.getupRoot) {          // adopt the get-up placement (the body got up where the ragdoll came to rest)
+      const g = h.getupRoot; h.getupRoot = null;
+      p.x = g.x; p.z = g.z; p.y = g.y; p.yaw = g.yaw;
+      if (p.tb) { p.tb.vx = 0; p.tb.vz = 0; p.tb.getupDur = h.getupDur; }
+      r.position.set(p.x, p.y, p.z); r.rotation.set(0, p.yaw, 0); r.updateMatrixWorld(); h._applyAnchor?.();
+    }
   }
   function postPose(p, bones) {
     const t = time + p.id * 1.7;

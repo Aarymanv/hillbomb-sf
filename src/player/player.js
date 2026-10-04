@@ -50,10 +50,13 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
       _v.set(side * (spec.width / 2 + 0.7), 0, spec.seat ? spec.seat[2] : 0).applyQuaternion(b.quat);
       const o = v.root.position;
       const x = o.x + _v.x, z = o.z + _v.z;
-      if (!world.colliders.pointHit(x, o.y + 1, z, R)) { P.pos.set(x, world.groundAt(x, z, o.y + 2), z); placed = true; break; }
+      if (!world.colliders.pointHit(x, o.y + 1, z, R)) { P.pos.set(x, world.groundAt(x, z, o.y + 2), z); placed = true; P.exitSide = side; break; }
     }
     if (!placed) { P.pos.copy(v.root.position); P.pos.y += spec.height + 0.3; }
     P.yaw = b.yaw();
+    // climb-out animation (not for forced exits: teleports, wrecks)
+    P.exitT = !force && placed && human.carTime ? human.carTime('exit') : 0;
+    P.exitCar = v; P.exitCarYaw = b.yaw();
     v.driver = null; v.role = 'npc'; v.body.isPlayer = false;
     v.input.throttle = 0; v.input.brake = 0; v.input.steer = 0; v.input.handbrake = 1;
     P.vehicle = null; P.mode = 'foot';
@@ -83,7 +86,7 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
       game.hud?.toast('Not in this mode', 'Carjacking is off in ' + (game.mode === 'explore' ? 'Free Roam' : 'Festival') + ' mode. Switch to Outlaw mode in the pause menu.', '', 2600);
       return;
     }
-    P.enterT = 0.55; P.enterCar = best; P.enterFrom.copy(P.pos);
+    P.enterT = human.carTime ? human.carTime('enter') : 0.55; P.enterCar = best; P.enterFrom.copy(P.pos);
     if (best.driver && best.driver !== 'player') game.onCarjack?.(best);
     best.input.throttle = 0; best.input.brake = 1; best.input.autoReverse = false; best.input.reverse = false;
   }
@@ -95,9 +98,19 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
       _v.set(-(spec.width / 2 + 0.3), 0, spec.seat ? spec.seat[2] : 0).applyQuaternion(v.body.quat).add(v.root.position);
       P.pos.lerp(_v, Math.min(1, dt * 10));
       human.root.position.copy(P.pos);
-      human.update(dt, { state: 'enterCar', speed: 0, turn: 0 });
+      // mocap: turn and sit down onto the driver seat (realhuman.js glides the body from the door to the seat)
+      human.update(dt, { state: 'enterCar', speed: 0, turn: 0, side: -1, seat: seatWorld(v, _v2), carYaw: v.body.yaw() });
       if (P.enterT <= 0) { setVehicle(v); P.enterCar = null; }
       return;
+    }
+    if (P.exitT > 0) {   // climbing out: stand up from the seat and step away from the door (move input cuts it short)
+      P.exitT -= dt;
+      const v = P.exitCar, ax = input.axes;
+      human.root.position.copy(P.pos); human.root.rotation.y = P.yaw;
+      human.update(dt, { state: 'exitCar', speed: 0, turn: 0, side: P.exitSide, seat: seatWorld(v, _v2), carYaw: P.exitCarYaw });
+      if (P.exitT > 0 && !(Math.hypot(ax.moveX || 0, ax.moveY || 0) > 0.3 && P.exitT < 0.55)) return;
+      P.exitT = 0; P.exitCar = null;
+      if (human.exitYaw != null) { P.yaw = human.exitYaw; human.root.rotation.y = P.yaw; }
     }
     if (P.mode === 'car') updateCar(dt); else updateFoot(dt);
   }
@@ -181,12 +194,22 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
     // knocked down
     if (P.knocked > 0) {
       P.knocked -= dt;
-      P.vel.y -= 9.8 * dt;
-      P.pos.addScaledVector(P.vel, dt);
+      const gt = P.getupT ?? 0.9, down = P.knocked > gt;
+      if (down) {
+        P.vel.y -= 9.8 * dt;
+        P.pos.addScaledVector(P.vel, dt);
+      }
       const gy = world.groundAt(P.pos.x, P.pos.z, P.pos.y + 1);
       if (P.pos.y < gy) { P.pos.y = gy; P.vel.multiplyScalar(0.5); P.vel.y = Math.abs(P.vel.y) * 0.2; }
       human.root.position.copy(P.pos);
-      human.update(dt, { state: P.knocked > 0.9 ? 'knocked' : 'getup', speed: 0, turn: 0 });
+      // realistic human: ragdoll while down (seeded with the hit velocity), then a mocap get-up where the body lies
+      human.update(dt, { state: down ? 'knocked' : 'getup', speed: 0, turn: 0, rate: 1.7, vel: P.knockVel, ground: { x: P.pos.x, z: P.pos.z, y: gy, gx: 0, gz: 0 } });
+      P.knockVel = null;
+      if (human.getupRoot) {
+        const g = human.getupRoot; human.getupRoot = null;
+        P.pos.set(g.x, g.y, g.z); P.yaw = g.yaw; P.vel.set(0, 0, 0);
+        human.root.position.copy(P.pos); human.root.rotation.y = P.yaw; human.root.updateMatrixWorld(); human._applyAnchor?.();
+      }
       return;
     }
     const camYaw = rig.rig.orbitYaw;
@@ -214,10 +237,12 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
     P.vel.y -= 16 * dt;
     P.pos.addScaledVector(P.vel, dt);
     const gy = world.groundAt(P.pos.x, P.pos.z, P.pos.y + 0.6);
-    if (P.pos.y <= gy + 0.02) {
-      if (!P.grounded && P.vel.y < -9) P.landT = 0.25;
+    // (rising out of a jump: no ground snap, else the step-down smoothing below swallowed every jump)
+    const rising = P.jumpT > 0 && P.vel.y > 0; if (P.jumpT > 0) P.jumpT -= dt;
+    if (P.pos.y <= gy + 0.02 && !rising) {
+      if (!P.grounded && P.vel.y < -3) P.landT = P.vel.y < -9 ? 0.3 : 0.2;   // (soft landings play the land clip too)
       P.pos.y = gy; P.vel.y = 0; P.grounded = true;
-    } else if (P.pos.y > gy + 0.3) P.grounded = false;
+    } else if (P.pos.y > gy + 0.3 || rising) P.grounded = false;
     else { P.pos.y += (gy - P.pos.y) * Math.min(1, dt * 20); P.grounded = true; }
     // collisions: static
     const cols = world.colliders.query(P.pos.x, P.pos.z, 1.5, _cand);
@@ -247,15 +272,24 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
     if (P.pos.y < -1.2) { game.onDrown?.(); }
   }
   function knock(vel, rel) {
-    P.knocked = 1.8;
+    P.getupT = human.getupTime ? human.getupTime(1.7) : 0.9;
+    P.knocked = (human.getupTime ? 1.5 : 0.9) + P.getupT;
     P.vel.set(vel.x * 0.6, Math.min(8, 2 + rel * 0.25), vel.z * 0.6);
+    P.knockVel = { x: P.vel.x, y: P.vel.y, z: P.vel.z };
     P.health = Math.max(0, P.health - Math.min(60, rel * 2.2));
     if (P.health <= 0) game.onWasted?.('hit');
   }
-  return Object.assign(P, { update, setVehicle, exitVehicle, resetCar, knock });
+  return Object.assign(P, { update, setVehicle, exitVehicle, resetCar, knock, tryEnter });
 }
 
 const _cand = [];
+// world position of the car's driver-seat pelvis point (spec.seat, car local; origin at ground level)
+function seatWorld(v, out) {
+  const s = v.spec?.seat || [-0.35, 0.9, 0];
+  // spec.seat[1] sits near eye level (camera anchor); the hip point of a car seat is ~36 % of the roof height
+  const hy = Math.min(s[1], Math.max(0.45, Math.min(1.0, (v.spec?.height || 1.45) * 0.36)));
+  return out.set(s[0], hy, s[2]).applyQuaternion(v.body.quat).add(v.root.position);
+}
 export function wrapA(a) { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; }
 export function pushOutCircle(p, r, c) {
   const dx = p.x - c.x, dz = p.z - c.z;
