@@ -5311,7 +5311,7 @@ function requestCar(id) {
     });
     // body pass 2: hero-only level H (player / showroom), L0 for traffic up close
     const A = { id, lods, hero: heroL, caliper, ao: t, details: makeDetailsMat(t, (A_cab = cabinBox(id))), cab: A_cab, parked: [null, null, null], parkedMat: null, doors: carIndex?.[id]?.doors || null };
-    A.lean = lods.map(leanLevel);
+    A.lean = lods.map((L, i) => leanLevel(L, i === 2 && PERF.carfarwheels ? getP(id) : null));
     ASSET.set(id, A);
     for (const cb of WAIT.get(id) || []) { try { cb(A); } catch (e) { console.warn('[cars] onCarAsset', e); } }
     WAIT.delete(id);
@@ -5320,11 +5320,14 @@ function requestCar(id) {
 // (perf r2) street cars (traffic / parked-hit / AI): a body level with its closed front doors merged in per material
 // (the door nodes sit at the identity transform while shut): 4-6 meshes per level instead of 10-12. A street car whose
 // door opens (carjack, the player getting in) remounts with the hinged split levels (buildCarModel).
-function leanLevel(L) {
-  if (!L.doors) return L;
-  const out = { wheel: L.wheel };
+// P (the far level only): the four wheels at rest are merged into the details too (same material): a car past 75 m is
+// ~8 px of wheel, spin / steer / suspension travel are sub-pixel there (4 wheel draws less per far car)
+function leanLevel(L, P = null) {
+  const wheels = P && L.wheel && L.details ? wheelPosOf(P).map(([x, z, w]) => xformGeo(L.wheel, new THREE.Matrix4().makeTranslation(x, P.R, z).multiply(new THREE.Matrix4().makeScale((x < 0 ? -1 : 1) * (w / P.ww), 1, 1)))) : null;
+  if (!L.doors && !wheels) return L;
+  const out = { wheel: L.wheel, wheelsMerged: !!wheels };
   for (const k of ['paint', 'paint2', 'details', 'lamps', 'lens', 'glass']) {
-    const parts = [L[k], L.doors.L?.[k], L.doors.R?.[k]].filter(Boolean);
+    const parts = [L[k], L.doors?.L?.[k], L.doors?.R?.[k], ...(k === 'details' && wheels ? wheels : [])].filter(Boolean);
     if (!parts.length) continue;
     let g = parts.length > 1 ? mergeGeometries(parts, false) : parts[0];
     if (!g) { console.warn('[cars] lean merge failed', k); return L; }
@@ -5360,7 +5363,7 @@ function carShadowProxy(A, P, i) {
     return b;
   };
   for (const k of ['paint', 'paint2', 'details']) if (L[k]) parts.push(pos(L[k]));
-  if (L.wheel) for (const [x, z, w] of wheelPos) parts.push(pos(L.wheel, new THREE.Matrix4().makeTranslation(x, P.R, z).multiply(new THREE.Matrix4().makeScale((x < 0 ? -1 : 1) * (w / P.ww), 1, 1))));
+  if (L.wheel && !L.wheelsMerged) for (const [x, z, w] of wheelPos) parts.push(pos(L.wheel, new THREE.Matrix4().makeTranslation(x, P.R, z).multiply(new THREE.Matrix4().makeScale((x < 0 ? -1 : 1) * (w / P.ww), 1, 1))));
   let g = null;
   try { g = parts.length && parts.every((q) => !!q.index === !!parts[0].index) ? mergeGeometries(parts, false) : null; } catch { g = null; }
   if (g) { g.computeBoundingSphere(); g.userData.realSphere = g.boundingSphere.clone(); g.boundingSphere = _carFarSphere.clone(); g.name = 'car:shadowProxy'; }
@@ -5373,6 +5376,22 @@ function carShadowProxyMesh(g) {
   p.name = 'carShadowProxy'; p.castShadow = true; p.receiveShadow = false;
   p.userData.shadowSphere = g.userData.realSphere; p.userData.noReflect = true; p.userData.shadowOnly = true;
   return p;
+}
+// transformed copy of a car geometry (all attributes; normals by the normal matrix; winding flipped back when mirrored)
+function xformGeo(g, m) {
+  const out = new THREE.BufferGeometry(), nm = new THREE.Matrix3().getNormalMatrix(m), v = new THREE.Vector3();
+  for (const [k, a] of Object.entries(g.attributes)) {
+    const b = new THREE.BufferAttribute(a.array.slice(0, a.count * a.itemSize), a.itemSize, a.normalized);
+    if (k === 'position') for (let q = 0; q < a.count; q++) { v.fromBufferAttribute(a, q).applyMatrix4(m); b.setXYZ(q, v.x, v.y, v.z); }
+    else if (k === 'normal') for (let q = 0; q < a.count; q++) { v.fromBufferAttribute(a, q).applyMatrix3(nm).normalize(); b.setXYZ(q, v.x, v.y, v.z); }
+    out.setAttribute(k, b);
+  }
+  if (g.index) {
+    const ix = g.index.array.slice();
+    if (m.determinant() < 0) for (let q = 0; q + 2 < ix.length; q += 3) { const t = ix[q + 1]; ix[q + 1] = ix[q + 2]; ix[q + 2] = t; }
+    out.setIndex(new THREE.BufferAttribute(ix, 1));
+  }
+  return out;
 }
 /** (perf r2) street-car warm-up behind the loading screen (game/sys_carwarm.js): the procedural build (P, lamp anchors,
  *  fallback geometry: 30-66 ms on a model's first spawn), the baked asset, its AO atlas upload and the far shadow proxies. */
@@ -5834,7 +5853,8 @@ export function buildCarModel(id, opts = {}) {
     for (const m of wheelMeshes) { m.geometry = g; m.material = mat; }
     for (const c of calipers) c.visible = hero || lodLevel === 0;
     const proxied = lean && !split && lodLevel > 0 && !!proxyLevels[lodLevel];
-    for (const m of wheelMeshes) m.castShadow = !proxied;
+    const merged = lean && !split && !!asset?.lean?.[lodLevel]?.wheelsMerged;
+    for (const m of wheelMeshes) { m.castShadow = !proxied; m.visible = !merged; }
   }
   function mountBody() {
     body.clear(); glassMeshes.length = 0; doorPivots.L.length = 0; doorPivots.R.length = 0;

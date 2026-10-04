@@ -11,7 +11,8 @@
 //   carshadowproxy  far street cars (LOD 1 / 2) cast the sun shadow from one merged depth-only proxy (vehicle/models.js)
 //   physlite   car physics: ground probes skip the normal / surface taps where they are never read (vehicle/physics.js; same results)
 //   carwarm    every traffic model built + its asset / AO atlas loaded behind the loading screen (game/sys_carwarm.js)
+//   carfarwheels  street cars past 75 m (LOD 2): the four wheels at rest merged into the body details (vehicle/models.js)
 const q = typeof location !== 'undefined' ? location.search : '';
 export const PERF = globalThis.HB_PERF || (globalThis.HB_PERF = {});
-for (const k of ['maskcull', 'extcull', 'shaderwarm', 'waterthrottle', 'shadowcull', 'tilesthrottle', 'probeumw', 'carlean', 'carshadowproxy', 'physlite', 'carwarm']) if (PERF[k] === undefined) PERF[k] = !new RegExp('[?&]no' + k + '(&|$)').test(q);
+for (const k of ['maskcull', 'extcull', 'shaderwarm', 'waterthrottle', 'shadowcull', 'tilesthrottle', 'probeumw', 'carlean', 'carshadowproxy', 'physlite', 'carwarm', 'carfarwheels']) if (PERF[k] === undefined) PERF[k] = !new RegExp('[?&]no' + k + '(&|$)').test(q);
 if (typeof window !== 'undefined') window.__perf = PERF;
