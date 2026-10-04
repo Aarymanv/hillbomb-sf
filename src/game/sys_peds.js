@@ -283,7 +283,7 @@ export function install(G) {
   function styleFor(zone, x, z) {
     const biz = zone === 'downtown' ? 0.42 : zone === 'downtown_soma' ? 0.3 : zone === 'soma' ? 0.16 : 0.06;
     let tour = zone === 'wharf' ? 0.5 : zone === 'chinatown' ? 0.3 : 0.05;
-    if (Math.hypot(x - 1400, z + 100) < 200) tour = Math.max(tour, 0.35);   // Union Square
+    tour = Math.max(tour, nav.tourAt(x, z));   // sights: Union Square, Chinatown gate, Pier 39, Lombard ... (nav.js, real lat/lon on the 1:1 map)
     const r = Math.random();
     return r < biz ? 'business' : r < biz + tour ? 'tourist' : 'generic';
   }
@@ -343,8 +343,9 @@ export function install(G) {
       const x = _pp.x - _pp.dz * lat, z = _pp.z + _pp.dx * lat;
       const y = nav.standY(x, z, 999);
       if (!spawnOK(x, y, z, fx, fz, rMin, rMax, allowView)) return null;
-      const jog = c.path.kind === 'park' || c.path.kind === 'shore' ? chance(0.6) : chance(0.3);
-      const p = newPed(jog ? 'jogger' : (c.path.kind === 'promenade' && chance(0.4) ? 'tourist' : 'generic'), jog ? 'jogger' : 'walker');
+      const plaza = c.path.kind === 'plaza';
+      const jog = c.path.kind === 'park' || c.path.kind === 'shore' ? chance(0.6) : chance(plaza ? 0.03 : 0.3);
+      const p = newPed(jog ? 'jogger' : ((c.path.kind === 'promenade' && chance(0.4)) || (plaza && chance(0.5)) ? 'tourist' : 'generic'), jog ? 'jogger' : 'walker');
       if (!p) return null;
       p.mode = 'path'; p.path = c.path; p.s = s; p.dir = chance(0.5) ? 1 : -1; p.lat = lat; p.latPref = lat;
       p.pref = speedFor(p.style, p.kind);

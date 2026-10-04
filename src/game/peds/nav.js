@@ -13,6 +13,7 @@ import { zoneAt, coastSDF as coastSDFv1, SPECIAL_ROADS } from '../../world/map.j
 import { pointInConvex } from '../../world/geo.js';
 import { buildBlocksV2 } from '../../world/props/v2blocks.js';
 import { zoneAtV2, densityAtV2 } from '../../world/props/v2zones.js';
+import { ll } from '../../world/latlon.js';
 
 export const SIDEWALK_W = 3.6;
 export const LIFT_WALK = 0.15;    // sidewalk / lot slab height above the terrain (citymesh)
@@ -59,12 +60,43 @@ const SPOTS = [
   { name: 'Twin Peaks', x: -440, z: 1612, r: 12, look: [1500, -200], n: 3 },
   { name: 'Dolores Park', x: 550, z: 1460, r: 55, look: [1500, 0], n: 6 },
 ];
+// the same spots on the real 1:1 map, by real lat/lon (+ a few the old map never had). at / look = [lat, lon]
+const SPOTS_LL = [
+  { name: 'Painted Ladies', at: [37.77625, -122.43325], r: 13, look: [37.77620, -122.43250], n: 6 },            // Alamo Square slope above Steiner St
+  { name: 'Palace of Fine Arts', at: [37.80250, -122.44760], r: 26, look: [37.80290, -122.44840], n: 5 },       // lagoon path, facing the rotunda
+  { name: 'Coit Tower', at: [37.80225, -122.40575], r: 22, look: [37.80240, -122.40580], n: 4, facing: 'out' },
+  { name: "Fisherman's Wharf", at: [37.80795, -122.41560], r: 14, look: [37.80815, -122.41575], n: 6 },         // crab wheel sign, Jefferson / Taylor
+  { name: 'Pier 39', at: [37.80870, -122.40980], r: 16, look: null, n: 7, deck: true },
+  { name: 'Ferry Building', at: [37.79525, -122.39410], r: 18, look: [37.79550, -122.39350], n: 5 },            // plaza in front of the clock tower
+  { name: 'Lombard St', at: [37.80215, -122.41890], r: 7, look: [37.80200, -122.41800], n: 4 },                  // top of the crooked block at Hyde
+  { name: 'Union Square', at: [37.78800, -122.40750], r: 34, look: null, n: 10 },
+  { name: 'Golden Gate vista', at: [37.80740, -122.47490], r: 26, look: [37.81990, -122.47830], n: 5 },          // bridge plaza / welcome centre
+  { name: 'City Hall', at: [37.77925, -122.41790], r: 22, look: [37.77925, -122.41930], n: 4 },                  // Civic Center plaza
+  { name: 'Twin Peaks', at: [37.75440, -122.44770], r: 12, look: [37.79000, -122.40000], n: 3 },                 // Christmas Tree Point
+  { name: 'Dolores Park', at: [37.75960, -122.42690], r: 55, look: [37.79000, -122.40000], n: 6 },
+  { name: 'Dragon Gate', at: [37.79055, -122.40570], r: 10, look: [37.79075, -122.40580], n: 5 },                // Chinatown gate, Grant / Bush
+  { name: 'Castro Theatre', at: [37.76210, -122.43460], r: 10, look: [37.76208, -122.43500], n: 4 },
+  { name: 'Balmy Alley', at: [37.75220, -122.41225], r: 8, look: null, n: 3 },                                   // Mission murals
+];
+// tourist share of the street crowd near the sights: [x, z, radius, share] (v1 = old half-scale map coords)
+const TOUR_V1 = [[1400, -100, 200, 0.35]];
+const TOUR_LL = [[37.7880, -122.4075, 230, 0.4], [37.7941, -122.4064, 220, 0.38], [37.8075, -122.4150, 380, 0.55], [37.8087, -122.4098, 160, 0.6],
+  [37.7955, -122.3937, 200, 0.32], [37.8021, -122.4188, 140, 0.45], [37.7762, -122.4330, 130, 0.4], [37.8027, -122.4482, 220, 0.4],
+  [37.8024, -122.4058, 160, 0.4], [37.7621, -122.4348, 120, 0.2], [37.7596, -122.4269, 160, 0.15], [37.8076, -122.4749, 200, 0.5]];
 
 // ------------------------------------------------------------------------------------------------ nav
 export function createNav(world) {
   // 1:1 map (?map=v2): blocks from the real street graph, real-district densities, park paths from OSM
   const v2 = !!world.v2;
   const { graph, terrain, colliders } = world;
+  // 1:1 map: spots + tourist zones from real lat/lon (ll() is set to the bake's exact projection by now)
+  const spots = v2 ? SPOTS_LL.map(s => {
+    const [x, z] = ll(s.at[0], s.at[1]), look = s.look ? ll(s.look[0], s.look[1]) : null;
+    return { name: s.name, x, z, r: s.r, look, n: s.n, deck: s.deck, facing: s.facing };
+  }) : SPOTS;
+  const tour = v2 ? TOUR_LL.map(([la, lo, r, k]) => { const [x, z] = ll(la, lo); return [x, z, r, k]; }) : TOUR_V1;
+  /** tourist share of the crowd at a point (sights), 0 elsewhere */
+  function tourAt(x, z) { let t = 0; for (const h of tour) if ((x - h[0]) ** 2 + (z - h[1]) ** 2 < h[2] * h[2]) t = Math.max(t, h[3]); return t; }
   const blocks = v2 ? buildBlocksV2(graph, terrain) : world.blocks;
   const coastSDF = v2 ? (x, z) => (terrain.heightAt(x, z) > 0.3 && terrain.surfaceRaw(x, z) !== 0 ? 50 : -1) : coastSDFv1;
   const hAt = (x, z) => terrain.heightAt(x, z);
@@ -298,8 +330,10 @@ export function createNav(world) {
     for (const p of world.data?.extras?.paths || []) {
       if (p.kind === 'steps' || p.pts.length < 2) continue;
       let L = 0; for (let i = 1; i < p.pts.length; i++) L += Math.hypot(p.pts[i][0] - p.pts[i - 1][0], p.pts[i][1] - p.pts[i - 1][1]);
-      if (L < 60) continue;
       const m = p.pts[p.pts.length >> 1], sf = terrain.surfaceRaw(m[0], m[1]);
+      // paved footways across the plazas at the sights (Union Square, Civic Center, Ferry plaza ...): busy walkers
+      if (sf === 2 && L >= 25 && tourAt(m[0], m[1]) >= 0.3) { addPath(p.pts, 'plaza', 0.95); continue; }
+      if (L < 60) continue;
       if (sf !== 3 && sf !== 7 && sf !== 8 && sf !== 4) continue;
       addPath(p.pts, sf === 4 ? 'beach' : 'park', sf === 4 ? 0.35 : 0.55);
     }
@@ -353,7 +387,8 @@ export function createNav(world) {
         const ne = graph.nearestEdge(x, z, 14);
         if (ne && ne.dist < ne.edge.width / 2 + 0.8) continue;
         const b = blockAt(x, z);
-        if (b && b.inner && !b.park && pointInConvex(x, z, b.inner)) continue;
+        // (1:1 map: plazas like Union Square sit inside a block's lot line; only private yards are off limits there)
+        if (b && b.inner && !b.park && pointInConvex(x, z, b.inner) && (!v2 || terrain.surfaceRaw(x, z) === 9)) continue;
       }
       if (colliders.pointHit(x, y + 1, z, 0.5)) continue;
       spot.pts.push([x, z]);
@@ -394,7 +429,7 @@ export function createNav(world) {
 
   return {
     blocks, blocksNear, blockAt, nodeNear, ring, ringPos, ringLen, ringProject, attach, nearestRing, crossing,
-    paths, spots: v2 ? [] : SPOTS, spotPoints, densityAt: v2 ? densityAtV2 : densityAt, zoneAt: v2 ? zoneAtV2 : zoneAt, seatsNear, seatPoint,
+    paths, spots, tourAt, spotPoints, densityAt: v2 ? densityAtV2 : densityAt, zoneAt: v2 ? zoneAtV2 : zoneAt, seatsNear, seatPoint,
     /** ground height a pedestrian stands on at (x, z): sidewalks/lots are raised 0.15 m, roads 0.05 m */
     standY(x, z, probeY = Infinity) {
       const g = terrain.groundAt(x, z, probeY);
