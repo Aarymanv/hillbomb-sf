@@ -140,17 +140,23 @@ export function createEnvironment({ renderer, scene, quality }) {
   // were never accurate at that resolution). ?noshadowcull = off.
   const _vf = new THREE.Frustum(), _vpm = new THREE.Matrix4(), _cs = new THREE.Sphere(), _lt = new THREE.Vector3();
   const cull = { on: false, groundY: 0, n: 0, kept: 0 };
-  function casterCull(light, margin) {
+  // shadow-only proxies (hero_lm.js shadowProxies) carry their real bounds in userData.shadowSphere (the geometry's is parked
+  // out of every camera's view)
+  function casterCull(light, margin, view = true) {
     const sh = light.shadow, base = sh.getFrustum();
     const proxy = {
       intersectsSprite: (s) => base.intersectsSprite(s),
       intersectsObject(o) {
-        if (!base.intersectsObject(o)) return false;
-        if (!cull.on || !PERF.shadowcull) return true;
-        let bs;
-        if (o.boundingSphere !== undefined) { if (o.boundingSphere === null) o.computeBoundingSphere(); bs = o.boundingSphere; }
-        else { const g = o.geometry; if (!g) return true; if (g.boundingSphere === null) g.computeBoundingSphere(); bs = g.boundingSphere; }
-        _cs.copy(bs).applyMatrix4(o.matrixWorld);
+        const ss = o.userData.shadowSphere;
+        if (ss) { _cs.copy(ss).applyMatrix4(o.matrixWorld); if (!base.intersectsSphere(_cs)) return false; }
+        else if (!base.intersectsObject(o)) return false;
+        if (!view || !cull.on || !PERF.shadowcull) return true;
+        if (!ss) {
+          let bs;
+          if (o.boundingSphere !== undefined) { if (o.boundingSphere === null) o.computeBoundingSphere(); bs = o.boundingSphere; }
+          else { const g = o.geometry; if (!g) return true; if (g.boundingSphere === null) g.computeBoundingSphere(); bs = g.boundingSphere; }
+          _cs.copy(bs).applyMatrix4(o.matrixWorld);
+        }
         const c = _cs.center, r = _cs.radius + margin;
         const ext = Math.min(1500, Math.max(0, c.y + r - cull.groundY) / Math.max(0.05, -_lt.y));
         cull.n++;
@@ -167,6 +173,7 @@ export function createEnvironment({ renderer, scene, quality }) {
     sh.getFrustum = () => proxy;
   }
   if (sun.castShadow) casterCull(sun, 1);
+  if (far) casterCull(far, 0, false);
   const farAt = new THREE.Vector3(1e9, 0, 0), farDir = new THREE.Vector3(); let farTimer = 0;
   const hemi = new THREE.HemisphereLight(0xb4cbe6, 0x55503f, 1.0);
   scene.add(hemi);

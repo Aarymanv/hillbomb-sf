@@ -33,6 +33,7 @@ export function heroLoader() {
 }
 
 const HERO_MERGE = typeof location === 'undefined' || !/[?&]noheromerge/.test(location.search);
+const HERO_SHADOW_PROXY = typeof location === 'undefined' || !/[?&]noheroshadow/.test(location.search);
 const NOSHADOW = new Set(['lamp', 'neon', 'lantern', 'shopint', 'curtain', 'sign', 'cwin']);
 // glTF scene -> group of meshes with the shared slot materials (node names: L<lod>_<slot>[.001])
 export function prepHero(scene, matFor = heroMat) {
@@ -74,7 +75,36 @@ export function prepHero(scene, matFor = heroMat) {
       out.add(m);
     }
   }
+  if (HERO_SHADOW_PROXY) shadowProxies(out);
   return out;
+}
+// (perf 10/4) the shadow pass draws every casting slot of a hero site separately (Chinatown: ~140 sun-map draws for the
+// two blocks after the per-material merge): their positions are merged once more into one depth-only proxy per material
+// side and the slot meshes stop casting. The proxy never draws in a colour pass: its geometry bounding sphere is parked far
+// below the map (every camera frustum-culls it) and environment.js' caster test uses userData.shadowSphere instead.
+const _farSphere = new THREE.Sphere(new THREE.Vector3(0, -1e7, 0), 0);
+function shadowProxies(out) {
+  const groups = new Map();
+  for (const m of out.children) {
+    const mat = m.material;
+    if (!m.isMesh || !m.castShadow || mat.transparent || mat.alphaTest > 0 || m.customDepthMaterial) continue;
+    const k = mat.side + '|' + mat.shadowSide + '|' + (m.geometry.index ? 1 : 0);
+    if (!groups.has(k)) groups.set(k, { side: mat.side, shadowSide: mat.shadowSide, ms: [] });
+    groups.get(k).ms.push(m);
+  }
+  for (const { side, shadowSide, ms } of groups.values()) {
+    if (ms.length < 2) continue;
+    const geos = ms.map(m => { const b = new THREE.BufferGeometry(); b.setAttribute('position', m.geometry.attributes.position); if (m.geometry.index) b.setIndex(m.geometry.index); return b; });
+    const g = mergeGeometries(geos, false); if (!g) continue;
+    g.computeBoundingSphere();
+    const real = g.boundingSphere.clone(); g.boundingSphere = _farSphere.clone();
+    const mat = new THREE.MeshBasicMaterial({ side, colorWrite: false, depthWrite: false }); mat.shadowSide = shadowSide;
+    const p = new THREE.Mesh(g, mat);
+    p.name = 'shadowProxy'; p.castShadow = true; p.receiveShadow = false; p.matrixAutoUpdate = false;
+    p.userData.shadowSphere = real; p.userData.noReflect = true; p.userData.shadowOnly = true;
+    for (const m of ms) m.castShadow = false;
+    out.add(p);
+  }
 }
 
 function dispose(g) { g?.traverse(o => { if (o.isMesh || o.isPoints) o.geometry.dispose(); }); }

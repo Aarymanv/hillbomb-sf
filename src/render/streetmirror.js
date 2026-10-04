@@ -92,7 +92,7 @@ export function createStreetMirror({ renderer, scene, segs, groundAt, sites, sca
     const S = sites?.() || [];
     for (const s of S) {
       if (!(s.ct || s.id === 'ct_gate') || !s.lod?.[1] || s.lod[1].userData.ctMir) continue;
-      s.lod[1].traverse(o => { if (o.isMesh && o.name !== 'clear') o.layers.enable(CT_MIRROR_LAYER); });
+      s.lod[1].traverse(o => { if (o.isMesh && o.name !== 'clear' && !o.userData.shadowOnly) o.layers.enable(CT_MIRROR_LAYER); });
       s.lod[1].userData.ctMir = true;
     }
     scene.traverse(o => {
