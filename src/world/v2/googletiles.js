@@ -66,13 +66,14 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
 
   // ENU frame at the anchor -> our world (+X east, +Y up, +Z south), anchored so the anchor lat/lon sits at its world x/z
   const anchor = { x: Infinity, z: Infinity };
+  let anchorVer = 0;
   const F = new THREE.Matrix4(), B = new THREE.Matrix4().set(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1), T = new THREE.Matrix4();
   function reanchor(x, z) {
     const [lat, lon] = toLatLon(x, z);
     tiles.ellipsoid.getEastNorthUpFrame(THREE.MathUtils.degToRad(lat), THREE.MathUtils.degToRad(lon), GEOID_N, F);
     T.makeTranslation(x, 0, z).multiply(B).multiply(F.invert());
     tiles.group.matrix.copy(T); tiles.group.matrixWorldNeedsUpdate = true; tiles.group.updateMatrixWorld(true);
-    anchor.x = x; anchor.z = z;
+    anchor.x = x; anchor.z = z; anchorVer++;
   }
 
   // attribution overlay (required while tiles are shown)
@@ -88,8 +89,44 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
   const T0 = stream.T;
   const inMask = (x, z) => { const i = Math.floor((x - cx) / T0), j = Math.floor((z - cz) / T0); return i >= 0 && j >= 0 && i < 3 && j < 3 && ((mask >> (j * 3 + i)) & 1) === 1; };
   const sunC = new THREE.Color();
+  // (perf 10/4) tiles lying wholly inside our near block are culled before the tiles renderer refines, loads or draws them:
+  // every fragment there is discarded by the uNear mask anyway, but the near photogrammetry is the most refined part of
+  // the set (Mission: ~190 of ~280 tile draws, FiDi 109 of 119). Only within MASK_CULL_R of the focus (farthest box
+  // corner): a mask cell is released at NEAR_KEEP (420 m), so a culled tile is back in view >= 80 m of travel before its
+  // cell can hand over to the photos. ?nomaskcull = A/B.
+  const MASK_CULL = typeof location === 'undefined' || !/[?&]nomaskcull/.test(location.search), MASK_CULL_R = 340;
+  const _ob = new THREE.Box3(), _om = new THREE.Matrix4(), _oc = new THREE.Vector3();
+  let fx = 0, fz = 0;
+  const maskStats = { culled: 0 };
+  const cellsInMask = (x0, z0, x1, z1) => {
+    const i0 = Math.floor((x0 - cx) / T0), i1 = Math.floor((x1 - cx) / T0), j0 = Math.floor((z0 - cz) / T0), j1 = Math.floor((z1 - cz) / T0);
+    if (i0 < 0 || j0 < 0 || i1 > 2 || j1 > 2) return false;
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) if (((mask >> (j * 3 + i)) & 1) === 0) return false;
+    return true;
+  };
+  if (MASK_CULL) tiles.registerPlugin({
+    name: 'HB_NEAR_MASK_CULL',
+    calculateTileViewError(tile, target) {
+      if (!mask || api.nearRadius === 0) return false;
+      let a = tile.__hbXZ;
+      if (!a || a[4] !== anchorVer) {
+        const bv = tile.engineData?.boundingVolume; if (!bv) return false;
+        bv.getOBB(_ob, _om); _om.premultiply(tiles.group.matrixWorld);
+        let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+        for (let k = 0; k < 8; k++) {
+          _oc.set(k & 1 ? _ob.max.x : _ob.min.x, k & 2 ? _ob.max.y : _ob.min.y, k & 4 ? _ob.max.z : _ob.min.z).applyMatrix4(_om);
+          if (_oc.x < x0) x0 = _oc.x; if (_oc.x > x1) x1 = _oc.x; if (_oc.z < z0) z0 = _oc.z; if (_oc.z > z1) z1 = _oc.z;
+        }
+        a = tile.__hbXZ = [x0, z0, x1, z1, anchorVer];
+      }
+      const dx = Math.max(fx - a[0], a[2] - fx), dz = Math.max(fz - a[1], a[3] - fz);
+      if (dx * dx + dz * dz > MASK_CULL_R * MASK_CULL_R || !cellsInMask(a[0], a[1], a[2], a[3])) return false;
+      target.inView = false; maskStats.culled++;
+      return true;
+    },
+  });
   const api = {
-    tiles, stats, nearRadius: null, get ready() { return ready; }, get nearMask() { return mask; },
+    tiles, stats, maskStats, nearRadius: null, get ready() { return ready; }, get nearMask() { return mask; },
     // is (x, z) inside our near block (or are the photos not ready yet)? (buildings kit cells follow it)
     ours: (x, z) => !ready || api.nearRadius !== 0 && inMask(x, z),
     update(dt, focus) {
@@ -148,6 +185,7 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
       U.uDay.value = THREE.MathUtils.lerp(0.9 * 0.86 / Math.max(0.5, expo) * (1 - 0.2 * warm) * dayK, phys ? 0.05 : 0.12, nightF);
       U.uNightL.value = city ? THREE.MathUtils.smoothstep(nightF, 0.25, 0.9) : 0;
       if (city && U.uNightL.value > 0) city.ensure();
+      fx = focus.x; fz = focus.z; maskStats.culled = 0;
       camera.updateMatrixWorld();
       tiles.setCamera(camera);
       tiles.setResolutionFromRenderer(camera, renderer);
