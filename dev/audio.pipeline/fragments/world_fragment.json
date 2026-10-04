@@ -1,0 +1,382 @@
+[
+ {
+  "key": "amb_night_market",
+  "variant": 0,
+  "file": "amb/amb_night_market.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 40.5,
+  "loopStart": 0.25,
+  "loopEnd": 40.25,
+  "lufs": -20.04,
+  "peak": -3.5,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 718917,
+    "page": "https://freesound.org/s/718917/",
+    "file": "https://cdn.freesound.org/previews/718/718917_12768873-hq.mp3",
+    "title": "Noisy night market on the street side",
+    "author": "lastraindrop",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "night market at the street side (crowd, chatter, cooking, light traffic) | 285-325 s, 2 s equal-power loop seam"
+ },
+ {
+  "key": "amb_indoor_walla",
+  "variant": 0,
+  "file": "amb/amb_indoor_walla.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 32.5,
+  "loopStart": 0.25,
+  "loopEnd": 32.25,
+  "lufs": -20.08,
+  "peak": -3.5,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 563379,
+    "page": "https://freesound.org/s/563379/",
+    "file": "https://cdn.freesound.org/previews/563/563379_10869493-hq.mp3",
+    "title": "Museum Gallery ambience soft walla calm steps edlarez.wav",
+    "author": "visionear",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "museum gallery, soft walla + distant steps | 0-32 s, 2 s loop seam"
+ },
+ {
+  "key": "road_cobble",
+  "variant": 0,
+  "file": "loops/road_cobble.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 10.5,
+  "loopStart": 0.25,
+  "loopEnd": 10.25,
+  "lufs": -20.0,
+  "peak": -3.5,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 591078,
+    "page": "https://freesound.org/s/591078/",
+    "file": "https://cdn.freesound.org/previews/591/591078_6411813-hq.mp3",
+    "title": "Car rolling on cobblestone.wav",
+    "author": "orlandorizo",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "car rolling on cobblestones, tyre + body rattle | 6-16 s, 1.5 s loop seam"
+ },
+ {
+  "key": "muni_tram",
+  "variant": 0,
+  "file": "amb/muni_tram.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 21.2,
+  "lufs": -21.48,
+  "peak": -1.46,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 237501,
+    "page": "https://freesound.org/s/237501/",
+    "file": "https://cdn.freesound.org/previews/237/237501_2258946-hq.mp3",
+    "title": "Tram on San Francisco's Market Street",
+    "author": "mhtaylor67",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "F-line streetcar passing on Market St at 5th (San Francisco) | full pass, 0.5 s / 1.5 s fades"
+ },
+ {
+  "key": "cablecar_go",
+  "variant": 0,
+  "file": "amb/cablecar_go.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 20.0,
+  "lufs": -16.44,
+  "peak": -5.65,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 238230,
+    "page": "https://freesound.org/s/238230/",
+    "file": "https://cdn.freesound.org/previews/238/238230_2258946-hq.mp3",
+    "title": "Cable Car Leaving Stop",
+    "author": "mhtaylor67",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "San Francisco cable car leaving a stop: grip, cable slot clatter | 8-28 s"
+ },
+ {
+  "key": "foot_concrete",
+  "variant": 0,
+  "file": "sfx/foot_concrete_1.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -27.23,
+  "peak": -4.53,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 459964,
+    "page": "https://freesound.org/s/459964/",
+    "file": "https://cdn.freesound.org/previews/459/459964_6253486-hq.mp3",
+    "title": "Footsteps on concrete",
+    "author": "florianreichelt",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep, 0.32 s gated"
+ },
+ {
+  "key": "foot_concrete",
+  "variant": 1,
+  "file": "sfx/foot_concrete_2.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -23.75,
+  "peak": -4.43,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 459964,
+    "page": "https://freesound.org/s/459964/",
+    "file": "https://cdn.freesound.org/previews/459/459964_6253486-hq.mp3",
+    "title": "Footsteps on concrete",
+    "author": "florianreichelt",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep, 0.32 s gated"
+ },
+ {
+  "key": "foot_concrete",
+  "variant": 2,
+  "file": "sfx/foot_concrete_3.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -24.63,
+  "peak": -4.35,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 459964,
+    "page": "https://freesound.org/s/459964/",
+    "file": "https://cdn.freesound.org/previews/459/459964_6253486-hq.mp3",
+    "title": "Footsteps on concrete",
+    "author": "florianreichelt",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep, 0.32 s gated"
+ },
+ {
+  "key": "foot_concrete",
+  "variant": 3,
+  "file": "sfx/foot_concrete_4.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -27.44,
+  "peak": -4.17,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 459964,
+    "page": "https://freesound.org/s/459964/",
+    "file": "https://cdn.freesound.org/previews/459/459964_6253486-hq.mp3",
+    "title": "Footsteps on concrete",
+    "author": "florianreichelt",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep, 0.32 s gated"
+ },
+ {
+  "key": "foot_concrete",
+  "variant": 4,
+  "file": "sfx/foot_concrete_5.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -26.91,
+  "peak": -5.05,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 459964,
+    "page": "https://freesound.org/s/459964/",
+    "file": "https://cdn.freesound.org/previews/459/459964_6253486-hq.mp3",
+    "title": "Footsteps on concrete",
+    "author": "florianreichelt",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep, 0.32 s gated"
+ },
+ {
+  "key": "foot_concrete",
+  "variant": 5,
+  "file": "sfx/foot_concrete_6.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -28.24,
+  "peak": -4.6,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 459964,
+    "page": "https://freesound.org/s/459964/",
+    "file": "https://cdn.freesound.org/previews/459/459964_6253486-hq.mp3",
+    "title": "Footsteps on concrete",
+    "author": "florianreichelt",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep, 0.32 s gated"
+ },
+ {
+  "key": "foot_hall",
+  "variant": 0,
+  "file": "sfx/foot_hall_1.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -28.37,
+  "peak": -4.37,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 155858,
+    "page": "https://freesound.org/s/155858/",
+    "file": "https://cdn.freesound.org/previews/155/155858_179538-hq.mp3",
+    "title": "Footsteps in Factory Hall on Wood and Concrete.wav",
+    "author": "RutgerMuller",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep in a factory hall (wood/concrete), 0.32 s gated"
+ },
+ {
+  "key": "foot_hall",
+  "variant": 1,
+  "file": "sfx/foot_hall_2.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -28.72,
+  "peak": -4.35,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 155858,
+    "page": "https://freesound.org/s/155858/",
+    "file": "https://cdn.freesound.org/previews/155/155858_179538-hq.mp3",
+    "title": "Footsteps in Factory Hall on Wood and Concrete.wav",
+    "author": "RutgerMuller",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep in a factory hall (wood/concrete), 0.32 s gated"
+ },
+ {
+  "key": "foot_hall",
+  "variant": 2,
+  "file": "sfx/foot_hall_3.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -27.99,
+  "peak": -4.34,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 155858,
+    "page": "https://freesound.org/s/155858/",
+    "file": "https://cdn.freesound.org/previews/155/155858_179538-hq.mp3",
+    "title": "Footsteps in Factory Hall on Wood and Concrete.wav",
+    "author": "RutgerMuller",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep in a factory hall (wood/concrete), 0.32 s gated"
+ },
+ {
+  "key": "foot_hall",
+  "variant": 3,
+  "file": "sfx/foot_hall_4.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -28.66,
+  "peak": -4.48,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 155858,
+    "page": "https://freesound.org/s/155858/",
+    "file": "https://cdn.freesound.org/previews/155/155858_179538-hq.mp3",
+    "title": "Footsteps in Factory Hall on Wood and Concrete.wav",
+    "author": "RutgerMuller",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep in a factory hall (wood/concrete), 0.32 s gated"
+ },
+ {
+  "key": "foot_hall",
+  "variant": 4,
+  "file": "sfx/foot_hall_5.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -29.98,
+  "peak": -4.48,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 155858,
+    "page": "https://freesound.org/s/155858/",
+    "file": "https://cdn.freesound.org/previews/155/155858_179538-hq.mp3",
+    "title": "Footsteps in Factory Hall on Wood and Concrete.wav",
+    "author": "RutgerMuller",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep in a factory hall (wood/concrete), 0.32 s gated"
+ },
+ {
+  "key": "foot_hall",
+  "variant": 5,
+  "file": "sfx/foot_hall_6.mp3",
+  "kind": "shot",
+  "channels": 2,
+  "duration": 0.32,
+  "lufs": -28.94,
+  "peak": -4.48,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 155858,
+    "page": "https://freesound.org/s/155858/",
+    "file": "https://cdn.freesound.org/previews/155/155858_179538-hq.mp3",
+    "title": "Footsteps in Factory Hall on Wood and Concrete.wav",
+    "author": "RutgerMuller",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "single footstep in a factory hall (wood/concrete), 0.32 s gated"
+ }
+]
