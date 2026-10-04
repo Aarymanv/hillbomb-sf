@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HILLBOMB human preview</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #9fb7c9; font: 13px/1.35 system-ui, sans-serif; }
+    #ui { position: fixed; top: 10px; left: 10px; background: rgba(20, 24, 30, 0.82); color: #e8edf2; padding: 10px 12px; border-radius: 8px; min-width: 250px; }
+    #ui label { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 4px 0; }
+    #ui input[type=range] { width: 130px; }
+    #ui select { width: 130px; }
+    #ui .v { width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
+    #stats { margin-top: 6px; opacity: 0.8; font-size: 12px; white-space: pre; }
+    h1 { font-size: 13px; margin: 0 0 6px; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <h1>HILLBOMB / human.js</h1>
+    <label>state <select id="state"></select></label>
+    <label>speed m/s <input id="speed" type="range" min="0" max="8" step="0.1" value="1.4" /><span class="v" id="speedV"></span></label>
+    <label>time scale <input id="ts" type="range" min="0" max="1" step="0.05" value="1" /><span class="v" id="tsV"></span></label>
+    <label>circle path <input id="circle" type="checkbox" checked /></label>
+    <label>foot trail <input id="trail" type="checkbox" checked /></label>
+    <label>lying (knocked) <input id="lying" type="range" min="0" max="1" step="0.05" value="0" /><span class="v" id="lyingV"></span></label>
+    <label>steer (drive) <input id="steer" type="range" min="-1" max="1" step="0.05" value="0" /><span class="v" id="steerV"></span></label>
+    <label>row state <select id="rowState"><option>mixed</option><option>idle</option><option>walk</option><option>wave</option><option>phone</option><option>sit</option><option>drive</option><option>knocked</option></select></label>
+    <label>hero seed <input id="seed" type="number" value="7" style="width:70px" /></label>
+    <label>hero outfit <select id="outfit"><option value="">(seed)</option><option>tshirt</option><option>hoodie</option><option>jacket</option><option>suit</option><option>dress</option><option>police</option></select></label>
+    <div id="stats"></div>
+  </div>
+  <script type="module" src="./human.js"></script>
+</body>
+</html>
