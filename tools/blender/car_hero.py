@@ -38,11 +38,14 @@ FIN = {
     'graphite': F(0x2a2c30, 0.85, 0.35), 'reflector': F(0xe8ebef, 1.0, 0.05), 'housing': F(0x1a1b1e, 0.6, 0.3),
     'grilleBack': F(0x050505, 0.0, 0.9), 'grille': F(0x0c0c0d, 0.3, 0.4), 'ti': F(0xb9b3ab, 1.0, 0.18),
     'soot': F(0x0a0a0a, 0.0, 0.95), 'paint': {'b': 'paint', 'col': (1, 1, 1), 'm': 0, 'r': 0.5, 'lamp': 0},
-    # interior
-    'dash': F(0x2c2d31, 0.0, 0.72), 'dashTop': F(0x232427, 0.0, 0.85), 'trimAlu': F(0x9a9ea5, 0.9, 0.3),
-    'leather': F(0x34343a, 0.0, 0.5), 'insert': F(0x4d4e55, 0.0, 0.92), 'stitch': F(0xb3261e, 0.0, 0.6),
-    'carpet': F(0x1f2023, 0.0, 0.97), 'door': F(0x303136, 0.0, 0.7), 'headliner': F(0x55565c, 0.0, 0.93),
-    'wheelRim': F(0x1b1b1d, 0.0, 0.55), 'gaugeFace': F(0x07080a, 0.1, 0.35), 'screen': F(0x050608, 0.3, 0.08),
+    # interior (cars pass 4): metalness >= 2 marks an interior material class for the runtime details shader
+    # (models.js INTERIOR_GLSL: 3 soft-touch, 4 leather, 5 brushed metal, 6 piano black, 7 fabric / alcantara, 8 carpet);
+    # roughness stays the base roughness. Albedos are real-world dark trims (soft-touch grey ~0.05 linear, not 0.025).
+    'dash': F(0x3a3c41, 3.0, 0.56), 'dashTop': F(0x2f3034, 3.0, 0.66), 'trimAlu': F(0xb7bbc2, 5.0, 0.28),
+    'leather': F(0x37363a, 4.0, 0.46), 'insert': F(0x4a4b52, 7.0, 0.92), 'stitch': F(0xc23a2c, 0.0, 0.6),
+    'carpet': F(0x26272a, 8.0, 0.97), 'door': F(0x3d3f45, 3.0, 0.58), 'headliner': F(0x55565c, 0.0, 0.93),
+    'wheelRim': F(0x232325, 4.0, 0.5), 'gaugeFace': F(0x07080a, 0.1, 0.35), 'screen': F(0x050608, 0.3, 0.08),
+    'piano': F(0x050506, 6.0, 0.05),
 }
 LAMPF = {
     'head': {'b': 'lamps', 'col': (1.0, 1.0, 1.0), 'm': 0, 'r': 0.2, 'lamp': 1},
@@ -816,7 +819,7 @@ def interior_unit(Bd, surf, IR, meta, parts, Bt):
     su, sv, sn = frame_from(sn)
     q = [sc + su * a + sv * b for a, b in ((-0.12, -0.065), (0.12, -0.065), (0.12, 0.065), (-0.12, 0.065))]
     Bd.face(q, LAMPF['screenLit'], smooth=False)
-    Bd.grid([q + [q[0]], [p + sn * -0.012 + (p - sc) * 0.06 for p in q + [q[0]]]], FIN['blackGloss'], smooth=False)
+    Bd.grid([q + [q[0]], [p + sn * -0.012 + (p - sc) * 0.06 for p in q + [q[0]]]], FIN['piano'], smooth=False)
     for vx in (-0.3, 0.3, -dwh + 0.12, dwh - 0.12):
         vc = Vector((vx, dTop - 0.05, dz1 + 0.006))
         for k in range(4):
@@ -851,6 +854,7 @@ def interior_unit(Bd, surf, IR, meta, parts, Bt):
         sbox(Bd, (0.0, (yF + ytop) / 2, (zc0 + zc1) / 2), 0.1, (ytop - yF) / 2, (zc1 - zc0) / 2, FIN['dash'], e=0.2, nu=20, nv=10)
         sbox(Bd, (0.0, ytop + 0.012, zc1 - 0.18), 0.085, 0.015, 0.14, FIN['leather'], e=0.3, nu=16, nv=8)
         sp = Vector((0.0, ytop + 0.01, (zc0 + zc1) / 2 - 0.08))
+        sbox(Bd, (0.0, ytop + 0.004, sp.z + 0.03), 0.075, 0.006, 0.1, FIN['piano'], e=0.15, nu=16, nv=6)   # piano-black shifter panel
         revolve(Bd, sp, (0, 1, 0), [(0.045, 0.0), (0.04, 0.02), (0.02, 0.05), (0.012, 0.09)], 16, FIN['rubber'])
         sbox(Bd, sp + Vector((0, 0.11, 0)), 0.024, 0.028, 0.024, FIN['trimAlu'], e=0.6, nu=16, nv=10)
         for cz in (sp.z - 0.12, sp.z - 0.2):

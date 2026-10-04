@@ -306,7 +306,8 @@ function drawAtlas(g) {
 // A finish says which merged mesh a triangle goes to ('b') plus its vertex colour / metal / rough / lamp group / texture.
 const C = (hex) => new THREE.Color(hex);
 const D = (hex, m, r, o) => Object.assign({ b: 'details', col: C(hex), m, r }, o);
-const LAMP = { NONE: 0, HEAD: 1, TAIL: 2, BRAKE: 3, REV: 4, RED: 5, BLUE: 6, SIGN: 7, DRL: 8, ALWAYS: 9 };
+// BAR (cars pass 4): full-width LED tail light bars (TAILBAR art), a bright running-light group of their own
+const LAMP = { NONE: 0, HEAD: 1, TAIL: 2, BRAKE: 3, REV: 4, RED: 5, BLUE: 6, SIGN: 7, DRL: 8, ALWAYS: 9, BAR: 10 };
 const Lf = (hex, lamp, tex) => ({ b: 'lamps', col: C(hex), m: 0, r: 0.2, lamp, tex });
 const FIN = {
   paint: { b: 'paint' },
@@ -1606,7 +1607,7 @@ DEFS.coupe = () => ({
     plate(ctx, 'F', { y: 0.37, idx: 3 });
     // full-width tail bar
     patch(ctx, '+z', [[-0.88, 0.765], [0.88, 0.765], [0.87, 0.815], [-0.87, 0.815]], FIN.blackGloss, { off: 0.004 });
-    patch(ctx, '+z', [[-0.86, 0.775], [0.86, 0.775], [0.85, 0.805], [-0.85, 0.805]], Lf(0xffffff, LAMP.TAIL, 'TAILBAR'), { off: 0.008 });
+    patch(ctx, '+z', [[-0.86, 0.775], [0.86, 0.775], [0.85, 0.805], [-0.85, 0.805]], Lf(0xffffff, LAMP.BAR, 'TAILBAR'), { off: 0.008 });
     for (const s of [-1, 1]) patch(ctx, '+z', rrect(s * 0.62 - 0.08, 0.4, s * 0.62 + 0.08, 0.43, 0.01), Lf(0xf4f6ff, LAMP.REV), { off: 0.007 });
     grille(ctx, { poly: [[-0.7, 0.3], [0.7, 0.3], [0.72, 0.38], [-0.72, 0.38]], dir: '+z', fin: FIN.black, tex: 'HONEY' });
     plate(ctx, 'R', { y: 0.52, idx: 3 });
@@ -2104,7 +2105,7 @@ DEFS.ev = () => ({
     badge(ctx, '-z', 0, 0.58, 0.03);
     plate(ctx, 'F', { y: 0.43, idx: 0 });
     patch(ctx, '+z', [[-0.88, 0.855], [0.88, 0.855], [0.86, 0.9], [-0.86, 0.9]], FIN.blackGloss, { off: 0.004 });
-    patch(ctx, '+z', [[-0.86, 0.863], [0.86, 0.863], [0.845, 0.892], [-0.845, 0.892]], Lf(0xffffff, LAMP.TAIL, 'TAILBAR'), { off: 0.008 });
+    patch(ctx, '+z', [[-0.86, 0.863], [0.86, 0.863], [0.845, 0.892], [-0.845, 0.892]], Lf(0xffffff, LAMP.BAR, 'TAILBAR'), { off: 0.008 });
     for (const s of [-1, 1]) patch(ctx, '+z', rrect(s * 0.6 - 0.07, 0.4, s * 0.6 + 0.07, 0.43, 0.01), Lf(0xf4f6ff, LAMP.REV), { off: 0.007 });
     plate(ctx, 'R', { y: 0.66, idx: 0 });
     badge(ctx, '+z', 0, 0.8, 0.03);
@@ -2433,7 +2434,7 @@ DEFS.hellion = () => ({
     archTrims(ctx, { fin: FIN.black, width: 0.075, out: 0.03, inner: 0.01 });
     // full-width 'racetrack' tail lamp ring
     patch(ctx, '+z', rrect(-0.86, 0.67, 0.86, 0.87, 0.04), FIN.blackGloss, { off: 0.004 });
-    patch(ctx, '+z', rrect(-0.84, 0.69, 0.84, 0.85, 0.03), Lf(0xd4000c, LAMP.TAIL, 'TAILBAR'), { off: 0.007, holes: [rrect(-0.8, 0.72, 0.8, 0.82, 0.02)] });
+    patch(ctx, '+z', rrect(-0.84, 0.69, 0.84, 0.85, 0.03), Lf(0xd4000c, LAMP.BAR, 'TAILBAR'), { off: 0.007, holes: [rrect(-0.8, 0.72, 0.8, 0.82, 0.02)] });
     patch(ctx, '+z', rrect(-0.8, 0.72, 0.8, 0.82, 0.02), FIN.blackGloss, { off: 0.008 });
     badge(ctx, '+z', 0, 0.77, 0.04);
     for (const s of [-1, 1]) patch(ctx, '+z', rrect(s * 0.62 - 0.08, 0.735, s * 0.62 + 0.08, 0.76, 0.008), Lf(0xf4f6ff, LAMP.REV), { off: 0.009 });
@@ -2740,7 +2741,7 @@ DEFS.senkou = () => ({
     bothSides(ctx, (dir) => patch(ctx, dir, [[0.55, 0.36], [0.95, 0.4], [0.95, 0.64], [0.7, 0.62]], tx(FIN.grille, 'HONEY'), { off: 0.005, depth: 0.012, wallFin: FIN.black }));
     // full-width tail light bar + wing that sweeps out of the rear fenders
     patch(ctx, '+z', rrect(-0.86, 0.6, 0.86, 0.74, 0.03), FIN.blackGloss, { off: 0.004 });
-    patch(ctx, '+z', rrect(-0.84, 0.62, 0.84, 0.72, 0.02), Lf(0xffffff, LAMP.TAIL, 'TAILBAR'), { off: 0.008 });
+    patch(ctx, '+z', rrect(-0.84, 0.62, 0.84, 0.72, 0.02), Lf(0xffffff, LAMP.BAR, 'TAILBAR'), { off: 0.008 });
     for (const s of [-1, 1]) patch(ctx, '+z', rrect(s * 0.18 - 0.08, 0.63, s * 0.18 + 0.08, 0.71, 0.01), Lf(0xf4f6ff, LAMP.REV), { off: 0.01 });
     const zw = 1.98, yw = section(P, zw).yt;
     tube(ctx, [[-0.86, yw + 0.02, zw], [-0.6, yw + 0.06, zw], [0, yw + 0.065, zw], [0.6, yw + 0.06, zw], [0.86, yw + 0.02, zw]], [[-0.01, -0.1], [0.014, 0.04], [0.004, 0.1], [-0.012, 0.05]], FIN.paint, { up: () => [0, 0, 1], crease: 40 });
@@ -3157,7 +3158,7 @@ DEFS.vanguard = () => ({
     // hood vents, aeroblade lip, thin light bar
     for (const s of [-1, 1]) patch(ctx, '+y', rrect(s * 0.36 - 0.12, -1.7, s * 0.36 + 0.12, -1.45, 0.03), tx(FIN.grille, 'HONEY'), { off: 0.006 });
     patch(ctx, '+z', [[-0.88, 0.74], [0.88, 0.74], [0.86, 0.79], [-0.86, 0.79]], FIN.blackGloss, { off: 0.004 });
-    patch(ctx, '+z', [[-0.86, 0.75], [0.86, 0.75], [0.845, 0.78], [-0.845, 0.78]], Lf(0xffffff, LAMP.TAIL, 'TAILBAR'), { off: 0.008 });
+    patch(ctx, '+z', [[-0.86, 0.75], [0.86, 0.75], [0.845, 0.78], [-0.845, 0.78]], Lf(0xffffff, LAMP.BAR, 'TAILBAR'), { off: 0.008 });
     const zs = 2.28, ys = section(P, zs).yt;
     tube(ctx, [[-0.78, ys + 0.004, zs], [0, ys + 0.014, zs], [0.78, ys + 0.004, zs]], [[-0.1, -0.012], [0.06, 0.03], [0.09, 0.026], [0.04, -0.018]], FIN.paint, { up: () => [0, 1, 0], crease: 35 });
     grille(ctx, { poly: [[-0.74, 0.24], [0.74, 0.24], [0.76, 0.4], [-0.76, 0.4]], dir: '+z', fin: FIN.graphite, tex: 'HONEY' });
@@ -3726,7 +3727,7 @@ DEFS.aska = () => ({
     const zw = 2.05, yw = 1.28;
     tube(ctx, [[-0.98, yw - 0.06, zw + 0.06], [-0.5, yw, zw], [0, yw + 0.02, zw - 0.02], [0.5, yw, zw], [0.98, yw - 0.06, zw + 0.06]], [[-0.014, -0.17], [0.024, 0.07], [0.008, 0.17], [-0.018, 0.09]], FIN.graphite, { up: () => [0, 0, 1], crease: 30 });
     for (const s of [-1, 1]) { box(ctx, FIN.graphite, s * 0.98, yw - 0.1, zw + 0.06, 0.012, 0.18, 0.4); tube(ctx, [[s * 0.42, yw - 0.02, zw], [s * 0.42, yw - 0.2, zw - 0.1], [s * 0.42, section(P, 1.6).yt + 0.02, 1.62]], [[-0.012, -0.05], [0.012, -0.05], [0.012, 0.05], [-0.012, 0.05]], FIN.graphite, { crease: 50 }); }
-    patch(ctx, '+z', [[-0.88, 0.6], [0.88, 0.6], [0.86, 0.64], [-0.86, 0.64]], Lf(0xffffff, LAMP.TAIL, 'TAILBAR'), { off: 0.007 });
+    patch(ctx, '+z', [[-0.88, 0.6], [0.88, 0.6], [0.86, 0.64], [-0.86, 0.64]], Lf(0xffffff, LAMP.BAR, 'TAILBAR'), { off: 0.007 });
     patch(ctx, '+z', rrect(-0.88, 0.22, 0.88, 0.56, 0.02), tx(FIN.grille, 'HONEY'), { off: 0.004 });
     diffuser(ctx, 0.86, 7, 0.1, 0.55);
     plate(ctx, 'R', { y: 0.46, idx: 0 });
@@ -3782,7 +3783,7 @@ DEFS.celerite = () => ({
     const sp = []; for (let z = 0.1; z <= 1.8; z += 0.1) sp.push([0, P.gh.roof(z) + 0.004, z]);
     tube(ctx, sp, [[-0.012, 0], [0.012, 0], [0.006, 0.03], [-0.006, 0.03]], FIN.paint2, { crease: 50 });
     ctx.noBounds = false;
-    patch(ctx, '+z', [[-0.9, 0.62], [0.9, 0.62], [0.88, 0.66], [-0.88, 0.66]], Lf(0xffffff, LAMP.TAIL, 'TAILBAR'), { off: 0.007 });
+    patch(ctx, '+z', [[-0.9, 0.62], [0.9, 0.62], [0.88, 0.66], [-0.88, 0.66]], Lf(0xffffff, LAMP.BAR, 'TAILBAR'), { off: 0.007 });
     patch(ctx, '+z', rrect(-0.86, 0.26, 0.86, 0.58, 0.03), tx(FIN.grille, 'HONEY'), { off: 0.004 });
     const zs = 1.98, ys = section(P, zs).yt;
     tube(ctx, [[-0.8, ys + 0.03, zs], [0, ys + 0.035, zs], [0.8, ys + 0.03, zs]], [[-0.01, -0.12], [0.014, 0.05], [0.004, 0.12], [-0.012, 0.05]], FIN.paint2, { up: () => [0, 0, 1], crease: 35 });
@@ -3828,7 +3829,7 @@ DEFS.munja = () => ({
     badge(ctx, '-z', 0, 0.46, 0.026);
     plate(ctx, 'F', { y: 0.16, idx: 0 });
     bothSides(ctx, (dir) => { patch(ctx, dir, [[-1.0, 0.3], [0.9, 0.38], [0.95, 0.56], [0.4, 0.54], [-0.9, 0.44]], FIN.blackGloss, { off: 0.005 }); });
-    patch(ctx, '+z', [[-0.9, 0.64], [0.9, 0.64], [0.88, 0.67], [-0.88, 0.67]], Lf(0xffffff, LAMP.TAIL, 'TAILBAR'), { off: 0.007 });
+    patch(ctx, '+z', [[-0.9, 0.64], [0.9, 0.64], [0.88, 0.67], [-0.88, 0.67]], Lf(0xffffff, LAMP.BAR, 'TAILBAR'), { off: 0.007 });
     const zs = 2.12, ys = section(P, zs).yt;
     tube(ctx, [[-0.82, ys + 0.03, zs], [0, ys + 0.035, zs], [0.82, ys + 0.03, zs]], [[-0.01, -0.12], [0.014, 0.05], [0.004, 0.12], [-0.012, 0.05]], FIN.graphite, { up: () => [0, 0, 1], crease: 35 });
     diffuser(ctx, 0.84, 7, 0.14, 0.45);
@@ -3877,7 +3878,7 @@ DEFS.elektra = () => ({
     badge(ctx, '+y', 0, -2.2, 0.03);
     plate(ctx, 'F', { y: 0.44, idx: 0 });
     patch(ctx, '+z', [[-0.9, 0.78], [0.9, 0.78], [0.88, 0.83], [-0.88, 0.83]], FIN.blackGloss, { off: 0.004 });
-    patch(ctx, '+z', [[-0.88, 0.787], [0.88, 0.787], [0.865, 0.822], [-0.865, 0.822]], Lf(0xffffff, LAMP.TAIL, 'TAILBAR'), { off: 0.008 });
+    patch(ctx, '+z', [[-0.88, 0.787], [0.88, 0.787], [0.865, 0.822], [-0.865, 0.822]], Lf(0xffffff, LAMP.BAR, 'TAILBAR'), { off: 0.008 });
     patch(ctx, '+z', rrect(-0.24, 0.7, 0.24, 0.74, 0.01), FIN.chrome, { off: 0.008 });
     for (const s of [-1, 1]) patch(ctx, '+z', s > 0 ? rrect(0.3, 0.44, 0.44, 0.47, 0.01) : rrect(-0.44, 0.44, -0.3, 0.47, 0.01), Lf(0xf4f6ff, LAMP.REV), { off: 0.007 });
     diffuser(ctx, 0.7, 5, 0.18, 0.4);
@@ -4919,6 +4920,50 @@ const SCULPT = {
   super: { flF: 0.035, flR: 0.065, flW: 0.28, waist: 0.02, shoulder: 0.004, cove: 0.01, rocker: 0.012, crown: 0.016, ghIn: 0.03, ghTaper: 0.06, rndF: { zx: 0.3, x: 0.14, zt: 0.22, zb: 0.06 }, rndR: { zt: 0.14, zx: 0.2, x: 0.08 } },
   muscle: { flF: 0.02, flR: 0.05, flW: 0.3, waist: 0.014, shoulder: 0.012, cove: 0.01, rocker: 0.014, dome: 0.02, crown: 0.008, ghIn: 0.035, ghTaper: 0.06, rndF: { zx: 0.22, x: 0.09 }, rndR: { zx: 0.18, x: 0.07 } },
   k5: { flF: 0.035, flR: 0.042, waist: 0.014, shoulder: 0.012, cove: 0.014, rocker: 0.016, dome: 0.016, crown: 0.014, ghIn: 0.035, ghTaper: 0.03, rndF: { zt: 0.5, t: 0.13, zx: 0.42, x: 0.17, zb: 0.1, b: 0.05 }, rndR: { zt: 0.3, t: 0.07, zx: 0.28, x: 0.12, zb: 0.1 } },
+  // cars pass 4: the other roster / street bodies, by family (kugel / kestrel have separate fender shells: noArches, no
+  // sculpt; the cable car is custom). Values scale with the body: small hatches and boxy 4x4s / vans get gentle terms.
+  police: SCULPT_SEDAN,
+  raiden: { flF: 0.035, flR: 0.045, waist: 0.014, shoulder: 0.012, cove: 0.012, rocker: 0.016, dome: 0.014, crown: 0.014, ghIn: 0.035, ghTaper: 0.035, rndF: { zt: 0.48, t: 0.12, zx: 0.4, x: 0.16, zb: 0.1, b: 0.05 }, rndR: { zt: 0.28, t: 0.06, zx: 0.26, x: 0.11 } },
+  k3: { flF: 0.035, flR: 0.035, waist: 0.01, shoulder: 0.008, cove: 0.012, rocker: 0.016, dome: 0.012, crown: 0.012, ghIn: 0.03, ghTaper: 0.03, rndF: { zt: 0.42, t: 0.11, zx: 0.36, x: 0.15, zb: 0.1, b: 0.05 }, rndR: { zt: 0.26, zx: 0.24, x: 0.1 } },
+  seiun: { flF: 0.045, flR: 0.045, flW: 0.22, waist: 0.012, shoulder: 0.008, cove: 0.012, rocker: 0.016, dome: 0.012, crown: 0.012, ghIn: 0.03, ghTaper: 0.03, rndF: { zt: 0.4, t: 0.1, zx: 0.34, x: 0.14, zb: 0.08 }, rndR: { zt: 0.24, zx: 0.22, x: 0.09 } },
+  brawler: { flF: 0.02, flR: 0.045, flW: 0.3, waist: 0.014, shoulder: 0.012, cove: 0.01, rocker: 0.014, dome: 0.02, crown: 0.008, ghIn: 0.035, ghTaper: 0.06, rndF: { zx: 0.22, x: 0.09 }, rndR: { zx: 0.18, x: 0.07 } },
+  vandal: { flF: 0.02, flR: 0.05, flW: 0.3, waist: 0.016, shoulder: 0.012, cove: 0.01, rocker: 0.014, dome: 0.02, crown: 0.01, ghIn: 0.035, ghTaper: 0.06, rndF: { zx: 0.22, x: 0.09 }, rndR: { zx: 0.18, x: 0.07 } },
+  hellion: { flF: 0.04, flR: 0.065, flW: 0.3, waist: 0.016, shoulder: 0.012, cove: 0.012, rocker: 0.016, dome: 0.022, crown: 0.01, ghIn: 0.035, ghTaper: 0.06, rndF: { zx: 0.24, x: 0.1 }, rndR: { zx: 0.2, x: 0.08 } },
+  sovereign: { flF: 0.03, flR: 0.045, flW: 0.28, waist: 0.018, shoulder: 0.006, cove: 0.01, rocker: 0.012, dome: 0.016, crown: 0.012, ghIn: 0.035, ghTaper: 0.05 },
+  comet: { flF: 0.035, flR: 0.045, flW: 0.28, waist: 0.02, shoulder: 0.004, cove: 0.01, rocker: 0.012, dome: 0.01, crown: 0.02 },
+  rz7: { flF: 0.03, flR: 0.04, waist: 0.012, shoulder: 0.008, cove: 0.012, rocker: 0.014, dome: 0.01, crown: 0.014, ghIn: 0.035, ghTaper: 0.04, rndF: { zt: 0.5, t: 0.12, zx: 0.42, x: 0.17, zb: 0.1, b: 0.05 }, rndR: { zt: 0.3, t: 0.06, zx: 0.26, x: 0.11 } },
+  kaminari: { flF: 0.035, flR: 0.045, flW: 0.24, waist: 0.014, shoulder: 0.008, cove: 0.012, rocker: 0.014, dome: 0.012, crown: 0.016, ghIn: 0.035, ghTaper: 0.045, rndF: { zt: 0.5, t: 0.12, zx: 0.42, x: 0.17, zb: 0.1, b: 0.05 }, rndR: { zt: 0.3, t: 0.06, zx: 0.26, x: 0.11 } },
+  sora: { flF: 0.03, flR: 0.035, waist: 0.014, shoulder: 0.004, cove: 0.01, rocker: 0.012, dome: 0.006, crown: 0.016, ghIn: 0.02, ghTaper: 0.02, rndF: { zt: 0.4, t: 0.1, zx: 0.36, x: 0.15 } },
+  classic9: { flF: 0.04, flR: 0.06, flW: 0.26, waist: 0.016, shoulder: 0.004, cove: 0.008, rocker: 0.012, crown: 0.022, ghIn: 0.04, ghTaper: 0.06 },
+  coupeGT: { flF: 0.055, flR: 0.08, flW: 0.28, waist: 0.018, shoulder: 0.004, cove: 0.008, rocker: 0.012, crown: 0.022, ghIn: 0.045, ghTaper: 0.07, rndF: { zt: 0.6, t: 0.14, zx: 0.5, x: 0.22, zb: 0.12 }, rndR: { zt: 0.5, t: 0.1, zx: 0.4, x: 0.17 } },
+  vanguard: { flF: 0.035, flR: 0.06, flW: 0.28, waist: 0.018, shoulder: 0.006, cove: 0.01, rocker: 0.012, dome: 0.012, crown: 0.018, ghIn: 0.04, ghTaper: 0.06, rndF: { zt: 0.55, t: 0.13, zx: 0.45, x: 0.2, zb: 0.12 }, rndR: { zt: 0.34, t: 0.07, zx: 0.3, x: 0.13 } },
+  stradale: { flF: 0.035, flR: 0.06, flW: 0.28, waist: 0.018, shoulder: 0.006, cove: 0.01, rocker: 0.012, dome: 0.012, crown: 0.018, ghIn: 0.04, ghTaper: 0.06, rndF: { zt: 0.55, t: 0.13, zx: 0.45, x: 0.2, zb: 0.12 }, rndR: { zt: 0.34, t: 0.07, zx: 0.3, x: 0.13 } },
+  senkou: { flF: 0.03, flR: 0.055, flW: 0.28, waist: 0.018, shoulder: 0.004, cove: 0.01, rocker: 0.012, crown: 0.014, ghIn: 0.03, ghTaper: 0.06, rndF: { zx: 0.3, x: 0.14, zt: 0.22, zb: 0.06 }, rndR: { zt: 0.14, zx: 0.2, x: 0.08 } },
+  saetta: { flF: 0.04, flR: 0.05, flW: 0.26, waist: 0.016, shoulder: 0.004, cove: 0.008, rocker: 0.012, crown: 0.014, ghIn: 0.025, ghTaper: 0.04 },
+  contessa: { flF: 0.03, flR: 0.06, flW: 0.28, waist: 0.016, shoulder: 0.004, cove: 0.01, rocker: 0.012, crown: 0.01, ghIn: 0.025, ghTaper: 0.05 },
+  tempesta: { flF: 0.035, flR: 0.065, flW: 0.28, waist: 0.02, shoulder: 0.004, cove: 0.01, rocker: 0.012, crown: 0.016, ghIn: 0.03, ghTaper: 0.06, rndF: { zx: 0.3, x: 0.14, zt: 0.22, zb: 0.06 }, rndR: { zt: 0.14, zx: 0.2, x: 0.08 } },
+  funo: { flF: 0.03, flR: 0.055, flW: 0.28, waist: 0.018, shoulder: 0.004, cove: 0.01, rocker: 0.012, crown: 0.014, ghIn: 0.03, ghTaper: 0.06, rndF: { zx: 0.3, x: 0.14, zt: 0.22, zb: 0.06 }, rndR: { zt: 0.14, zx: 0.2, x: 0.08 } },
+  aska: { flF: 0.035, flR: 0.065, flW: 0.28, waist: 0.02, shoulder: 0.004, cove: 0.01, rocker: 0.012, crown: 0.016, ghIn: 0.03, ghTaper: 0.06, rndF: { zx: 0.3, x: 0.14, zt: 0.22, zb: 0.06 }, rndR: { zt: 0.14, zx: 0.2, x: 0.08 } },
+  celerite: { flF: 0.035, flR: 0.06, flW: 0.3, waist: 0.022, shoulder: 0.004, cove: 0.012, rocker: 0.012, crown: 0.016, ghIn: 0.03, ghTaper: 0.06, rndF: { zx: 0.32, x: 0.15, zt: 0.26, zb: 0.06 }, rndR: { zt: 0.16, zx: 0.22, x: 0.09 } },
+  munja: { flF: 0.035, flR: 0.06, flW: 0.28, waist: 0.02, shoulder: 0.004, cove: 0.01, rocker: 0.012, crown: 0.016, ghIn: 0.03, ghTaper: 0.06, rndF: { zx: 0.3, x: 0.14, zt: 0.24, zb: 0.06 }, rndR: { zt: 0.14, zx: 0.2, x: 0.08 } },
+  elektra: { flF: 0.025, flR: 0.035, flW: 0.26, waist: 0.012, shoulder: 0.006, cove: 0.008, rocker: 0.012, dome: 0.006, crown: 0.014, ghIn: 0.04, ghTaper: 0.045, rndF: { zt: 0.6, t: 0.16, zx: 0.5, x: 0.22, zb: 0.14, b: 0.06 }, rndR: { zt: 0.36, t: 0.07, zx: 0.32, x: 0.14 } },
+  piccina: { flF: 0.018, flR: 0.02, waist: 0.006, shoulder: 0.005, cove: 0.006, rocker: 0.01, dome: 0.004, crown: 0.008, ghIn: 0.02, ghTaper: 0.015 },
+  nipper: { flF: 0.02, flR: 0.022, waist: 0.006, shoulder: 0.006, cove: 0.006, rocker: 0.01, dome: 0.004, crown: 0.008, ghIn: 0.02, ghTaper: 0.015 },
+  petard: { flF: 0.028, flR: 0.03, waist: 0.008, shoulder: 0.006, cove: 0.008, rocker: 0.012, dome: 0.006, crown: 0.01, ghIn: 0.025, ghTaper: 0.02, rndF: { zt: 0.36, t: 0.1, zx: 0.3, x: 0.12 } },
+  gauner: { flF: 0.03, flR: 0.034, waist: 0.012, shoulder: 0.008, cove: 0.01, rocker: 0.014, dome: 0.008, crown: 0.012, ghIn: 0.03, ghTaper: 0.03, rndF: { zt: 0.48, t: 0.14, zx: 0.42, x: 0.17, zb: 0.1, b: 0.05 }, rndR: { zt: 0.16, zx: 0.18, x: 0.08 } },
+  hachi: { flF: 0.024, flR: 0.028, waist: 0.008, shoulder: 0.004, cove: 0.008, rocker: 0.012, dome: 0.006, crown: 0.01, ghIn: 0.025, ghTaper: 0.025 },
+  rally: { flF: 0.045, flR: 0.045, flW: 0.22, waist: 0.012, shoulder: 0.008, cove: 0.01, rocker: 0.016, dome: 0.008, crown: 0.012, ghIn: 0.03, ghTaper: 0.03, rndF: { zt: 0.44, t: 0.12, zx: 0.38, x: 0.15, zb: 0.08 }, rndR: { zt: 0.16, zx: 0.18, x: 0.08 } },
+  sport1: { flF: 0.06, flR: 0.06, flW: 0.22, waist: 0.01, shoulder: 0.006, cove: 0.01, rocker: 0.016, dome: 0.008, crown: 0.01, ghIn: 0.025, ghTaper: 0.025 },
+  aspro: { flF: 0.055, flR: 0.055, flW: 0.2, waist: 0.01, shoulder: 0.006, cove: 0.01, rocker: 0.016, dome: 0.008, crown: 0.01, ghIn: 0.025, ghTaper: 0.025 },
+  buggy: { flF: 0.02, flR: 0.03, flW: 0.2, shoulder: 0.004, cove: 0.006, rocker: 0.01, crown: 0.008 },
+  trophy: { flF: 0.05, flR: 0.05, flW: 0.26, waist: 0.008, shoulder: 0.006, cove: 0.012, rocker: 0.02, dome: 0.016, crown: 0.012, ghIn: 0.025 },
+  baja: { flF: 0.05, flR: 0.05, flW: 0.26, waist: 0.008, shoulder: 0.006, cove: 0.012, rocker: 0.02, dome: 0.016, crown: 0.012, ghIn: 0.025, rndF: { zt: 0.36, t: 0.1, zx: 0.28, x: 0.13, zb: 0.12, b: 0.07 } },
+  trekker: { flF: 0.02, flR: 0.02, flW: 0.2, shoulder: 0.004, cove: 0.006, rocker: 0.014, dome: 0.004, crown: 0.006, ghIn: 0.01 },
+  kodiak: { flF: 0.02, flR: 0.02, flW: 0.2, shoulder: 0.004, cove: 0.006, rocker: 0.014, dome: 0.004, crown: 0.006, ghIn: 0.01 },
+  van: { flF: 0.015, flR: 0.015, flW: 0.2, shoulder: 0.006, cove: 0.01, rocker: 0.012, ghIn: 0.01 },
+  picknick: { flF: 0.015, flR: 0.015, flW: 0.2, shoulder: 0.006, cove: 0.01, rocker: 0.012, ghIn: 0.012, ghTaper: 0.01 },
+  boxtruck: { shoulder: 0.004, cove: 0.006, rocker: 0.01 },
+  bus: { shoulder: 0.004, cove: 0.006, rocker: 0.01 },
 };
 
 function getP(id) {
@@ -5026,7 +5071,7 @@ function surfOBC(shader) {
 function lampOBC(shader) {
   shader.uniforms.uLamp = this.userData.uLamp;
   shader.vertexShader = shader.vertexShader
-    .replace('#include <common>', '#include <common>\nattribute float lampId;\nuniform float uLamp[10];\nvarying float vLampI;')
+    .replace('#include <common>', '#include <common>\nattribute float lampId;\nuniform float uLamp[11];\nvarying float vLampI;')
     .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLampI = uLamp[int(lampId + 0.5)];');
   shader.fragmentShader = shader.fragmentShader
     .replace('#include <common>', '#include <common>\nvarying float vLampI;')
@@ -5182,7 +5227,7 @@ function applyFinish(m, finish, hex) {
 }
 function makeLamps() {
   const m = new THREE.MeshStandardMaterial({ vertexColors: true, map: shared().atlas, roughness: 0.22, metalness: 0 });
-  m.userData.uLamp = { value: new Float32Array([0.05, 0.15, 0.6, 0, 0.05, 0.2, 0.2, 0.35, 1.4, 1.6]) };
+  m.userData.uLamp = { value: new Float32Array([0.05, 0.15, 0.6, 0, 0.05, 0.2, 0.2, 0.35, 1.4, 1.6, 0.8]) };
   m.onBeforeCompile = function (sh) { lampOBC.call(this, sh); lampDepthOBC(sh); sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_maps>', '#include <lights_fragment_maps>\n' + envGlsl('mix(1.0, 2.0, metalnessFactor)')); applyCarProbe(sh); };
   m.customProgramCacheKey = () => 'hb-car-lamp-v2';
   m.name = 'car-lamps';
@@ -5257,12 +5302,14 @@ function requestCar(id) {
     const lods = [{}, {}, {}]; let caliper = null, heroL = null, A_cab = null;
     g.scene.traverse((o) => {
       if (!o.isMesh) return;
-      const m = /^(L\d|H)_([a-z0-9]+)/.exec(o.name), geo = fixCarGeo(o.geometry, m ? m[2] : 'caliper');
+      // cars pass 4: hinged front doors are their own nodes <level>_<kind>__dl / __dr (tools/blender/car_door.py)
+      const m = /^(L\d|H)_([a-z0-9]+)(?:__d(l|r))?/.exec(o.name), geo = fixCarGeo(o.geometry, m ? m[2] : 'caliper');
       if (!m) { if (/^caliper/.test(o.name)) caliper = geo; return; }
-      if (m[1] === 'H') (heroL || (heroL = {}))[m[2]] = geo; else lods[+m[1][1]][m[2]] = geo;
+      const L = m[1] === 'H' ? (heroL || (heroL = {})) : lods[+m[1][1]];
+      if (m[3]) { const D = L.doors || (L.doors = {}); (D[m[3].toUpperCase()] || (D[m[3].toUpperCase()] = {}))[m[2]] = geo; } else L[m[2]] = geo;
     });
     // body pass 2: hero-only level H (player / showroom), L0 for traffic up close
-    const A = { id, lods, hero: heroL, caliper, ao: t, details: makeDetailsMat(t, (A_cab = cabinBox(id))), cab: A_cab, parked: [null, null, null], parkedMat: null };
+    const A = { id, lods, hero: heroL, caliper, ao: t, details: makeDetailsMat(t, (A_cab = cabinBox(id))), cab: A_cab, parked: [null, null, null], parkedMat: null, doors: carIndex?.[id]?.doors || null };
     ASSET.set(id, A);
     for (const cb of WAIT.get(id) || []) { try { cb(A); } catch (e) { console.warn('[cars] onCarAsset', e); } }
     WAIT.delete(id);
@@ -5275,6 +5322,7 @@ export function onCarAsset(id, cb) {
   WAIT.get(id).push(cb); requestCar(id);
 }
 export const carAssetReady = (id) => ASSET.has(id);
+if (typeof window !== 'undefined') window.__hbCarAsset = onCarAsset;   // dev capture rigs: wait for a baked car
 // glTF -> the attribute layout the car materials expect: uv (atlas, three's flipY), uv1 (AO), surf (metal, rough), lampId
 function fixCarGeo(g, kind) {
   const n = g.attributes.position.count, out = new THREE.BufferGeometry();
@@ -5306,17 +5354,78 @@ function fixCarGeo(g, kind) {
 // scene recompiled every program (a multi-second hitch on the first 'C').
 // in-car view gains: window-light irradiance x gain (the eye adapts to the cabin; at the street exposure a physically lit
 // black dash reads as a hole), gauges / screen emissive x lamp (night readability). window.__hbCab for live tuning.
-export const CABIN = { gain: 3.2, lamp: 2.5 };
+export const CABIN = { gain: 6.0, lamp: 2.5 };   // pass 4: 3.2 -> 6.0 with the lighter trims + softer cabin AO
 if (typeof window !== 'undefined') window.__hbCab = CABIN;
 function cabinBox(id) {
   const P = getP(id), e = P.eye || P.seat || [-0.37, 1.1, 0];
   return { c: new THREE.Vector4(0, e[1] - 0.3, e[2] - 0.15, 0), h: new THREE.Vector3(0.95, 0.62, 1.25) };
 }
+// cars pass 4: interior material classes. car_hero.py marks interior trims with metalness 2 + class (surf.x): 3 soft-touch
+// plastic (satin, fine pebble grain, a velvet-like grazing sheen), 4 leather (pebbled grain, glossier on the raised grain),
+// 5 brushed aluminium (streaks along the part), 6 piano black (near-mirror lacquer), 7 fabric / alcantara (matte, fuzzy
+// rim), 8 carpet. Object-space procedural detail (vHbCabP), faded out before it can alias.
+const INTERIOR_PARS = `
+float hbInt = 0.0, hbIntH = 0.0, hbIntSheen = 0.0;
+float hbIH(vec3 p) { p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+float hbIN(vec3 p) {
+  vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(hbIH(i), hbIH(i + vec3(1, 0, 0)), f.x), mix(hbIH(i + vec3(0, 1, 0)), hbIH(i + vec3(1, 1, 0)), f.x), f.y),
+             mix(mix(hbIH(i + vec3(0, 0, 1)), hbIH(i + vec3(1, 0, 1)), f.x), mix(hbIH(i + vec3(0, 1, 1)), hbIH(i + vec3(1, 1, 1)), f.x), f.y), f.z);
+}`;
+const INTERIOR_MAT = `
+if (vSurf.x > 2.5) {
+  hbInt = floor(vSurf.x - 2.0 + 0.5);
+  vec3 ip = vHbCabP; float fw = length(fwidth(ip));
+  metalnessFactor = 0.0;
+  if (hbInt < 1.5) {            // soft-touch
+    float fade = 1.0 - smoothstep(0.0005, 0.002, fw);
+    float gr = hbIN(ip * 1100.0);
+    roughnessFactor = clamp(vSurf.y + (gr - 0.5) * 0.14 * fade, 0.3, 0.95);
+    diffuseColor.rgb *= 1.2;
+    hbIntH = gr * 0.00018 * fade; hbIntSheen = 0.55;
+  } else if (hbInt < 2.5) {     // leather
+    float fade = 1.0 - smoothstep(0.0007, 0.0028, fw);
+    float c1 = hbIN(ip * 650.0), c2 = hbIN(ip * 1500.0 + 7.0);
+    float grain = smoothstep(0.3, 0.7, c1 * 0.7 + c2 * 0.3);
+    roughnessFactor = clamp(vSurf.y + 0.06 + mix(0.05, -0.05, grain) * fade, 0.3, 0.85);
+    diffuseColor.rgb *= mix(1.0, mix(0.94, 1.03, grain), fade);
+    hbIntH = grain * 0.00015 * fade; hbIntSheen = 0.25;
+  } else if (hbInt < 3.5) {     // brushed aluminium: streaks along the long axis of the part (most trims run across x)
+    float fade = 1.0 - smoothstep(0.0006, 0.003, fw);
+    float st = hbIN(ip * vec3(5.0, 1400.0, 1400.0)) * 0.65 + hbIN(ip * vec3(2.0, 300.0, 300.0)) * 0.35;
+    metalnessFactor = 1.0; roughnessFactor = mix(0.3, mix(0.17, 0.4, st), fade);
+    diffuseColor.rgb *= mix(1.0, mix(0.84, 1.06, st), fade);
+  } else if (hbInt < 4.5) {     // piano black
+    roughnessFactor = 0.045; diffuseColor.rgb = vec3(0.0055);
+  } else if (hbInt < 5.5) {     // fabric / alcantara
+    float fade = 1.0 - smoothstep(0.0006, 0.0025, fw);
+    diffuseColor.rgb *= mix(1.0, 0.9 + 0.2 * hbIN(ip * 1500.0), fade);
+    roughnessFactor = 0.96; hbIntSheen = 1.1;
+  } else {                      // carpet
+    float fade = 1.0 - smoothstep(0.0006, 0.003, fw);
+    diffuseColor.rgb *= mix(1.0, 0.8 + 0.4 * hbIN(ip * 900.0), fade);
+    roughnessFactor = 1.0; hbIntSheen = 0.6;
+  }
+}
+`;
+// view-space derivative bump from the grain height (soft-touch / leather)
+const INTERIOR_NORMAL = `
+if (hbIntH > 0.0) {
+  vec3 pos = -vViewPosition; vec2 dH = vec2(dFdx(hbIntH), dFdy(hbIntH));
+  vec3 sx = dFdx(pos), sy = dFdy(pos), r1 = cross(sy, normal), r2 = cross(normal, sx);
+  float det = dot(sx, r1) * faceDirection;
+  normal = normalize(abs(det) * normal - sign(det) * (dH.x * r1 + dH.y * r2));
+}
+`;
 function makeDetailsMat(ao, cab) {
   const m = new THREE.MeshStandardMaterial({ vertexColors: true, map: getAtlas(), alphaTest: 0.5, roughness: 0.5, metalness: 0, aoMap: ao });
   const uC = { value: cab ? cab.c : new THREE.Vector4() }, uH = { value: cab ? cab.h : new THREE.Vector3() };
   m.onBeforeCompile = (sh) => {
     surfOBC(sh); wheelOBC(sh, CAR_BASE);
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\n' + INTERIOR_PARS)
+      .replace('#include <normal_fragment_begin>', INTERIOR_MAT + '#include <normal_fragment_begin>')
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + INTERIOR_NORMAL);
     sh.uniforms.uHbCab = uC; sh.uniforms.uHbCabH = uH;
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vHbCabP;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvHbCabP = position;');
     sh.fragmentShader = sh.fragmentShader
@@ -5336,11 +5445,13 @@ function makeDetailsMat(ao, cab) {
             hbL = getIBLIrradiance(transformDirection(hbD, viewMatrix));
             #endif
             if (uProbeP.w > 0.0) { vec4 hbP = textureLod(uProbe, hbD, 6.0); hbL = mix(hbL, PI * hbP.rgb * 1.15 + hbL * (1.0 - hbP.a), uProbeP.w); }
-            irradiance += hbL * uHbCab.w + vec3(0.06, 0.055, 0.05) * uHbCab.w;
+            irradiance += hbL * uHbCab.w + vec3(0.075, 0.07, 0.064) * uHbCab.w;
           }
-        }`)
+        }
+        // soft-touch / fabric sheen: a soft grazing-angle lift of the diffuse light (velvet-like, no hot spot)
+        if (hbIntSheen > 0.0) irradiance *= 1.0 + hbIntSheen * pow(1.0 - saturate(dot(geometryNormal, geometryViewDir)), 3.0);`)
       .replace('#include <aomap_fragment>', `#ifdef USE_AOMAP
-        float ambientOcclusion = ( texture2D( aoMap, vAoMapUv ).r - 1.0 ) * aoMapIntensity * (1.0 - 0.5 * hbCabIn) + 1.0;
+        float ambientOcclusion = ( texture2D( aoMap, vAoMapUv ).r - 1.0 ) * aoMapIntensity * (1.0 - 0.7 * hbCabIn) + 1.0;
         reflectedLight.indirectDiffuse *= ambientOcclusion;
         #if defined( USE_ENVMAP ) && defined( STANDARD )
         reflectedLight.indirectSpecular *= computeSpecularOcclusion( saturate( dot( geometryNormal, geometryViewDir ) ), ambientOcclusion, material.roughness );
@@ -5348,7 +5459,7 @@ function makeDetailsMat(ao, cab) {
         #endif`);
     applyCarProbe(sh);
   };
-  m.customProgramCacheKey = () => 'hb-car-surf-ao-v4';
+  m.customProgramCacheKey = () => 'hb-car-surf-ao-v5';
   m.name = 'car-details';
   return m;
 }
@@ -5380,11 +5491,15 @@ export function parkedCarGeometry(id, level) {
     if (mtx) { o.applyMatrix4(mtx); if (mtx.determinant() < 0) { const I = o.index.array; for (let i = 0; i < I.length; i += 3) { const t = I[i + 1]; I[i + 1] = I[i + 2]; I[i + 2] = t; } } }
     parts.push(o);
   };
-  put(L.paint, null, [1, 1, 1], [-1, 0.32]);
-  put(L.paint2, null, [p2.r, p2.g, p2.b], [-2, 0.32]);
-  put(L.details); put(L.lamps, null, null, [0, 0.34], true);
-  { const lp = parts[parts.length - 1]; if (lp && L.lamps) { const c = lp.attributes.color.array; for (let i = 0; i < c.length; i++) c[i] *= 0.55; } }   // unlit lenses: 0.18-gloss full-bright lenses flashed white under headlights / the probe at night
-  put(L.glass, null, [0.012, 0.016, 0.02], [0, 0.03]);
+  for (const B of [L, ...Object.values(L.doors || {})]) {
+    put(B.paint, null, [1, 1, 1], [-1, 0.32]);
+    put(B.paint2, null, [p2.r, p2.g, p2.b], [-2, 0.32]);
+    put(B.details); put(B.lamps, null, null, [0, 0.34], true);
+    { const lp = parts[parts.length - 1]; if (lp && B.lamps) { const c = lp.attributes.color.array; for (let i = 0; i < c.length; i++) c[i] *= 0.55; } }   // unlit lenses: 0.18-gloss full-bright lenses flashed white under headlights / the probe at night
+    put(B.glass, null, [0.012, 0.016, 0.02], [0, 0.03]);
+  }
+  // interior material classes (surf.x >= 2, the details shader's markers) are plain dielectric in the instanced material
+  for (const o of parts) { const sa = o.attributes.surf.array; for (let i = 0; i < sa.length; i += 2) if (sa[i] > 1.5) sa[i] = 0; }
   const mx = new THREE.Matrix4();
   for (const [x, z, w] of [[-P.tf / 2, P.axleFZ, P.ww], [P.tf / 2, P.axleFZ, P.ww], [-P.tr / 2, P.axleRZ, P.wwR], [P.tr / 2, P.axleRZ, P.wwR]]) {
     mx.makeScale((x < 0 ? -1 : 1) * (w / P.ww), 1, 1).setPosition(x, P.R, z);
@@ -5612,12 +5727,32 @@ export function buildCarModel(id, opts = {}) {
     if (calMat) return;
     calMat = new THREE.MeshStandardMaterial({ color: hero ? 0xb01a20 : 0x2a2b2e, roughness: 0.35, metalness: hero ? 0.15 : 0.6 }); calMat.name = 'car-caliper';
   };
-  function addBodyLevel(parent, g) {
+  function addParts(parent, g) {
     add(parent, g.paint, paint); add(parent, g.paint2, paint2); add(parent, g.details, detailsMat);
     add(parent, g.lamps, lamps);
     if (g.lens) { lensMat = lensMat || makeLens(lamps); const lm = add(parent, g.lens, lensMat, false); lm.renderOrder = 1; }
     const gm = add(parent, g.glass, glassMat, false);
     if (gm) { gm.receiveShadow = false; gm.renderOrder = 1; glassMeshes.push(gm); }
+  }
+  // cars pass 4: front doors hang on a hinge pivot (vertical axis through the front edge on the outer skin)
+  const doorPivots = { L: [], R: [] }, doorOpen = { L: 0, R: 0 };
+  function addBodyLevel(parent, g) {
+    addParts(parent, g);
+    const H = asset?.doors;
+    for (const sd of ['L', 'R']) {
+      const dg = g.doors?.[sd]; if (!dg) continue;
+      const h = H?.[sd], pv = new THREE.Group(), inner = new THREE.Group();
+      pv.name = 'door' + sd;
+      if (h) { pv.position.fromArray(h.p); inner.position.set(-h.p[0], -h.p[1], -h.p[2]); }
+      pv.userData.max = h?.max ?? 1.1; pv.userData.hinged = !!h;
+      pv.add(inner); parent.add(pv); addParts(inner, dg);
+      doorPivots[sd].push(pv); setDoor(sd, doorOpen[sd]);
+    }
+  }
+  function setDoor(sd, t) {
+    doorOpen[sd] = t;
+    const sg = sd === 'L' ? -1 : 1, e = t * t * (3 - 2 * t);
+    for (const pv of doorPivots[sd]) pv.rotation.y = pv.userData.hinged ? sg * e * pv.userData.max : 0;
   }
   function wheelGeo() { return customRim || (asset ? ((hero && asset.hero) || asset.lods[lodLevel]).wheel : hero && !P.custom ? heroWheelGeom(id, P) : G.wheel); }
   function syncWheels() {
@@ -5626,7 +5761,7 @@ export function buildCarModel(id, opts = {}) {
     for (const c of calipers) c.visible = hero || lodLevel === 0;
   }
   function mountBody() {
-    body.clear(); glassMeshes.length = 0;
+    body.clear(); glassMeshes.length = 0; doorPivots.L.length = 0; doorPivots.R.length = 0;
     asset = ASSET.get(id) || null;
     if (!asset) { requestCar(id); addBodyLevel(body, G.geoms); return; }
     detailsMat = asset.details;
@@ -5679,7 +5814,9 @@ export function buildCarModel(id, opts = {}) {
     const kc = cabinOn ? CABIN.lamp : 1;     // in-car view: gauges / screen read at the cabin's adapted exposure
     u[7] = (o.head ? 2.4 : 0.35) * kc;
     u[8] = o.head ? 1.7 : 1.5;
-    u[9] = (o.head ? 2.2 : 1.4) * kc;
+    u[9] = (o.head ? 0.55 : 0.8) * kc;   // centre screen: dimmed (2.2 x the cockpit gain burned to white)
+    // LED tail light bar: a saturated running light that blooms at night (the plain tail level read as a dim stripe), brighter braking
+    u[10] = o.brake ? (o.head ? 9.0 : 4.5) : o.head ? 5.5 : 1.1;
   }
   setLights({});
   const spec = getModelSpec(id);
@@ -5730,6 +5867,11 @@ export function buildCarModel(id, opts = {}) {
   else if (hero) applyFinish(paint, flakeFor(paintHex) < 0.1 ? 'gloss' : 'metallic', paintHex);   // solid whites / blacks stay solid (unowned player cars have no look)
   return {
     root, wheels, setLights, setLook, setAero, setCabin, hero,
+    /** cars pass 4: swing a front door open (side -1 = driver / left, +1 = right; t 0 shut .. 1 fully open, eased) */
+    openDoor(side, t) { setDoor(side < 0 ? 'L' : 'R', Math.max(0, Math.min(1, t))); },
+    doorOpenness(side) { return doorOpen[side < 0 ? 'L' : 'R']; },
+    hasDoor(side) { return doorPivots[side < 0 ? 'L' : 'R'].some((p) => p.userData.hinged); },
+    doorHinge(side) { const h = asset?.doors?.[side < 0 ? 'L' : 'R']; return h ? h.p : null; },
     setPaint(hex) { paint.color.setHex(hex); },
     setPaint2(hex) { if (paint2) paint2.color.setHex(hex); },
     headlightAnchors: G.head.map((v) => v.clone()),

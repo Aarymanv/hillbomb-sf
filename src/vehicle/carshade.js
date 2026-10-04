@@ -263,6 +263,9 @@ float hbLH(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
       diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0), bulb);
       hbLampGlow = mix(0.25, 1.0, cup) + bulb * 2.5;
       hbLampMetal = cup * (1.0 - bulb) * 0.92; hbLampRough = mix(0.35, 0.08, cup);
+    } else if (id == 9) {
+      // centre screen (cars pass 4): matte anti-glare film, not a mirror of the sky
+      hbLampRough = 0.5;
     }
   } else {
     #ifdef USE_MAP
@@ -278,6 +281,14 @@ float hbLH(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
     diffuseColor *= sampledDiffuseColor;
     float lum = dot(sampledDiffuseColor.rgb, vec3(0.3, 0.5, 0.2));
     hbLampMetal = smoothstep(0.35, 0.75, lum) * 0.7; hbLampRough = mix(0.3, 0.1, hbLampMetal);
+    if (id == 10) {
+      // LED light bar (cars pass 4): an even, saturated red emitter strip with a hotter core line (the bar art is a
+      // dark-edged gradient); the lit part reads continuous instead of a dim painted stripe
+      float core = smoothstep(0.08, 0.6, lum * 2.2);
+      diffuseColor.rgb = mix(vec3(0.05, 0.003, 0.003), vec3(1.0, 0.035, 0.025), core);
+      hbLampGlow = mix(0.15, 1.0, core) + 0.35 * smoothstep(0.5, 0.9, lum * 2.2);
+      hbLampMetal = 0.0; hbLampRough = 0.18;
+    }
     #endif
   }
 }`)

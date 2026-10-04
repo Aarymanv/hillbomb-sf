@@ -56,6 +56,7 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
     P.yaw = b.yaw();
     // climb-out animation (not for forced exits: teleports, wrecks)
     P.exitT = !force && placed && human.carTime ? human.carTime('exit') : 0;
+    P.exitDur = P.exitT;   // door timing (cars pass 4)
     P.exitCar = v; P.exitCarYaw = b.yaw();
     v.driver = null; v.role = 'npc'; v.body.isPlayer = false;
     v.input.throttle = 0; v.input.brake = 0; v.input.steer = 0; v.input.handbrake = 1;
@@ -87,6 +88,7 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
       return;
     }
     P.enterT = human.carTime ? human.carTime('enter') : 0.55; P.enterCar = best; P.enterFrom.copy(P.pos);
+    P.enterDur = P.enterT; P.enterJack = !!(best.driver && best.driver !== 'player');   // door timing (cars pass 4)
     if (best.driver && best.driver !== 'player') game.onCarjack?.(best);
     best.input.throttle = 0; best.input.brake = 1; best.input.autoReverse = false; best.input.reverse = false;
   }
@@ -95,12 +97,14 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
     if (P.enterT > 0) {
       P.enterT -= dt;
       const v = P.enterCar, spec = v.spec;
-      _v.set(-(spec.width / 2 + 0.3), 0, spec.seat ? spec.seat[2] : 0).applyQuaternion(v.body.quat).add(v.root.position);
+      // (hinged door: stand a little behind the seat, near the door's rear edge, so the door swings open in front)
+      _v.set(-(spec.width / 2 + 0.3), 0, (spec.seat ? spec.seat[2] : 0) + (v.visual.hasDoor?.(-1) ? 0.3 : 0)).applyQuaternion(v.body.quat).add(v.root.position);
       P.pos.lerp(_v, Math.min(1, dt * 10));
       human.root.position.copy(P.pos);
       // mocap: turn and sit down onto the driver seat (realhuman.js glides the body from the door to the seat)
       human.update(dt, { state: 'enterCar', speed: 0, turn: 0, side: -1, seat: seatWorld(v, _v2), carYaw: v.body.yaw() });
-      if (P.enterT <= 0) { setVehicle(v); P.enterCar = null; }
+      v.openDoor?.(-1, doorCurve(1 - P.enterT / Math.max(1e-3, P.enterDur), P.enterJack ? 'jack' : 'enter'));
+      if (P.enterT <= 0) { v.openDoor?.(-1, 0); setVehicle(v); P.enterCar = null; }
       return;
     }
     if (P.exitT > 0) {   // climbing out: stand up from the seat and step away from the door (move input cuts it short)
@@ -108,8 +112,9 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
       const v = P.exitCar, ax = input.axes;
       human.root.position.copy(P.pos); human.root.rotation.y = P.yaw;
       human.update(dt, { state: 'exitCar', speed: 0, turn: 0, side: P.exitSide, seat: seatWorld(v, _v2), carYaw: P.exitCarYaw });
+      v.openDoor?.(P.exitSide, doorCurve(1 - P.exitT / Math.max(1e-3, P.exitDur || 1), 'exit'));
       if (P.exitT > 0 && !(Math.hypot(ax.moveX || 0, ax.moveY || 0) > 0.3 && P.exitT < 0.55)) return;
-      P.exitT = 0; P.exitCar = null;
+      P.exitT = 0; P.exitCar = null; v.releaseDoor?.(P.exitSide, human.root);
       if (human.exitYaw != null) { P.yaw = human.exitYaw; human.root.rotation.y = P.yaw; }
     }
     if (P.mode === 'car') updateCar(dt); else updateFoot(dt);
@@ -283,6 +288,14 @@ export function createPlayer({ scene, world, input, rig, sim, audio, game }) {
 }
 
 const _cand = [];
+/** door openness over a car one-shot (k = 0..1 of the clip): 'enter' opens while turning at the door, stays open while
+ *  sliding in, pulled shut once seated; 'jack' yanks it open at once (the driver is thrown out); 'exit' opens as the
+ *  body rises out of the seat and stays open (the car closes it once the person is clear, Vehicle.releaseDoor). */
+function doorCurve(k, kind) {
+  const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  if (kind === 'exit') return sm(0.0, 0.22, k);
+  return sm(kind === 'jack' ? -0.02 : 0.04, kind === 'jack' ? 0.1 : 0.28, k) * (1 - sm(0.86, 1.0, k));
+}
 // world position of the car's driver-seat pelvis point (spec.seat, car local; origin at ground level)
 function seatWorld(v, out) {
   const s = v.spec?.seat || [-0.35, 0.9, 0];

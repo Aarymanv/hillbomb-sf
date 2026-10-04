@@ -343,7 +343,7 @@ let buildProvider = null;
 export function setBuildProvider(fn) { buildProvider = fn; }
 
 let idSeq = 1;
-const _ip = new THREE.Vector3();
+const _ip = new THREE.Vector3(), _dw = new THREE.Vector3();
 export class Vehicle {
   constructor(id, { scene, paint, seed = 0, role = 'npc', build = undefined } = {}) {
     this.uid = idSeq++;
@@ -374,6 +374,44 @@ export class Vehicle {
   /** live cosmetic change (paint shop): { paint, finish, paint2, rim, rimColor, caliper, tint, livery } */
   applyLook(look) { if (this.build) this.build.look = look; this.visual.setLook?.(look); if (look?.paint != null) this.paint = look.paint; }
   place(x, y, z, yaw) { this.body.place(x, y, z, yaw); this.sync(0); }
+  // ---- front doors (cars pass 4). The enter / exit animations (player.js) drive the door with openDoor(side, t)
+  // (side -1 = driver / left, +1 = right; t 0 shut .. 1 open) every frame; releaseDoor(side, who) hands it back to the
+  // car, which swings it shut once `who` (an Object3D, e.g. the person who got out) is clear of the door's arc, after a
+  // few seconds, or as soon as the car moves.
+  openDoor(side, t) { this._door = this._door || { L: 0, R: 0, rel: null }; this._door[side < 0 ? 'L' : 'R'] = t; if (this._door.rel?.side === side) this._door.rel = null; this.visual.openDoor?.(side, t); }
+  releaseDoor(side, who = null) { if (!this._door) return; this._door.rel = { side, who, t: 0 }; }
+  _doorStep(dt) {
+    const D = this._door; if (!D) return;
+    const b = this.body;
+    for (const sd of ['L', 'R']) {
+      const side = sd === 'L' ? -1 : 1;
+      if (D[sd] <= 0) continue;
+      const held = !D.rel || D.rel.side !== side ? !(Math.abs(b.fwdSpeed) > 2.5) : false;
+      if (held) continue;
+      let close = Math.abs(b.fwdSpeed) > 2.5;
+      const R = D.rel;
+      if (R && R.side === side) {
+        R.t += dt;
+        if (R.t > 3.5) close = true;
+        else if (R.t > 0.35) {
+          const w = R.who?.position, h = this.visual.doorHinge?.(side);
+          if (!w || !h) close = true;
+          else {
+            // clear of the door: further than the door's length + 0.5 m from the hinge, or ahead of / behind it
+            this.root.updateMatrixWorld();
+            const lp = this.root.worldToLocal(_dw.copy(w));
+            const dx = lp.x - h[0], dz = lp.z - h[2];
+            close = Math.hypot(dx, dz) > 1.75 || dz < -0.4 || dx * side < -0.1;
+          }
+        }
+      }
+      if (close) {
+        D[sd] = Math.max(0, D[sd] - dt / 0.42);
+        this.visual.openDoor?.(side, D[sd]);
+        if (D[sd] <= 0 && R?.side === side) D.rel = null;
+      }
+    }
+  }
   get pos() { return this.body.pos; }
   sync(dt, night = 0, time = 0) {
     const b = this.body;
@@ -396,6 +434,7 @@ export class Vehicle {
     L.reverse = reversing;
     L.siren = this.sirenOn; L.sirenPhase = time;
     this.visual.setLights(L);
+    if (this._door && dt > 0) this._doorStep(dt);
   }
   remove() { this.scene.remove(this.root); this.visual.dispose?.(); this.voice?.stop(); this.voice = null; }
 }

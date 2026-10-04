@@ -24,13 +24,22 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))
 SRC = os.path.join(HERE, '_cache', 'cars')
 OUT = os.path.join(ROOT, 'public', 'assets', 'cars')
 if os.environ.get('HB_OUT'): OUT = os.environ['HB_OUT']   # perf A/B baselines (with HB_NOHERO): never the live folder
+# HB_STAGE=<dir>: build into a staging folder (done files as usual) and copy into public/ in one go when every car is in
+# (the :5191 test server serves public/ live: half-written GLBs would show up in other people's runs)
+if os.environ.get('HB_STAGE'): OUT = os.environ['HB_STAGE']
 
 # LOD targets (triangles) : LOD1 ~ the old full procedural model, LOD2 ~ the old parked proxy
 LOD_RATIO = {1: 0.30, 2: 0.035}
 WHEEL_RATIO = {1: 0.22, 2: 0.035}
 # body pass 2 (car_hero.py): garage cars get a hero level H (player / showroom, up to ~120k tris) above L0 ~30k,
 # the most common traffic bodies an L0 ~40k; both then L1 ~5k (24-75 m) and L2 ~1.7k (far, as before)
-HERO_IDS = ['hatch', 'tora', 'rallye6', 'stallion18', 'coupe', 'super', 'muscle', 'k5', 'sedan']
+HERO_IDS = ['hatch', 'tora', 'rallye6', 'stallion18', 'coupe', 'super', 'muscle', 'k5', 'sedan',
+            # cars pass 4: every other garage body gets the detail pass + level H too
+            'rally', 'brawler', 'vandal', 'hellion', 'comet', 'rz7', 'kaminari', 'raiden', 'senkou', 'hachi', 'sora', 'classic9',
+            'coupeGT', 'k3', 'sovereign', 'vanguard', 'sport1', 'aspro', 'saetta', 'seiun', 'contessa', 'tempesta', 'stradale',
+            'funo', 'aska', 'celerite', 'munja', 'elektra', 'piccina', 'nipper', 'petard', 'gauner', 'kugel', 'picknick', 'buggy',
+            'trophy', 'trekker', 'kodiak', 'baja', 'kestrel']
+NO_DETAIL = {'cablecar'}   # custom build: no loft records for the detail pass
 TRAFFIC6 = ['sedan', 'hatch', 'suv', 'ev', 'taxi', 'pickup']
 HERO_TRIS = {'L0': 30000, 'L1': 5000, 'L2': 1700}
 TRAFFIC_L0 = 40000
@@ -447,10 +456,15 @@ def decimate(ob, ratio):
 def tris(ob): return len(ob.data.polygons)
 
 
+def kind(k): return k.split('__')[0]
+
+
 def lod_from(base, lv, body_ratio, wheel_ratio, lens_to_lamps=False, drop_interior=False):
     """decimated copies of the base parts named <lv>_*; returns total tris (wheel x4)"""
     tot = 0; made = {}
     for k, o in base.items():
+        if kind(k) == 'lens' and lens_to_lamps and k != 'lens':
+            continue   # door lens bits: tiny, dropped below L0
         if k == 'lens' and lens_to_lamps: continue
         made[k] = dup(o, '%s_%s' % (lv, k))
     if lens_to_lamps and 'lens' in base and 'lamps' in made:
@@ -465,7 +479,7 @@ def lod_from(base, lv, body_ratio, wheel_ratio, lens_to_lamps=False, drop_interi
             if len(idx):
                 bm = bmesh.new(); bm.from_mesh(d.data); bm.faces.ensure_lookup_table()
                 bmesh.ops.delete(bm, geom=[bm.faces[i] for i in idx], context='FACES'); bm.to_mesh(d.data); bm.free()
-        r = wheel_ratio if k == 'wheel' else body_ratio * (1.6 if k in ('glass', 'lamps', 'lens') else 1.0)
+        r = wheel_ratio if k == 'wheel' else body_ratio * (1.6 if kind(k) in ('glass', 'lamps', 'lens') else 1.0)
         if r < 0.999:
             if d.data.has_custom_normals:
                 bpy.context.view_layer.objects.active = d
@@ -479,9 +493,11 @@ def lod_from(base, lv, body_ratio, wheel_ratio, lens_to_lamps=False, drop_interi
 def build(cid, res, samples):
     t0 = time.time()
     hj = os.path.join(SRC, cid + '.hero.json')
-    hero = (cid in HERO_IDS or cid in TRAFFIC6) and os.path.exists(hj) and not os.environ.get('HB_NOHERO')
+    # cars pass 4: every body with a hero export gets the detail pass (traffic-only ids as B -> L0 30k)
+    hero = cid not in NO_DETAIL and os.path.exists(hj) and not os.environ.get('HB_NOHERO')
     with open(hj if hero else os.path.join(SRC, cid + '.json')) as f: D = json.load(f)
     meta, B = D['meta'], D['buckets']
+    doors = {}
     bpy.ops.wm.read_factory_settings(use_empty=True)
     parts = {k: soup_mesh('L0_' + k, B[k]) for k in ('paint', 'paint2', 'details', 'lamps', 'glass') if k in B}
     if hero:
@@ -490,6 +506,8 @@ def build(cid, res, samples):
         car_hero.detail(parts, D, log=print)
         import car_body
         car_body.aero(cid, parts, D, log=print)
+        import car_door
+        doors = car_door.split(cid, parts, D, log=print)
         res = max(res, 2048)
     wheel = soup_mesh('L0_wheel', B['wheel'])
     custom = meta['custom']
@@ -507,7 +525,7 @@ def build(cid, res, samples):
         bpy.ops.object.join()
         cal = caliper_mesh(meta)
     # bake scene: wheel + caliper packed in the same atlas but baked away from the body (they move at runtime)
-    targets = [o for k, o in parts.items() if k not in ('glass', 'lens')] + [wheel] + ([cal] if cal else [])
+    targets = [o for k, o in parts.items() if kind(k) not in ('glass', 'lens')] + [wheel] + ([cal] if cal else [])
     ao_unwrap(targets, res)
     far = (60.0, 0.0, 0.0)
     wheel.location = far
@@ -518,15 +536,15 @@ def build(cid, res, samples):
         bpy.context.scene.collection.objects.link(o); occ.append(o)
     bpy.ops.mesh.primitive_plane_add(size=16, location=(0, 0, 0), rotation=(-math.pi / 2, 0, 0))
     ground = bpy.context.active_object; occ.append(ground)
-    for k in ('glass', 'lens'):
-        if k in parts: parts[k].hide_render = True
+    for k, o in parts.items():
+        if kind(k) in ('glass', 'lens'): o.hide_render = True
     os.makedirs(OUT, exist_ok=True)
     bake_ao(targets, occ, res, samples, os.path.join(OUT, cid + '_ao.jpg'))
     for o in occ: bpy.data.objects.remove(o, do_unlink=True)
     wheel.location = (0, 0, 0)
     if cal: cal.location = (0, 0, 0)
-    for k in ('glass', 'lens'):
-        if k in parts: parts[k].hide_render = False
+    for k, o in parts.items():
+        if kind(k) in ('glass', 'lens'): o.hide_render = False
     base = dict(parts); base['wheel'] = wheel
     body = sum(tris(o) for k, o in parts.items())
     if hero:
@@ -572,7 +590,7 @@ def build(cid, res, samples):
                               export_draco_texcoord_quantization=12, export_draco_color_quantization=10,
                               export_animations=False, export_skins=False, export_morph=False, export_cameras=False, export_lights=False)
     kb = os.path.getsize(path) // 1024 + os.path.getsize(os.path.join(OUT, cid + '_ao.jpg')) // 1024
-    info = {'id': cid, 'tris': stats, 'kb': kb, 'caliper': cal is not None, 'hero': hero, 'sec': round(time.time() - t0, 1)}
+    info = {'id': cid, 'tris': stats, 'kb': kb, 'caliper': cal is not None, 'hero': hero, 'doors': doors, 'sec': round(time.time() - t0, 1)}
     with open(os.path.join(SRC, cid + ('.done.json' if not os.environ.get('HB_OUT') else '.done_alt')), 'w') as f: json.dump(info, f)
     print('[cars]', json.dumps(info))
 
@@ -585,7 +603,7 @@ def index():
             if os.path.exists(os.path.join(OUT, d['id'] + '.glb')):
                 ids.append(d); tot += d['kb']
     with open(os.path.join(OUT, 'cars.json'), 'w') as f:
-        json.dump({'version': 2, 'cars': {d['id']: {'tris': d['tris'], 'caliper': d['caliper'], **({'hero': True} if d.get('hero') else {})} for d in ids}}, f, indent=1)
+        json.dump({'version': 2, 'cars': {d['id']: {'tris': d['tris'], 'caliper': d['caliper'], **({'hero': True} if d.get('hero') else {}), **({'doors': d['doors']} if d.get('doors') else {})} for d in ids}}, f, indent=1)
     print('[cars] index', len(ids), 'cars', tot // 1024, 'MB')
 
 
