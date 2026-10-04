@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><title>HILLBOMB</title>
+<script>
+// dev: ?sandbox = this tab's saves live in sessionStorage (survive reloads, never touch the real profile in localStorage)
+if (/[?&]sandbox\b/.test(location.search)) try { Object.defineProperty(window, 'localStorage', { value: window.sessionStorage, configurable: true }); } catch (e) { /* ignore */ }
+</script></head>
+<body><script type="module" src="/src/main.js"></script></body></html>
