@@ -1,0 +1,2350 @@
+[
+ {
+  "key": "amb_city_day",
+  "variant": 0,
+  "file": "amb/amb_city_day.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 40.5,
+  "loopStart": 0.25,
+  "loopEnd": 40.25,
+  "lufs": -19.99,
+  "peak": -3.17,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 237426,
+    "page": "https://freesound.org/s/237426/",
+    "file": "https://cdn.freesound.org/previews/237/237426_2258946-hq.mp3",
+    "title": "San Francisco Traffic at Powell And O'Farrell",
+    "author": "mhtaylor67",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "San Francisco, busy intersection at Powell & OFarrell (one block from Union Square): traffic, tyres over the cable-car tracks, the cable running under the street, distant horns and people; no dominant speech | section 81.00-123.00s (L) and 44.00-86.00s (R): pseudo-stereo from a dual-mono source; loop 40.00s, equal-power xfade 2.00s, HP 40 Hz, gently peak-limited; L/R correlation 0.00; seam head/tail RMS -27.16/-27.84 dB, clicks 0; 112 kbps stereo; loop phase rotated 38.510s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "amb_city_night",
+  "variant": 0,
+  "file": "amb/amb_city_night.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 30.5,
+  "loopStart": 0.25,
+  "loopEnd": 30.25,
+  "lufs": -20.0,
+  "peak": -7.47,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 330427,
+    "page": "https://freesound.org/s/330427/",
+    "file": "https://cdn.freesound.org/previews/330/330427_3287894-hq.mp3",
+    "title": "Downtown LA, Little Tokyo, late night semi distant traffic.wav",
+    "author": "janbezouska",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Downtown LA (Little Tokyo) 11 PM from a 4th-floor apartment, MS stereo: quiet semi-distant city traffic hum at night | section 33.00-64.50s; loop 30.00s, equal-power xfade 1.50s, HP 40 Hz; L/R correlation 0.66; seam head/tail RMS -23.0/-22.89 dB, clicks 0; 112 kbps stereo; loop phase rotated 10.454s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "amb_park_day",
+  "variant": 0,
+  "file": "amb/amb_park_day.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 30.5,
+  "loopStart": 0.25,
+  "loopEnd": 30.25,
+  "lufs": -20.01,
+  "peak": -3.41,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 268934,
+    "page": "https://freesound.org/s/268934/",
+    "file": "https://cdn.freesound.org/previews/268/268934_40107-hq.mp3",
+    "title": "Birdsong and wind through trees in Stockwood Park",
+    "author": "icmusic",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Spring birdsong in a park with wind blowing through the trees above (Stockwood Park, UK) | section 4.00-35.50s; loop 30.00s, equal-power xfade 1.50s, HP 60 Hz, gently peak-limited; L/R correlation 0.70; seam head/tail RMS -26.42/-24.64 dB, clicks 0; 112 kbps stereo; loop phase rotated 28.407s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "amb_park_night",
+  "variant": 0,
+  "file": "amb/amb_park_night.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 30.5,
+  "loopStart": 0.25,
+  "loopEnd": 30.25,
+  "lufs": -19.99,
+  "peak": -7.54,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 522299,
+    "page": "https://freesound.org/s/522299/",
+    "file": "https://cdn.freesound.org/previews/522/522299_9084007-hq.mp3",
+    "title": "Crickets At Night - Raw sound",
+    "author": "Defelozedd94",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Crickets at night in a garden (raw, Tascam DR-05); HP 150 Hz removes the distant storm rumble | section 178.00-209.50s; loop 30.00s, equal-power xfade 1.50s, HP 150 Hz; L/R correlation 0.05; seam head/tail RMS -27.92/-28.56 dB, clicks 0; 112 kbps stereo; loop phase rotated 29.439s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "amb_residential",
+  "variant": 0,
+  "file": "amb/amb_residential.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 30.5,
+  "loopStart": 0.25,
+  "loopEnd": 30.25,
+  "lufs": -20.0,
+  "peak": -3.36,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 135074,
+    "page": "https://freesound.org/s/135074/",
+    "file": "https://cdn.freesound.org/previews/135/135074_658546-hq.mp3",
+    "title": "Residential Street Ambience Quiet Birds.wav",
+    "author": "mzui",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Quiet residential street, distant traffic and sparse birds (Zoom H4n) | section 32.00-63.50s; loop 30.00s, equal-power xfade 1.50s, HP 60 Hz, gently peak-limited; L/R correlation 0.29; seam head/tail RMS -23.52/-21.8 dB, clicks 1; 112 kbps stereo; loop phase rotated 28.144s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "amb_tunnel",
+  "variant": 0,
+  "file": "amb/amb_tunnel.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 40.5,
+  "loopStart": 0.25,
+  "loopEnd": 40.25,
+  "lufs": -20.0,
+  "peak": -4.37,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 90637,
+    "page": "https://freesound.org/s/90637/",
+    "file": "https://cdn.freesound.org/previews/90/90637_1431924-hq.mp3",
+    "title": "sfbroadwaytunnelwest.wav",
+    "author": "tec_studio",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Inside the tile-lined Broadway Tunnel, San Francisco: traffic drone with cars passing through | section 80.00-122.00s; loop 40.00s, equal-power xfade 2.00s, HP 30 Hz; L/R correlation 0.45; seam head/tail RMS -25.69/-25.21 dB, clicks 0; 112 kbps stereo; loop phase rotated 17.934s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "amb_waterfront",
+  "variant": 0,
+  "file": "amb/amb_waterfront.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 30.5,
+  "loopStart": 0.25,
+  "loopEnd": 30.25,
+  "lufs": -20.46,
+  "peak": -3.08,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 838025,
+    "page": "https://freesound.org/s/838025/",
+    "file": "https://cdn.freesound.org/previews/838/838025_11519060-hq.mp3",
+    "title": "bubble lapping  wave on concrete pier",
+    "author": "bruno.auzet",
+    "license": "CC0 1.0"
+   },
+   {
+    "site": "freesound",
+    "id": 413334,
+    "page": "https://freesound.org/s/413334/",
+    "file": "https://cdn.freesound.org/previews/413/413334_7723777-hq.mp3",
+    "title": "Baltimore Harbor with Distant Industrial Ambience",
+    "author": "flood-mix",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Waves lapping against a concrete pier with bubbles (Schoeps MS) layered with a harbour bed (Baltimore harbor, distant industrial ambience) at -6 dB; no gulls | section 29.00-60.50s; layered with 413334 @10.00s at -6 dB rel.; loop 30.00s, equal-power xfade 1.50s, HP 50 Hz, gently peak-limited; L/R correlation 0.55; seam head/tail RMS -20.91/-26.01 dB, clicks 0; 112 kbps stereo; loop phase rotated 23.902s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "amb_wind_high",
+  "variant": 0,
+  "file": "amb/amb_wind_high.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 30.5,
+  "loopStart": 0.25,
+  "loopEnd": 30.25,
+  "lufs": -20.0,
+  "peak": -3.7,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 167684,
+    "page": "https://freesound.org/s/167684/",
+    "file": "https://cdn.freesound.org/previews/167/167684_1661766-hq.mp3",
+    "title": "Strong wind blowing in the plain in Anatolia (Turkey)",
+    "author": "felix.blume",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Strong gusty wind across an open plain, through grass and bushes (Schoeps MS, Sound Devices); HP 120 Hz keeps any low mic rumble out | section 105.00-137.00s; loop 30.00s, equal-power xfade 2.00s, HP 120 Hz; L/R correlation 0.62; seam head/tail RMS -29.37/-31.01 dB, clicks 0; 112 kbps stereo; loop phase rotated 12.130s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "city_honk",
+  "variant": 1,
+  "file": "amb/city_honk_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 1.1,
+  "lufs": -16.05,
+  "peak": -1.35,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 553150,
+    "page": "https://freesound.org/s/553150/",
+    "file": "https://cdn.freesound.org/previews/553/553150_6838039-hq.mp3",
+    "title": "Car Horn Honk 01- Single, Distant - EXT Day Brooklyn Street corner ambience.wav",
+    "author": "Brett+Butter",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Single distant car horn honk from a Brooklyn street corner window (2.15-3.25 s), street bed included | distant car horn | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; peak limiter ~1.4 dB; 96 kbps"
+ },
+ {
+  "key": "city_honk",
+  "variant": 2,
+  "file": "amb/city_honk_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.4897,
+  "lufs": -16.04,
+  "peak": -5.01,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 575262,
+    "page": "https://freesound.org/s/575262/",
+    "file": "https://cdn.freesound.org/previews/575/575262_97550-hq.mp3",
+    "title": "Distant horn beeps 09.flac",
+    "author": "TRP",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Distant car (alarm) horn beep, Toronto city (0.05-0.55 s) | distant car horn | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "city_honk",
+  "variant": 3,
+  "file": "amb/city_honk_3.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.7,
+  "lufs": -16.05,
+  "peak": -5.59,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 717865,
+    "page": "https://freesound.org/s/717865/",
+    "file": "https://cdn.freesound.org/previews/717/717865_97550-hq.mp3",
+    "title": "230707 Car alarm horn honks, roof, EM272s Toronto 12pm",
+    "author": "TRP",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Car horn honk heard from a roof, Toronto street (1.12-1.82 s) | distant car horn | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "distant_siren",
+  "variant": 0,
+  "file": "amb/distant_siren.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 18.0,
+  "lufs": -16.0,
+  "peak": -1.38,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 635741,
+    "page": "https://freesound.org/s/635741/",
+    "file": "https://cdn.freesound.org/previews/635/635741_612689-hq.mp3",
+    "title": "siren police north american distant city echo changes behind buildings natural nice +bassy skyline lowcut to taste.flac",
+    "author": "kyles",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "North American police siren, distant, echoing between city buildings (Sony PCM-D50), 16-34 s with 1.5 s fade in / 2.5 s fade out | distant siren | loudness = integrated LUFS; group matched at -16.0; peak limiter ~0.6 dB; 96 kbps"
+ },
+ {
+  "key": "dog_bark",
+  "variant": 0,
+  "file": "amb/dog_bark.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 1.1,
+  "lufs": -15.95,
+  "peak": -1.3,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 581478,
+    "page": "https://freesound.org/s/581478/",
+    "file": "https://cdn.freesound.org/previews/581/581478_11015511-hq.mp3",
+    "title": "Dogs Barking in Distance_Rural.wav",
+    "author": "rvandemark",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Dog (corgi) barking twice in the distance, rural, faint insects/birds (0-1.1 s) | distant dog bark | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -15.9; peak limiter ~2.9 dB; 96 kbps"
+ },
+ {
+  "key": "gull",
+  "variant": 1,
+  "file": "amb/gull_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.9007,
+  "lufs": -16.0,
+  "peak": -4.46,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 73497,
+    "page": "https://freesound.org/s/73497/",
+    "file": "https://cdn.freesound.org/previews/73/73497_1088850-hq.mp3",
+    "title": "Gull.wav",
+    "author": "nigelcoop",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Single raucous herring gull call, isolated (0-2.9 s) | gull call | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "gull",
+  "variant": 2,
+  "file": "amb/gull_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.6691,
+  "lufs": -16.0,
+  "peak": -7.29,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 75195,
+    "page": "https://freesound.org/s/75195/",
+    "file": "https://cdn.freesound.org/previews/75/75195_1088850-hq.mp3",
+    "title": "Seagull trill and whine.wav",
+    "author": "nigelcoop",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Seagull trill (quieter call), isolated (0-0.8 s) | gull call | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "gull",
+  "variant": 3,
+  "file": "amb/gull_3.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 1.55,
+  "lufs": -16.0,
+  "peak": -12.38,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 538015,
+    "page": "https://freesound.org/s/538015/",
+    "file": "https://cdn.freesound.org/previews/538/538015_11982267-hq.mp3",
+    "title": "Herring Gull 2.wav",
+    "author": "Canardo55",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Herring gull calling (Scheveningen), 0-1.55 s | gull call | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "muni_bell",
+  "variant": 0,
+  "file": "amb/muni_bell.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 1.1287,
+  "lufs": -16.05,
+  "peak": -10.12,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 479980,
+    "page": "https://freesound.org/s/479980/",
+    "file": "https://cdn.freesound.org/previews/479/479980_2524442-hq.mp3",
+    "title": "R04-39-Trolley Bell.wav",
+    "author": "craigsmith",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Trolley bell: one solid ring with natural decay (0.05-1.20 s) | streetcar / Muni ding | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "rain_car_roof",
+  "variant": 0,
+  "file": "amb/rain_car_roof.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 25.5,
+  "loopStart": 0.25,
+  "loopEnd": 25.25,
+  "lufs": -20.0,
+  "peak": -3.28,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 448125,
+    "page": "https://freesound.org/s/448125/",
+    "file": "https://cdn.freesound.org/previews/448/448125_2573247-hq.mp3",
+    "title": "Inside a car in the rain",
+    "author": "derjuli",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Inside a parked car in the rain: drops on roof and glass (stereo) | section 2.00-28.50s; loop 25.00s, equal-power xfade 1.50s, HP 40 Hz, gently peak-limited; L/R correlation 0.68; seam head/tail RMS -23.71/-23.61 dB, clicks 0; 112 kbps stereo; loop phase rotated 16.022s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "rain_heavy",
+  "variant": 0,
+  "file": "amb/rain_heavy.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 30.5,
+  "loopStart": 0.25,
+  "loopEnd": 30.25,
+  "lufs": -20.0,
+  "peak": -4.45,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 398593,
+    "page": "https://freesound.org/s/398593/",
+    "file": "https://cdn.freesound.org/previews/398/398593_4162229-hq.mp3",
+    "title": "Rain (strong), city, street, distant traffic",
+    "author": "Dominik_W",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Strong rain on a city street with distant traffic (Zoom H1 stereo) | section 2.00-33.50s; loop 30.00s, equal-power xfade 1.50s, HP 60 Hz, gently peak-limited; L/R correlation 0.57; seam head/tail RMS -24.52/-24.04 dB, clicks 0; 112 kbps stereo; loop phase rotated 9.334s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "rain_light",
+  "variant": 0,
+  "file": "amb/rain_light.mp3",
+  "kind": "loop",
+  "channels": 2,
+  "duration": 30.5,
+  "loopStart": 0.25,
+  "loopEnd": 30.25,
+  "lufs": -20.0,
+  "peak": -3.49,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 380651,
+    "page": "https://freesound.org/s/380651/",
+    "file": "https://cdn.freesound.org/previews/380/380651_5902878-hq.mp3",
+    "title": "Light rain on street.wav",
+    "author": "BonnyOrbit",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Light rain on a city street at night, recorded out of an open window (Zoom H6 stereo) | section 41.00-72.50s; loop 30.00s, equal-power xfade 1.50s, HP 60 Hz, gently peak-limited; L/R correlation 0.36; seam head/tail RMS -25.32/-23.97 dB, clicks 0; 112 kbps stereo; loop phase rotated 22.599s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "thunder_far",
+  "variant": 1,
+  "file": "amb/thunder_far_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 14.5,
+  "lufs": -16.0,
+  "peak": -1.31,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 717845,
+    "page": "https://freesound.org/s/717845/",
+    "file": "https://cdn.freesound.org/previews/717/717845_97550-hq.mp3",
+    "title": "230405 Thunder DRY rolling distant low rumbles, roof, EM272s, Toronto 7am",
+    "author": "TRP",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Dry distant rolling thunder (EM272 mics, Toronto roof), 76.3-90.8 s | far thunder (lows kept) | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; peak limiter ~0.2 dB; 96 kbps"
+ },
+ {
+  "key": "thunder_far",
+  "variant": 2,
+  "file": "amb/thunder_far_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 14.0,
+  "lufs": -16.0,
+  "peak": -1.31,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 347562,
+    "page": "https://freesound.org/s/347562/",
+    "file": "https://cdn.freesound.org/previews/347/347562_5481182-hq.mp3",
+    "title": "Distant Thunder Clap_Gentle.wav",
+    "author": "mikala_oidua",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Distant gentle thunder clap and roll (US east coast), 0-14 s | far thunder (lows kept) | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; peak limiter ~2.3 dB; 96 kbps"
+ },
+ {
+  "key": "thunder_near",
+  "variant": 1,
+  "file": "amb/thunder_near_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 14.9957,
+  "lufs": -16.02,
+  "peak": -2.59,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 194364,
+    "page": "https://freesound.org/s/194364/",
+    "file": "https://cdn.freesound.org/previews/194/194364_1985044-hq.mp3",
+    "title": "Thunder Clap OWB KY 441x16.wav",
+    "author": "Dave Welsh",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Thunder clap, close (Sony ECM-MS957 + PCM-D50, Kentucky), crack + rolling rumble, 13.6-28.6 s | near thunder (lows kept) | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "thunder_near",
+  "variant": 2,
+  "file": "amb/thunder_near_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 11.4884,
+  "lufs": -16.02,
+  "peak": -3.41,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 2689,
+    "page": "https://freesound.org/s/2689/",
+    "file": "https://cdn.freesound.org/previews/2/2689_2211-hq.mp3",
+    "title": "th_loud.wav",
+    "author": "Pingel",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Very loud thunder clap at ~400 ft, crack + rumble, 0.45-11.95 s | near thunder (lows kept) | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "horn_bus",
+  "variant": 0,
+  "file": "loops/horn_bus.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 1.8425,
+  "loopStart": 0.25,
+  "loopEnd": 1.592472,
+  "lufs": -20.0,
+  "peak": -12.8,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 451697,
+    "page": "https://freesound.org/s/451697/",
+    "file": "https://cdn.freesound.org/previews/451/451697_612689-hq.mp3",
+    "title": "school bus truck int horn honk.flac",
+    "author": "kyles",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "School bus horn, recorded inside the bus (real bus horn, ~460/483 Hz pair) | section 4.01-5.39s; loop length 1.3425s chosen by waveform autocorrelation (corr 0.924 at the cut) + 30 ms linear crossfade; strongest partials (Hz) [482.7, 965.4, 1448.1, 1930.8, 2413.5, 2895.4]; HP 120 Hz; seam head/tail RMS -21.34/-20.88 dB, clicks 0; 88 kbps; loop phase rotated 0.016s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "horn_car",
+  "variant": 0,
+  "file": "loops/horn_car.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 0.9911,
+  "loopStart": 0.25,
+  "loopEnd": 0.741111,
+  "lufs": -20.01,
+  "peak": -10.26,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 182474,
+    "page": "https://freesound.org/s/182474/",
+    "file": "https://cdn.freesound.org/previews/182/182474_3153523-hq.mp3",
+    "title": "car horn.wav",
+    "author": "keweldog",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Real sedan horn blown in traffic: steady part of the blast, classic dual-tone car horn (~397 + ~483 Hz with harmonics); light traffic noise underneath | section 1.74-2.26s; loop length 0.4911s chosen by waveform autocorrelation (corr 0.765 at the cut) + 30 ms linear crossfade; strongest partials (Hz) [397.1, 794.1, 1191.2, 1588.2, 1985.3, 2384.4]; HP 150 Hz; seam head/tail RMS -20.82/-20.15 dB, clicks 0; 88 kbps; loop phase rotated 0.214s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "horn_truck",
+  "variant": 0,
+  "file": "loops/horn_truck.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 1.5276,
+  "loopStart": 0.25,
+  "loopEnd": 1.277642,
+  "lufs": -19.98,
+  "peak": -9.33,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 131930,
+    "page": "https://freesound.org/s/131930/",
+    "file": "https://cdn.freesound.org/previews/131/131930_1542102-hq.mp3",
+    "title": "Industrial Air Horn",
+    "author": "mcpable",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Industrial dual-tone air horn (oil rig, Alberta) - same kind of compressed-air horn as a truck air horn (~317 + ~385 Hz tones) | section 0.52-1.58s; loop length 1.0276s chosen by waveform autocorrelation (corr 0.988 at the cut) + 30 ms linear crossfade; strongest partials (Hz) [385.3, 634.5, 951.7, 1156.0, 1268.9, 1586.2]; HP 120 Hz; seam head/tail RMS -20.56/-20.57 dB, clicks 0; 88 kbps; loop phase rotated 0.920s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "road_asphalt",
+  "variant": 0,
+  "file": "loops/road_asphalt.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 12.5,
+  "loopStart": 0.25,
+  "loopEnd": 12.25,
+  "lufs": -20.0,
+  "peak": -5.91,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 237374,
+    "page": "https://freesound.org/s/237374/",
+    "file": "https://cdn.freesound.org/previews/237/237374_1502374-hq.mp3",
+    "title": "Car Driving Interior",
+    "author": "squareal",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Interior of a VW Tiguan cruising (Neumann KM185 / Oktava MK-012): steady tyre/road roar, low-mid broadband; engine barely audible at cruise | section 64.00-76.40s of source, loop 12.000s, equal-power xfade 0.40s, HP 30 Hz; seam: head/tail RMS -20.44/-20.71 dB, clicks at seam 0 (ref 0); 88 kbps; loop phase rotated 8.079s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "road_gravel",
+  "variant": 0,
+  "file": "loops/road_gravel.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 8.5,
+  "loopStart": 0.25,
+  "loopEnd": 8.25,
+  "lufs": -20.0,
+  "peak": -6.7,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 251662,
+    "page": "https://freesound.org/s/251662/",
+    "file": "https://cdn.freesound.org/previews/251/251662_3719168-hq.mp3",
+    "title": "Tires on Gravel Road 2",
+    "author": "OBXJohn",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Tyres of a flatbed trailer rolling on a gravel path, recorder a couple of feet from the wheel: steady crunch | section 5.25-13.65s of source, loop 8.000s, equal-power xfade 0.40s, HP 60 Hz; seam: head/tail RMS -21.28/-17.96 dB, clicks at seam 0 (ref 0); 88 kbps; loop phase rotated 0.565s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "road_wet",
+  "variant": 0,
+  "file": "loops/road_wet.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 6.5,
+  "loopStart": 0.25,
+  "loopEnd": 6.25,
+  "lufs": -20.01,
+  "peak": -7.58,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 648786,
+    "page": "https://freesound.org/s/648786/",
+    "file": "https://cdn.freesound.org/previews/648/648786_12184473-hq.mp3",
+    "title": "Cars and trucks passing by on a wet road",
+    "author": "klau78",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Roadside recording (96 kHz source) of cars/trucks on a wet road: steady tyre spray hiss section; light rain audible underneath (source is recorded in light rain) | section 26.75-33.25s of source, loop 6.000s, equal-power xfade 0.50s, HP 120 Hz; seam: head/tail RMS -24.21/-24.67 dB, clicks at seam 0 (ref 0); 88 kbps; spectral flatness 500-6000 Hz (median of 186 ms frames) 0.278; 86% of energy in 500-6000 Hz; loop phase rotated 5.085s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "scrape_metal",
+  "variant": 0,
+  "file": "loops/scrape_metal.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 3.2,
+  "loopStart": 0.25,
+  "loopEnd": 2.95,
+  "lufs": -19.9,
+  "peak": -8.01,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 104361,
+    "page": "https://freesound.org/s/104361/",
+    "file": "https://cdn.freesound.org/previews/104/104361_179538-hq.mp3",
+    "title": "Metal Pipe Scraped on Concrete in Basement.aif",
+    "author": "RutgerMuller",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Metal pipe dragged on a concrete floor (steady middle section of a long drag): gritty metal-on-concrete scrape with pipe resonances | section 4.50-7.55s of source, loop 2.700s, equal-power xfade 0.35s, HP 80 Hz; seam: head/tail RMS -31.14/-28.94 dB, clicks at seam 0 (ref 0); 88 kbps; loop phase rotated 1.527s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "siren_wail",
+  "variant": 0,
+  "file": "loops/siren_wail.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 10.594,
+  "loopStart": 0.25,
+  "loopEnd": 10.343968,
+  "lufs": -19.99,
+  "peak": -10.23,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 157867,
+    "page": "https://freesound.org/s/157867/",
+    "file": "https://cdn.freesound.org/previews/157/157867_2859370-hq.mp3",
+    "title": "Whelen Wail.wav",
+    "author": "Jefflix",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Whelen electronic siren (US police brand), WAIL tone miked directly from the siren: two full wail cycles (~5 s each), fundamental sweeps ~750-1750 Hz | section 10.03-20.15s; loop length 10.0940s chosen by waveform autocorrelation (corr 1.000 at the cut) + 30 ms linear crossfade; strongest partials (Hz) [1139.9, 1155.1, 1288.3, 1415.3, 1449.0, 1572.2]; HP 200 Hz; seam head/tail RMS -28.13/-31.44 dB, clicks 0; 88 kbps; loop phase rotated 6.725s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "siren_yelp",
+  "variant": 0,
+  "file": "loops/siren_yelp.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 6.5659,
+  "loopStart": 0.25,
+  "loopEnd": 6.31585,
+  "lufs": -20.0,
+  "peak": -9.49,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 157866,
+    "page": "https://freesound.org/s/157866/",
+    "file": "https://cdn.freesound.org/previews/157/157866_2859370-hq.mp3",
+    "title": "Whelen Yelp.wav",
+    "author": "Jefflix",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Whelen electronic siren (US police brand), YELP tone miked directly from the siren: ~16 full yelp cycles (~0.38 s each), fundamental sweeps ~775-1530 Hz | section 10.01-16.11s; loop length 6.0659s chosen by waveform autocorrelation (corr 1.000 at the cut) + 30 ms linear crossfade; strongest partials (Hz) [1142.1, 1255.6, 1287.2, 1308.3, 1424.4, 1448.1]; HP 200 Hz; seam head/tail RMS -20.7/-21.35 dB, clicks 0; 88 kbps; loop phase rotated 1.293s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "tyre_scrub",
+  "variant": 0,
+  "file": "loops/tyre_scrub.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 4.3,
+  "loopStart": 0.25,
+  "loopEnd": 4.05,
+  "lufs": -20.01,
+  "peak": -9.93,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 71739,
+    "page": "https://freesound.org/s/71739/",
+    "file": "https://cdn.freesound.org/previews/71/71739_995351-hq.mp3",
+    "title": "Chrysler LHS tire squeal 04 (04-25-2009).wav",
+    "author": "audible-edge",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Real sedan (1996 Chrysler LHS) cornering tyre squeal, steady medium-intensity section; narrower/tonal (squeal band ~0.8-2 kHz) - use for low slip / grip limit; source notes some distortion in the original | section 4.00-8.30s of source, loop 3.800s, equal-power xfade 0.50s, HP 250 Hz; seam: head/tail RMS -25.74/-23.5 dB, clicks at seam 0 (ref 0); 88 kbps; spectral flatness 500-6000 Hz (median of 186 ms frames) 0.017; 100% of energy in 500-6000 Hz; loop phase rotated 0.723s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "tyre_squeal",
+  "variant": 0,
+  "file": "loops/tyre_squeal.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 4.8,
+  "loopStart": 0.25,
+  "loopEnd": 4.55,
+  "lufs": -20.01,
+  "peak": -7.46,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 628044,
+    "page": "https://freesound.org/s/628044/",
+    "file": "https://cdn.freesound.org/previews/628/628044_3625175-hq.mp3",
+    "title": "palenie_opon.wav",
+    "author": "monosfera",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Real drift/burnout recording (tyres smoking while drifting). Broadband gritty screech, HP 350 Hz to push down engine harmonics | section 5.75-10.55s of source, loop 4.300s, equal-power xfade 0.50s, HP 350 Hz; seam: head/tail RMS -23.5/-22.16 dB, clicks at seam 0 (ref 1); 88 kbps; spectral flatness 500-6000 Hz (median of 186 ms frames) 0.108; 91% of energy in 500-6000 Hz; loop phase rotated 1.382s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "wind_rush",
+  "variant": 0,
+  "file": "loops/wind_rush.mp3",
+  "kind": "loop",
+  "channels": 1,
+  "duration": 8.5,
+  "loopStart": 0.25,
+  "loopEnd": 8.25,
+  "lufs": -20.0,
+  "peak": -7.18,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 82267,
+    "page": "https://freesound.org/s/82267/",
+    "file": "https://cdn.freesound.org/previews/82/82267_94000-hq.mp3",
+    "title": "Wind-inside car-091007.wav",
+    "author": "ra_gun",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Heavy wind noise recorded inside a car (Tascam DR-100): steady broadband aero rush, no tonal whistle (max single-bin share ~1.6%), HP 150 Hz to keep mic-rumble out | section 11.25-19.75s of source, loop 8.000s, equal-power xfade 0.50s, HP 150 Hz; seam: head/tail RMS -21.84/-22.16 dB, clicks at seam 0 (ref 0); 88 kbps; spectral flatness 500-6000 Hz (median of 186 ms frames) 0.289; 65% of energy in 500-6000 Hz; loop phase rotated 1.629s so the loop point sits on a quiet spot"
+ },
+ {
+  "key": "backfire",
+  "variant": 1,
+  "file": "sfx/backfire_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.2545,
+  "lufs": -16.38,
+  "peak": -2.01,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 385935,
+    "page": "https://freesound.org/s/385935/",
+    "file": "https://cdn.freesound.org/previews/385/385935_7097737-hq.mp3",
+    "title": "S012_Engine_Backfire_Mono.wav",
+    "author": "Pól",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Engine backfire pop (0.17-0.47 s) | exhaust pops / backfires, short and dry | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.5; 96 kbps"
+ },
+ {
+  "key": "backfire",
+  "variant": 2,
+  "file": "sfx/backfire_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.35,
+  "lufs": -16.5,
+  "peak": -1.4,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 675723,
+    "page": "https://freesound.org/s/675723/",
+    "file": "https://cdn.freesound.org/previews/675/675723_2524442-hq.mp3",
+    "title": "S41-25 Car backfires; reverberant.wav",
+    "author": "craigsmith",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Car backfire (library recording, reverberant) @5.83 s: cut to 0.35 s with an exponential gate (tau 70 ms) to keep it short and dry | exhaust pops / backfires, short and dry | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.5; peak limiter ~6.0 dB; 96 kbps"
+ },
+ {
+  "key": "backfire",
+  "variant": 3,
+  "file": "sfx/backfire_3.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.3495,
+  "lufs": -16.4,
+  "peak": -1.09,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 675723,
+    "page": "https://freesound.org/s/675723/",
+    "file": "https://cdn.freesound.org/previews/675/675723_2524442-hq.mp3",
+    "title": "S41-25 Car backfires; reverberant.wav",
+    "author": "craigsmith",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Car backfire (library recording) @0.03 s, gated as above | exhaust pops / backfires, short and dry | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.5; peak limiter ~6.0 dB; 96 kbps"
+ },
+ {
+  "key": "blowoff",
+  "variant": 1,
+  "file": "sfx/blowoff_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.5758,
+  "lufs": -16.06,
+  "peak": -4.29,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 131302,
+    "page": "https://freesound.org/s/131302/",
+    "file": "https://cdn.freesound.org/previews/131/131302_2394357-hq.mp3",
+    "title": "release_air_pffft.wav",
+    "author": "reg7783",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "STAND-IN: real pneumatic air release (air line disconnect \"pffft\"), 0.18-0.80 s, HP 300 Hz - no CC0 recording of an actual turbo blow-off valve was found | turbo blow-off \"pssh\" | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "blowoff",
+  "variant": 2,
+  "file": "sfx/blowoff_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.8898,
+  "lufs": -16.09,
+  "peak": -6.2,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 457294,
+    "page": "https://freesound.org/s/457294/",
+    "file": "https://cdn.freesound.org/previews/457/457294_300738-hq.mp3",
+    "title": "Air (or steam) pressure release",
+    "author": "brunoboselli",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "STAND-IN: real compressed-air release (inflatable board valve, studio Neumann TLM-102), 0-0.9 s with an exponential decay envelope (tau 0.28 s) to make a short \"pssh\" | turbo blow-off \"pssh\" | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "body_creak",
+  "variant": 1,
+  "file": "sfx/body_creak_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.6379,
+  "lufs": -16.09,
+  "peak": -1.04,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 86234,
+    "page": "https://freesound.org/s/86234/",
+    "file": "https://cdn.freesound.org/previews/86/86234_1188748-hq.mp3",
+    "title": "Car_Suspension_Creak.aif",
+    "author": "nmscher",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Car suspension creak (car rocked by hand), 0.82-1.47 s | car body / chassis creak | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; peak limiter ~1.6 dB; 96 kbps"
+ },
+ {
+  "key": "body_creak",
+  "variant": 2,
+  "file": "sfx/body_creak_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.7857,
+  "lufs": -15.99,
+  "peak": -1.4,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 508279,
+    "page": "https://freesound.org/s/508279/",
+    "file": "https://cdn.freesound.org/previews/508/508279_4810511-hq.mp3",
+    "title": "Old_Truck_Metal_Squeaks-Creaks-Rattle-Impact_Open_Door.wav",
+    "author": "dilsun",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Old truck metal body squeak/creak, 0.15-0.95 s (before the door impact) | car body / chassis creak | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "body_hit",
+  "variant": 1,
+  "file": "sfx/body_hit_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.6951,
+  "lufs": -16.0,
+  "peak": -1.29,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 346694,
+    "page": "https://freesound.org/s/346694/",
+    "file": "https://cdn.freesound.org/previews/346/346694_2104797-hq.mp3",
+    "title": "Body fall_02.wav",
+    "author": "deleted_user_2104797",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Body fall thud (0.42-1.12 s), LP 4 kHz for a dull non-gory thud | soft dull thud | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; peak limiter ~2.3 dB; 96 kbps"
+ },
+ {
+  "key": "body_hit",
+  "variant": 2,
+  "file": "sfx/body_hit_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.5669,
+  "lufs": -16.0,
+  "peak": -1.29,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/impact-sounds",
+    "file": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip#impactSoft_heavy_002.ogg",
+    "title": "Impact Sounds (Kenney) - impactSoft_heavy_002.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Soft heavy impact (Kenney), LP 4 kHz | soft dull thud | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; peak limiter ~3.4 dB; 96 kbps"
+ },
+ {
+  "key": "brake_squeal",
+  "variant": 1,
+  "file": "sfx/brake_squeal_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 3.9883,
+  "lufs": -15.99,
+  "peak": -1.08,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 456764,
+    "page": "https://freesound.org/s/456764/",
+    "file": "https://cdn.freesound.org/previews/456/456764_9514571-hq.mp3",
+    "title": "Car Brakes sqeak screech squeal stop.wav",
+    "author": "WavJunction.com",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Car braking with squeaky brakes, no engine (squeal partials ~3.2/5/6.2/9.5 kHz), section 0.70-4.70 s, HP 600 Hz | brake squeal of a vehicle stopping at low speed | loudness = integrated LUFS; group matched at -16.0; peak limiter ~0.7 dB; 96 kbps"
+ },
+ {
+  "key": "brake_squeal",
+  "variant": 2,
+  "file": "sfx/brake_squeal_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 5.395,
+  "lufs": -16.01,
+  "peak": -4.33,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 706273,
+    "page": "https://freesound.org/s/706273/",
+    "file": "https://cdn.freesound.org/previews/706/706273_13154243-hq.mp3",
+    "title": "Bus Stopping with squeaky brakes.wav",
+    "author": "timpet55",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "School bus stopping with brake squeal (strong partials ~4.8/5.5/8-11 kHz), section 6.90-12.30 s, HP 900 Hz to drop the bus engine | brake squeal of a vehicle stopping at low speed | loudness = integrated LUFS; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "cable_car_bell",
+  "variant": 1,
+  "file": "sfx/cable_car_bell_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.9007,
+  "lufs": -17.08,
+  "peak": -1.88,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 333346,
+    "page": "https://freesound.org/s/333346/",
+    "file": "https://cdn.freesound.org/previews/333/333346_4789980-hq.mp3",
+    "title": "20150826_SFcablecar_Powel-Hyde_pm.aif",
+    "author": "jaeisele",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Real San Francisco Powell-Hyde cable car: gripman ringing the bell pattern (500.90-503.80 s of the full-ride recording); HP 350 Hz to thin the cable/street rumble; faint background of the ride | SF cable car bell ringing pattern; bell partials ~1.0/1.8/2.6/3.3/4.6 kHz | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -17.1; peak limiter ~4.0 dB; 96 kbps"
+ },
+ {
+  "key": "cable_car_bell",
+  "variant": 2,
+  "file": "sfx/cable_car_bell_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 3.0951,
+  "lufs": -17.09,
+  "peak": -1.09,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 333346,
+    "page": "https://freesound.org/s/333346/",
+    "file": "https://cdn.freesound.org/previews/333/333346_4789980-hq.mp3",
+    "title": "20150826_SFcablecar_Powel-Hyde_pm.aif",
+    "author": "jaeisele",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Real San Francisco Powell-Hyde cable car: another bell ringing pattern (1495.50-1498.60 s); HP 350 Hz | SF cable car bell ringing pattern; bell partials ~1.0/1.8/2.6/3.3/4.6 kHz | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -17.1; peak limiter ~4.0 dB; 96 kbps"
+ },
+ {
+  "key": "debris",
+  "variant": 1,
+  "file": "sfx/debris_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.0369,
+  "lufs": -16.07,
+  "peak": -2.56,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 587443,
+    "page": "https://freesound.org/s/587443/",
+    "file": "https://cdn.freesound.org/previews/587/587443_5487341-hq.mp3",
+    "title": "Scrap metal dropping / crashing",
+    "author": "SamsterBirdies",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Scrap metal objects clattering on concrete (8.05-10.25 s), HP 150 Hz for a light tinkly tail | metal debris tail | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "debris",
+  "variant": 2,
+  "file": "sfx/debris_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.2,
+  "lufs": -16.07,
+  "peak": -2.19,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 587443,
+    "page": "https://freesound.org/s/587443/",
+    "file": "https://cdn.freesound.org/previews/587/587443_5487341-hq.mp3",
+    "title": "Scrap metal dropping / crashing",
+    "author": "SamsterBirdies",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Scrap metal objects clattering on concrete, another take (4.62-6.82 s), HP 150 Hz | metal debris tail | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "foghorn",
+  "variant": 0,
+  "file": "sfx/foghorn.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 7.9,
+  "lufs": -15.99,
+  "peak": -7.76,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 99630,
+    "page": "https://freesound.org/s/99630/",
+    "file": "https://cdn.freesound.org/previews/99/99630_1431924-hq.mp3",
+    "title": "foghorn.wav",
+    "author": "tec_studio",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Real foghorn recorded in San Francisco (2010): ~4 s blast + natural echo/decay; fundamental ~139 Hz (harmonics 278/418 Hz...). Single-tone (no two-tone diaphone found in CC0 at usable quality; the Golden Gate recording 140898 is too windy) | foghorn | loudness = integrated LUFS; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "gear_shift",
+  "variant": 1,
+  "file": "sfx/gear_shift_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.4809,
+  "lufs": -19.69,
+  "peak": -4.89,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 675264,
+    "page": "https://freesound.org/s/675264/",
+    "file": "https://cdn.freesound.org/previews/675/675264_2524442-hq.mp3",
+    "title": "S07-08 Car gear shift lever.wav",
+    "author": "craigsmith",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Car gear shift lever clunk (5.33-5.83 s) | mechanical gear change clunk | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -19.7; peak limiter ~3.8 dB; 96 kbps"
+ },
+ {
+  "key": "gear_shift",
+  "variant": 2,
+  "file": "sfx/gear_shift_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.35,
+  "lufs": -19.64,
+  "peak": -1.04,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 675264,
+    "page": "https://freesound.org/s/675264/",
+    "file": "https://cdn.freesound.org/previews/675/675264_2524442-hq.mp3",
+    "title": "S07-08 Car gear shift lever.wav",
+    "author": "craigsmith",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Car gear shift lever clunk, another shift (0.24-0.59 s) | mechanical gear change clunk | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -19.7; peak limiter ~6.0 dB; 96 kbps"
+ },
+ {
+  "key": "glass_break",
+  "variant": 1,
+  "file": "sfx/glass_break_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.6134,
+  "lufs": -17.73,
+  "peak": -1.18,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 221528,
+    "page": "https://freesound.org/s/221528/",
+    "file": "https://cdn.freesound.org/previews/221/221528_1038806-hq.mp3",
+    "title": "Glass Break",
+    "author": "unfa",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Sheet of glass shattered with a rock (0.28-1.33 s) | car window / glass shatter | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -17.7; peak limiter ~6.0 dB; 96 kbps"
+ },
+ {
+  "key": "glass_break",
+  "variant": 2,
+  "file": "sfx/glass_break_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.4856,
+  "lufs": -17.76,
+  "peak": -5.71,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 452670,
+    "page": "https://freesound.org/s/452670/",
+    "file": "https://cdn.freesound.org/previews/452/452670_612689-hq.mp3",
+    "title": "window small trailer rv glass smash with an axe debris fall metal grill.wav",
+    "author": "kyles",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Small trailer/RV window smashed, glass debris falling (0.08-2.58 s) | car window / glass shatter | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -17.7; 96 kbps"
+ },
+ {
+  "key": "horn_car_start",
+  "variant": 0,
+  "file": "sfx/horn_car_start.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.594,
+  "lufs": -16.1,
+  "peak": -4.99,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 182474,
+    "page": "https://freesound.org/s/182474/",
+    "file": "https://cdn.freesound.org/previews/182/182474_3153523-hq.mp3",
+    "title": "car horn.wav",
+    "author": "keweldog",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Attack of the same sedan horn as loops/horn_car (1.24-1.84 s): play once, crossfade into the loop after ~0.4 s | horn attack | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "impact_car_heavy",
+  "variant": 1,
+  "file": "sfx/impact_car_heavy_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 3.2,
+  "lufs": -15.95,
+  "peak": -1.46,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 237375,
+    "page": "https://freesound.org/s/237375/",
+    "file": "https://cdn.freesound.org/previews/237/237375_1502374-hq.mp3",
+    "title": "Car Crash",
+    "author": "squareal",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Layered car crash (grit/glass box + metal filing cabinet), 0.33-3.53 s | heavy car-to-car crunch with metal and debris | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; peak limiter ~0.8 dB; 96 kbps"
+ },
+ {
+  "key": "impact_car_heavy",
+  "variant": 2,
+  "file": "sfx/impact_car_heavy_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.0937,
+  "lufs": -16.02,
+  "peak": -3.37,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 675259,
+    "page": "https://freesound.org/s/675259/",
+    "file": "https://cdn.freesound.org/previews/675/675259_2524442-hq.mp3",
+    "title": "S30-30 Heavy short car crash.wav",
+    "author": "craigsmith",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Heavy short car crash (library recording), 0.25-2.35 s | heavy car-to-car crunch with metal and debris | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "impact_car_light",
+  "variant": 1,
+  "file": "sfx/impact_car_light_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.95,
+  "lufs": -16.05,
+  "peak": -3.37,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 675466,
+    "page": "https://freesound.org/s/675466/",
+    "file": "https://cdn.freesound.org/previews/675/675466_2524442-hq.mp3",
+    "title": "S37-14 Two cars crash foley; good metallic bump.wav",
+    "author": "craigsmith",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Two cars bump foley, metallic body bump (0.00-0.95 s) | light car-to-car hit | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "impact_car_light",
+  "variant": 2,
+  "file": "sfx/impact_car_light_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.3719,
+  "lufs": -16.04,
+  "peak": -1.34,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 340539,
+    "page": "https://freesound.org/s/340539/",
+    "file": "https://cdn.freesound.org/previews/340/340539_4959511-hq.mp3",
+    "title": "Car_Door_Hit.wav",
+    "author": "mickyman5000",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Car door hit: dull panel thud (0.07-0.45 s) | light car-to-car hit | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; 96 kbps"
+ },
+ {
+  "key": "impact_car_light",
+  "variant": 3,
+  "file": "sfx/impact_car_light_3.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.5,
+  "lufs": -16.01,
+  "peak": -1.8,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 812592,
+    "page": "https://freesound.org/s/812592/",
+    "file": "https://cdn.freesound.org/previews/812/812592_71257-hq.mp3",
+    "title": "Clang",
+    "author": "qubodup",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Clang of a not-very-heavy metal (boiler) door: light panel dent/clank | light car-to-car hit | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.1; peak limiter ~1.4 dB; 96 kbps"
+ },
+ {
+  "key": "impact_pole",
+  "variant": 1,
+  "file": "sfx/impact_pole_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 3.2,
+  "lufs": -16.3,
+  "peak": -1.4,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 406490,
+    "page": "https://freesound.org/s/406490/",
+    "file": "https://cdn.freesound.org/previews/406/406490_5923045-hq.mp3",
+    "title": "hit - metallic - basketball hoop pipe 01.wav",
+    "author": "Anthousai",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Metal basketball-hoop pole struck (96 kHz source): ringing metal, partials ~1.5/2.8/4.5 kHz, 0-3.2 s | car hits a metal pole | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.3; peak limiter ~6.0 dB; 96 kbps"
+ },
+ {
+  "key": "impact_pole",
+  "variant": 2,
+  "file": "sfx/impact_pole_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.8109,
+  "lufs": -16.27,
+  "peak": -1.21,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 244983,
+    "page": "https://freesound.org/s/244983/",
+    "file": "https://cdn.freesound.org/previews/244/244983_3008343-hq.mp3",
+    "title": "ANI Big Pipe Hit",
+    "author": "ani_music",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Big pipe hit: heavy, slightly detuned ringing metal thud | car hits a metal pole | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.3; peak limiter ~3.0 dB; 96 kbps"
+ },
+ {
+  "key": "impact_prop",
+  "variant": 1,
+  "file": "sfx/impact_prop_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 1.85,
+  "lufs": -17.86,
+  "peak": -4.52,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 450810,
+    "page": "https://freesound.org/s/450810/",
+    "file": "https://cdn.freesound.org/previews/450/450810_612689-hq.mp3",
+    "title": "trash can plastic bin kick over angrily and bounce on pavement gritty garbage fall out.wav",
+    "author": "kyles",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Plastic trash bin kicked over, bouncing on pavement (0.95-2.80 s) | street furniture hits (plastic bins, wooden barriers) | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -17.9; 96 kbps"
+ },
+ {
+  "key": "impact_prop",
+  "variant": 2,
+  "file": "sfx/impact_prop_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.0484,
+  "lufs": -17.85,
+  "peak": -3.45,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 450810,
+    "page": "https://freesound.org/s/450810/",
+    "file": "https://cdn.freesound.org/previews/450/450810_612689-hq.mp3",
+    "title": "trash can plastic bin kick over angrily and bounce on pavement gritty garbage fall out.wav",
+    "author": "kyles",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Plastic trash bin kicked over, second take (17.75-19.85 s) | street furniture hits (plastic bins, wooden barriers) | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -17.9; 96 kbps"
+ },
+ {
+  "key": "impact_prop",
+  "variant": 3,
+  "file": "sfx/impact_prop_3.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.5091,
+  "lufs": -17.8,
+  "peak": -1.17,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/impact-sounds",
+    "file": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip#impactPlank_medium_001.ogg",
+    "title": "Impact Sounds (Kenney) - impactPlank_medium_001.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Wooden plank impact (wooden barrier) | street furniture hits (plastic bins, wooden barriers) | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -17.9; peak limiter ~6.0 dB; 96 kbps"
+ },
+ {
+  "key": "impact_wall",
+  "variant": 1,
+  "file": "sfx/impact_wall_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.8039,
+  "lufs": -15.97,
+  "peak": -4.18,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 683774,
+    "page": "https://freesound.org/s/683774/",
+    "file": "https://cdn.freesound.org/previews/683/683774_14876768-hq.mp3",
+    "title": "Hard Impact on Concrete",
+    "author": "Elements-Library",
+    "license": "CC0 1.0"
+   },
+   {
+    "site": "freesound",
+    "id": 703247,
+    "page": "https://freesound.org/s/703247/",
+    "file": "https://cdn.freesound.org/previews/703/703247_13504080-hq.mp3",
+    "title": "Big falling debris (crash)",
+    "author": "xkeril",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Concrete impact thud (683774 @1.12 s) layered with a crash of tiles/stone/metal on a concrete floor (703247, 0-2.8 s, thud -5 dB) | car into concrete wall: low concrete thud + metal/debris crunch | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "impact_wall",
+  "variant": 2,
+  "file": "sfx/impact_wall_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 1.6547,
+  "lufs": -15.97,
+  "peak": -3.44,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 683774,
+    "page": "https://freesound.org/s/683774/",
+    "file": "https://cdn.freesound.org/previews/683/683774_14876768-hq.mp3",
+    "title": "Hard Impact on Concrete",
+    "author": "Elements-Library",
+    "license": "CC0 1.0"
+   },
+   {
+    "site": "freesound",
+    "id": 587443,
+    "page": "https://freesound.org/s/587443/",
+    "file": "https://cdn.freesound.org/previews/587/587443_5487341-hq.mp3",
+    "title": "Scrap metal dropping / crashing",
+    "author": "SamsterBirdies",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Concrete impact thud (683774 @4.73 s) layered with scrap metal crashing onto concrete (587443, 2.40-4.30 s, thud -5 dB) | car into concrete wall: low concrete thud + metal/debris crunch | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "impact_wall",
+  "variant": 3,
+  "file": "sfx/impact_wall_3.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 1.6112,
+  "lufs": -15.98,
+  "peak": -3.58,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 683774,
+    "page": "https://freesound.org/s/683774/",
+    "file": "https://cdn.freesound.org/previews/683/683774_14876768-hq.mp3",
+    "title": "Hard Impact on Concrete",
+    "author": "Elements-Library",
+    "license": "CC0 1.0"
+   },
+   {
+    "site": "freesound",
+    "id": 562198,
+    "page": "https://freesound.org/s/562198/",
+    "file": "https://cdn.freesound.org/previews/562/562198_12618935-hq.mp3",
+    "title": "snd_metal_smash.wav",
+    "author": "gristi",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Concrete impact thud (683774 @8.11 s) layered with a hard metal smash (562198, 0-1.6 s, +12 ms, thud -5 dB) | car into concrete wall: low concrete thud + metal/debris crunch | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; 96 kbps"
+ },
+ {
+  "key": "splash",
+  "variant": 0,
+  "file": "sfx/splash.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 3.8887,
+  "lufs": -16.04,
+  "peak": -0.96,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 529794,
+    "page": "https://freesound.org/s/529794/",
+    "file": "https://cdn.freesound.org/previews/529/529794_11519060-hq.mp3",
+    "title": "5 meters dive.wav",
+    "author": "bruno.auzet",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Dive from a 5 m board into a pool (Schoeps ORTF): big splash and water settling, 0.10-4.00 s; faint birds in the background | car into water | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -16.0; peak limiter ~0.8 dB; 96 kbps"
+ },
+ {
+  "key": "starter",
+  "variant": 0,
+  "file": "sfx/starter.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.8934,
+  "lufs": -15.99,
+  "peak": -1.16,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 479351,
+    "page": "https://freesound.org/s/479351/",
+    "file": "https://cdn.freesound.org/previews/479/479351_6323727-hq.mp3",
+    "title": "Car Engine Starting",
+    "author": "Grasopt",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Petrol car starter crank then engine catching and settling to idle (mics on hood/deafener, 96 kHz source), 0.52-3.42 s | starter crank + catch | loudness = integrated LUFS; group matched at -16.0; peak limiter ~0.1 dB; 96 kbps"
+ },
+ {
+  "key": "suspension_thump",
+  "variant": 1,
+  "file": "sfx/suspension_thump_1.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.7067,
+  "lufs": -17.8,
+  "peak": -2.28,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 452550,
+    "page": "https://freesound.org/s/452550/",
+    "file": "https://cdn.freesound.org/previews/452/452550_612689-hq.mp3",
+    "title": "auto trunk close hard semi slam from outside.wav",
+    "author": "kyles",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Car trunk closed hard (hollow body thud), 0.28-1.03 s, LP 1.4 kHz for a low chassis thump | suspension bottoming / landing thump built from real car body slams | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -17.9; peak limiter ~0.5 dB; 96 kbps"
+ },
+ {
+  "key": "suspension_thump",
+  "variant": 2,
+  "file": "sfx/suspension_thump_2.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.4883,
+  "lufs": -17.85,
+  "peak": -1.05,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 136535,
+    "page": "https://freesound.org/s/136535/",
+    "file": "https://cdn.freesound.org/previews/136/136535_2417094-hq.mp3",
+    "title": "CarBootClose.wav",
+    "author": "jmdh",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "MG-B boot (trunk) closed, 0.12-0.62 s, LP 1.4 kHz | suspension bottoming / landing thump built from real car body slams | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -17.9; peak limiter ~4.0 dB; 96 kbps"
+ },
+ {
+  "key": "suspension_thump",
+  "variant": 3,
+  "file": "sfx/suspension_thump_3.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.5994,
+  "lufs": -17.8,
+  "peak": -5.97,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 86236,
+    "page": "https://freesound.org/s/86236/",
+    "file": "https://cdn.freesound.org/previews/86/86236_1188748-hq.mp3",
+    "title": "Car_hood-Slam-hollow-metallic.aif",
+    "author": "nmscher",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Car hood slam (hollow metallic), 1.00-1.60 s, LP 1.4 kHz | suspension bottoming / landing thump built from real car body slams | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -17.9; 96 kbps"
+ },
+ {
+  "key": "back",
+  "variant": 0,
+  "file": "ui/back.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.2078,
+  "lufs": -20.09,
+  "peak": -8.04,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#minimize_009.ogg",
+    "title": "Interface Sounds (Kenney) - minimize_009.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds minimize_009: short falling blip (back/cancel) | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.1; 80 kbps"
+ },
+ {
+  "key": "busted",
+  "variant": 0,
+  "file": "ui/busted.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 4.0,
+  "lufs": -19.99,
+  "peak": -9.71,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 706754,
+    "page": "https://freesound.org/s/706754/",
+    "file": "https://cdn.freesound.org/previews/706/706754_13504080-hq.mp3",
+    "title": "You've been trapped (short sting)",
+    "author": "xkeril",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "You have been trapped short sting: descending minor bells/piano (xkeril family), 0-4.0 s | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "checkpoint",
+  "variant": 0,
+  "file": "ui/checkpoint.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.3296,
+  "lufs": -20.0,
+  "peak": -12.6,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#question_003.ogg",
+    "title": "Interface Sounds (Kenney) - question_003.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds question_003: rising two-note ding-DING | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "click",
+  "variant": 0,
+  "file": "ui/click.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.0595,
+  "lufs": -27.75,
+  "peak": -3.38,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#select_007.ogg",
+    "title": "Interface Sounds (Kenney) - select_007.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds select_007: short soft tonal click (~740 Hz) | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -27.8; peak limiter ~3.0 dB; 80 kbps"
+ },
+ {
+  "key": "close",
+  "variant": 0,
+  "file": "ui/close.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.3145,
+  "lufs": -20.08,
+  "peak": -8.08,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#close_002.ogg",
+    "title": "Interface Sounds (Kenney) - close_002.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds close_002: falling glide (mirror of open) | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.1; 80 kbps"
+ },
+ {
+  "key": "confirm",
+  "variant": 0,
+  "file": "ui/confirm.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.2898,
+  "lufs": -20.01,
+  "peak": -7.2,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#confirmation_001.ogg",
+    "title": "Interface Sounds (Kenney) - confirmation_001.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds confirmation_001: two-note rising confirm | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "error",
+  "variant": 0,
+  "file": "ui/error.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.2717,
+  "lufs": -20.03,
+  "peak": -3.4,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#error_006.ogg",
+    "title": "Interface Sounds (Kenney) - error_006.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds error_006: low soft buzz (not harsh) | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; peak limiter ~1.3 dB; 80 kbps"
+ },
+ {
+  "key": "evaded",
+  "variant": 0,
+  "file": "ui/evaded.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.3261,
+  "lufs": -20.0,
+  "peak": -5.76,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 619840,
+    "page": "https://freesound.org/s/619840/",
+    "file": "https://cdn.freesound.org/previews/619/619840_7614679-hq.mp3",
+    "title": "Achievement Accomplish Jingle App UI",
+    "author": "CogFireStudios",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Accomplish jingle: gentle rising then resolving (relief), CogFireStudios app-UI family, 0-2.4 s | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "fail",
+  "variant": 0,
+  "file": "ui/fail.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.3883,
+  "lufs": -20.0,
+  "peak": -7.76,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 578406,
+    "page": "https://freesound.org/s/578406/",
+    "file": "https://cdn.freesound.org/previews/578/578406_10522382-hq.mp3",
+    "title": "Vibraphone Sting",
+    "author": "nomiqbomi",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Vibraphone/mallet sting, sad realisation chord, 0-2.8 s | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "finish",
+  "variant": 0,
+  "file": "ui/finish.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 4.1604,
+  "lufs": -20.0,
+  "peak": -10.19,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 706753,
+    "page": "https://freesound.org/s/706753/",
+    "file": "https://cdn.freesound.org/previews/706/706753_13504080-hq.mp3",
+    "title": "Victory (short sting)",
+    "author": "xkeril",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Victory short sting (bells + piano, major), 0-4.2 s with ring-out; family with wanted/busted | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "go",
+  "variant": 0,
+  "file": "ui/go.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.955,
+  "lufs": -20.02,
+  "peak": -19.0,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 385928,
+    "page": "https://freesound.org/s/385928/",
+    "file": "https://cdn.freesound.org/previews/385/385928_7097737-hq.mp3",
+    "title": "S001_Countdown_Signal.wav",
+    "author": "Pól",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Rally start countdown final GO beep (higher, longer), 2.98-3.96 s; same recording as ui/tick | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "hover",
+  "variant": 0,
+  "file": "ui/hover.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.0071,
+  "lufs": -32.28,
+  "peak": -3.58,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#click_003.ogg",
+    "title": "Interface Sounds (Kenney) - click_003.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds click_003: very short low tick; deliberately normalised 6 dB under the UI target so it is subtle at unity gain | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -32.3; peak limiter ~3.0 dB; 80 kbps"
+ },
+ {
+  "key": "levelup",
+  "variant": 0,
+  "file": "ui/levelup.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 1.5929,
+  "lufs": -19.99,
+  "peak": -8.35,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 636679,
+    "page": "https://freesound.org/s/636679/",
+    "file": "https://cdn.freesound.org/previews/636/636679_7614679-hq.mp3",
+    "title": "App Ui Sound",
+    "author": "CogFireStudios",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Rising app jingle (CogFireStudios app-UI family with rankup/evaded), 0-1.9 s | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "money",
+  "variant": 0,
+  "file": "ui/money.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.8337,
+  "lufs": -22.16,
+  "peak": -3.47,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/casino-audio",
+    "file": "https://kenney.nl/media/pages/assets/casino-audio/2472606a04-1721639069/kenney_casino-audio.zip#chips-handle-5.ogg",
+    "title": "Casino Audio (Kenney) - chips-handle-5.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Casino Audio chips-handle-5: coins/chips rattle | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -22.2; peak limiter ~3.0 dB; 80 kbps"
+ },
+ {
+  "key": "nearmiss",
+  "variant": 0,
+  "file": "ui/nearmiss.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.3,
+  "lufs": -20.02,
+  "peak": -7.94,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 22598,
+    "page": "https://freesound.org/s/22598/",
+    "file": "https://cdn.freesound.org/previews/22/22598_85523-hq.mp3",
+    "title": "DMP CAR PASSBY 2.wav",
+    "author": "martypinso",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Real car pass-by whoosh with doppler, recorded from inside another car (Schoeps MS), 2.9-5.2 s | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "notify",
+  "variant": 0,
+  "file": "ui/notify.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.4907,
+  "lufs": -20.0,
+  "peak": -11.31,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#question_001.ogg",
+    "title": "Interface Sounds (Kenney) - question_001.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds question_001: two-note ding-dong notification | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "open",
+  "variant": 0,
+  "file": "ui/open.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.3134,
+  "lufs": -20.04,
+  "peak": -9.61,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#open_002.ogg",
+    "title": "Interface Sounds (Kenney) - open_002.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds open_002: rising glide (pairs with close) | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "rankup",
+  "variant": 0,
+  "file": "ui/rankup.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 2.8262,
+  "lufs": -20.0,
+  "peak": -7.44,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 619837,
+    "page": "https://freesound.org/s/619837/",
+    "file": "https://cdn.freesound.org/previews/619/619837_7614679-hq.mp3",
+    "title": "Soft Short App Melody",
+    "author": "CogFireStudios",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Soft short rising app melody (CogFireStudios app-UI family), 0-3.0 s | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "reward",
+  "variant": 0,
+  "file": "ui/reward.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.539,
+  "lufs": -20.0,
+  "peak": -6.24,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#confirmation_002.ogg",
+    "title": "Interface Sounds (Kenney) - confirmation_002.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds confirmation_002: 4-step rising arpeggio | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "select",
+  "variant": 0,
+  "file": "ui/select.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.2448,
+  "lufs": -20.04,
+  "peak": -3.5,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#select_005.ogg",
+    "title": "Interface Sounds (Kenney) - select_005.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds select_005: soft bouncy select | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; peak limiter ~0.2 dB; 80 kbps"
+ },
+ {
+  "key": "skill",
+  "variant": 0,
+  "file": "ui/skill.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.1208,
+  "lufs": -20.12,
+  "peak": -3.3,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#glass_003.ogg",
+    "title": "Interface Sounds (Kenney) - glass_003.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds glass_003: short positive glass ding | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.1; peak limiter ~3.0 dB; 80 kbps"
+ },
+ {
+  "key": "star",
+  "variant": 0,
+  "file": "ui/star.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.2424,
+  "lufs": -19.98,
+  "peak": -4.84,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#select_003.ogg",
+    "title": "Interface Sounds (Kenney) - select_003.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds select_003: sparkly high arpeggio | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "tick",
+  "variant": 0,
+  "file": "ui/tick.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.42,
+  "lufs": -20.02,
+  "peak": -10.13,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 385928,
+    "page": "https://freesound.org/s/385928/",
+    "file": "https://cdn.freesound.org/previews/385/385928_7097737-hq.mp3",
+    "title": "S001_Countdown_Signal.wav",
+    "author": "Pól",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Rally start countdown beep (one of the 3-2-1 beeps), 0-0.42 s; same recording as ui/go | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "toggle",
+  "variant": 0,
+  "file": "ui/toggle.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.1306,
+  "lufs": -20.0,
+  "peak": -3.31,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#toggle_001.ogg",
+    "title": "Interface Sounds (Kenney) - toggle_001.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds toggle_001: short tonal switch click | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; peak limiter ~0.8 dB; 80 kbps"
+ },
+ {
+  "key": "unlock",
+  "variant": 0,
+  "file": "ui/unlock.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.322,
+  "lufs": -20.02,
+  "peak": -6.07,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#confirmation_003.ogg",
+    "title": "Interface Sounds (Kenney) - confirmation_003.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds confirmation_003: bright rising arpeggio | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "wanted",
+  "variant": 0,
+  "file": "ui/wanted.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 3.9918,
+  "lufs": -20.0,
+  "peak": -8.49,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 706752,
+    "page": "https://freesound.org/s/706752/",
+    "file": "https://cdn.freesound.org/previews/706/706752_13504080-hq.mp3",
+    "title": "Nightmare (short sting)",
+    "author": "xkeril",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Nightmare short sting: tense minor bells/piano (xkeril family with finish/busted), 0-4.0 s | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; 80 kbps"
+ },
+ {
+  "key": "whoosh",
+  "variant": 0,
+  "file": "ui/whoosh.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.8,
+  "lufs": -20.01,
+  "peak": -3.07,
+  "sources": [
+   {
+    "site": "freesound",
+    "id": 449996,
+    "page": "https://freesound.org/s/449996/",
+    "file": "https://cdn.freesound.org/previews/449/449996_3217484-hq.mp3",
+    "title": "whoosh_short_mid.wav",
+    "author": "DJT4NN3R",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Short mid-pitched air whoosh, 0-0.8 s | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -20.0; peak limiter ~2.2 dB; 80 kbps"
+ },
+ {
+  "key": "xp",
+  "variant": 0,
+  "file": "ui/xp.mp3",
+  "kind": "shot",
+  "channels": 1,
+  "duration": 0.2731,
+  "lufs": -22.13,
+  "peak": -3.33,
+  "sources": [
+   {
+    "site": "kenney",
+    "id": null,
+    "page": "https://kenney.nl/assets/interface-sounds",
+    "file": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip#glass_001.ogg",
+    "title": "Interface Sounds (Kenney) - glass_001.ogg",
+    "author": "Kenney (kenney.nl)",
+    "license": "CC0 1.0"
+   }
+  ],
+  "notes": "Kenney Interface Sounds glass_001: small glass ding | UI | loudness = max momentary (400 ms window) - integrated gating unreliable on short shots; group matched at -22.1; peak limiter ~3.0 dB; 80 kbps"
+ }
+]
