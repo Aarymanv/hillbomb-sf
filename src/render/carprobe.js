@@ -5,6 +5,7 @@
 // the player's car and the cars right next to it see the real street (buildings, street lights, neon) while every
 // other car keeps the sky IBL. Where the probe saw nothing (beyond its far plane) the sky IBL shows through (alpha).
 import * as THREE from 'three';
+import { PERF } from './perfflags.js';
 
 // uProbeP = (probe centre xyz, strength 0..1); uProbeR = parallax sphere radius (m)
 export const CAR_PROBE = {
@@ -98,12 +99,16 @@ export function createCarProbe(renderer, scene, { size = 128, facesPerFrame = 1,
       cam.position.copy(pos); cam.updateMatrixWorld(true);
       const n = primed < 1 ? 6 : facesPerFrame;              // the first frame fills the whole cube
       const cams = cam.children;
+      // (perf r2) the scene's world matrices are the last main render's: renderer.render would walk the whole graph
+      // (~5.5 k nodes, ~1.4 ms) again just to move the cars around us by one frame. ?noprobeumw = off
+      const prevMW = scene.matrixWorldAutoUpdate; if (PERF.probeumw && primed > 0) scene.matrixWorldAutoUpdate = false;
       for (let i = 0; i < n; i++) {
         rt.texture.generateMipmaps = i === n - 1;           // mips once, after the last face of this frame
         renderer.setRenderTarget(rt, face);
         renderer.render(scene, cams[face]);
         face = (face + 1) % 6;
       }
+      scene.matrixWorldAutoUpdate = prevMW;
       renderer.setRenderTarget(prevRT, prevFace, prevMip);
       renderer.setClearColor(clear, prevA);
       sm.autoUpdate = smAuto; sm.needsUpdate = smNeed;
