@@ -22,7 +22,7 @@ Scores run 0-10 and are judged from the user's screenshots plus our own measurem
 | Buildings / streets | 6 | Not boxy, varied, grounded, no pop-in | 10/1 v5 (aaa9e34..d3f79ed): bays/turrets/mansards/setbacks, near shadows, dither fade (pops 401->96); variety still partial |
 | Landmarks / interiors | 6 | Recognisable 1:1 exteriors, near-photoreal walk-in interiors, on the map | 10/1: 39 walk-ins rebuilt, real furniture, day/night bakes, map markers; many halls still sparse/overexposed (Macy's, Saks, Legion, office lobbies) |
 | People | 6 | Realistic bodies, faces, clothes, animation | 10/1: 53 Rocketbox mocap peds (be35afd, 3b3e0ca); placeholder phone/umbrella, no far impostors |
-| Cars | 6 | FH-level bodies, paint, lights, interiors | 10/1: all 13 rebuilt (c750d23); silhouettes unchanged, cockpit still dark, heavy A-pillar |
+| Cars | 6 | FH-level bodies, paint, lights, interiors | 10/3 pass 3: 13 bodies sculpted (flares, waist, raked noses, tumblehome), slim A-pillars, window-lit cabin + lit gauges; 45 other ids still pass-2 shapes |
 | Nature | 6 | Real SF species, parks, coast | done 9/29; ice plant colour, lupines |
 | Roads | 6 | Real asphalt, markings, rails, curbs, wet | 10/2 road 2: streaked wet reflections (no sparkle), warm rough asphalt, crisp markings (shots/road2_vs_ref.jpg) |
 | Sound | 6 | Engines, city, music feel right | 10/1 (35be7a7): no clipping, drone fixed, district + road sounds; needs user listen test |

@@ -26,6 +26,15 @@ cars.py HERO_IDS get level H (player only, ~85-115k) + L0 30k / L1 5k / L2 1.7k;
 tools/blender/car_hero_preview.py -- <id>. Cockpit: camera.js eye/FOV 56 + cabin fill (details-material uniform box, build.setCabin).
 All 13 rebuilt 10/1 (traffic-only ids: full-detail base B_* is build input only, L0 ~43k); AO dds via tools/texpack.py --only cars/.
 Perf A/B: dev/car2perf.js + ?carbase=<dir> (baseline: HB_NOHERO=1 HB_OUT=<dir> cars.py). Shots: dev/car2shots.js.
+Cars pass 3 10/3 (body shapes + in-car): the 13 hero/traffic bodies are sculpted in the JS loft (models.js SCULPT table -> section()
+sculptSide/sculptTop: arch flares + haunches, waist, shoulder/cove/rocker, raked nose/tail via rndF/rndR zt/zx/zb, bonnet dome +
+crowns, greenhouse ghIn/ghTaper; S.w + getModelSpec unchanged = physics identical), quarter lights + glass-wrapped slim A-pillars
+(ghMat), Blender aero add-ons tools/blender/car_body.py (splitter, skirts). Review the shapes fast: tools/blender/car_shape_sheet.py
+-- <ids> [--big] (workbench, seconds). Rebuild: cars_export.mjs --hero <ids>, cars.py <ids>, cars.py --index, texpack --only cars/.
+In-car: CABIN {gain 3.2, lamp 2.5} (window-lit cabin from the probe / IBL, AO softened, gauges x2.5), camera.js eye = spec.seat, FOV 54.
+Silent harness: node dev/car3cdp.mjs <url+mute> <script.js> (own headless Chrome --mute-audio, parks on manifest); shots dev/car3shots.js.
+Baseline assets for A/B: public/assets/cars_p2 (untracked, ?carbase=cars_p2). Open: interior trim is still near-black plastic;
+EV tail light bar dim at night (pre-existing); the 45 non-hero ids keep the pass-2 loft shapes.
 
 Sky + night pass 9/29: physical sky by default (render/atmosphere.js Hillaire LUTs; ?sky=hdri = old photo sky). sky.js = dome + 1/3-res
 volumetric cumulus pass (createCloudPass) + cirrus, moon phase (env.state.moonAge), few stars, city skyglow; the dome bakes the IBL
