@@ -32,7 +32,7 @@ for (const nm of names) {
     worst: r.worst.slice(0, 4).map(w => ({ ms: w.ms, cpu: w.cpu, js: w.js, between: w.between, prog: w.prog, tex: w.tex, geo: w.geo, slow: w.slow, upl: w.upl, parts: w.parts })) };
   if (PROF) {
     const c = W.__drawCensus(); o.calls = c.tot.calls; o.tris = c.tot.tris; o.mainDraws = c.mainDraws; o.shadowDraws = c.shadowDraws; o.programs = c.tot.programs; o.census = c.rows.slice(0, 40);
-    const g = await W.__gpuPass(20); o.gpuFrame = g.total; o.gpuRoll = W.__gpuRoll(g.sections); o.gpuCpu = g.cpu;
+    const g = await W.__gpuPass(20); o.gpuFrame = g.total; o.gpuRoll = W.__gpuRoll(g.sections); o.gpuCpu = g.cpu; o.renderCalls = g.calls;
     // CPU: keep moving along the last route leg back and forth
     const v = W.__player.vehicle, a = route[Math.max(0, route.length - 40)], b = route[route.length - 1];
     o.cpu = await W.__cpuParts(120, (i) => { const t = (i % 60) / 60, px = b[0] + (a[0] - b[0]) * t * 0.5, pz = b[1] + (a[1] - b[1]) * t * 0.5; v.place(px, W.__world.groundAt(px, pz, 999) + 0.4, pz, Math.atan2(-(a[0] - b[0]), -(a[1] - b[1]))); });

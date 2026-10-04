@@ -9,7 +9,7 @@
 (() => {
   const W = window;
   const R = () => W.__renderer, gl = () => R().getContext();
-  let cpuAcc = {}; const addCpu = (k, v) => { cpuAcc[k] = (cpuAcc[k] || 0) + v; };
+  let cpuAcc = {}, callsAcc = {}; const addCpu = (k, v) => { cpuAcc[k] = (cpuAcc[k] || 0) + v; };
   let on = false, stack = [], cur = null, curQ = null, frameRecs = null, mainDepth = 0, lastCat = null;
   const ext = () => gl().getExtension('EXT_disjoint_timer_query_webgl2');
   function sec(label) {
@@ -32,10 +32,10 @@
       if (!on && !census.on) return rr.apply(this, arguments);
       const rt = r.getRenderTarget();
       const isMain = sc === scene;
-      const lab = (cur || '').replace(/\$[0-9a-f]+\$export\$[0-9a-f]+/g, 'N8AO') + '>' + (isMain ? 'SCENE' : (sc.name || (sc.isMesh ? 'quad:' + (sc.material?.name || sc.material?.type) : sc.type))) + (isMain ? '[' + (cam.name || cam.type) + (rt ? '@' + rt.width + 'x' + rt.height : '@screen') + ']' : '');
+      const lab = (cur || '').replace(/\$[0-9a-f]+\$export\$[0-9a-f]+/g, 'N8AO') + '>' + (isMain ? 'SCENE' : (sc.name || (sc.isMesh ? 'quad:' + (sc.material?.name || sc.material?.type) : sc.type))) + (isMain || sc.isScene ? '[' + (cam.name || cam.type) + (rt ? '@' + rt.width + 'x' + rt.height : '@screen') + ']' : '');
       const main = isMain && cam === W.__camera;
       push(lab); if (main) mainDepth++; const t0 = performance.now();
-      try { return rr.apply(this, arguments); } finally { if (on) addCpu('R ' + lab, performance.now() - t0); if (main) mainDepth--; lastCat = null; pop(); }
+      try { return rr.apply(this, arguments); } finally { if (on) { addCpu('R ' + lab, performance.now() - t0); if (r.info.autoReset) callsAcc[lab] = (callsAcc[lab] || 0) + r.info.render.calls; } if (main) mainDepth--; lastCat = null; pop(); }
     };
     const sm = r.shadowMap, sr = sm.render;
     let shBase = null, inSh = false, shTag = ''; const shIds = new Map();
@@ -50,11 +50,13 @@
     const rbd = r.renderBufferDirect;
     let lastSh = null;
     r.renderBufferDirect = function (cam, sc, geo, mat, obj) {
-      if ((on || census.on) && (mainDepth > 0 || inSh)) {
-        const cat = (inSh ? 'SH' + shTag + ' ' : '') + topOf(obj) + (mat.transparent ? ' (T)' : '');
+      const other = census.on && !inSh && mainDepth === 0 && sc === W.__scene;   // probe / water mirror draws (census only)
+      if ((on || census.on) && (mainDepth > 0 || inSh || other)) {
+        const rtt = r.getRenderTarget();
+        const cat = (inSh ? 'SH' + shTag + ' ' : other ? 'X' + (rtt ? rtt.width : '') + ' ' : '') + topOf(obj) + (mat.transparent ? ' (T)' : '');
         if (census.on) { const row = census.rows[cat] || (census.rows[cat] = { draws: 0, tris: 0, inst: 0 }); row.draws++; const n = geo.index ? geo.index.count : geo.attributes.position?.count || 0; const ic = obj.isInstancedMesh ? obj.count : geo.isInstancedBufferGeometry ? geo.instanceCount : 1; row.tris += (geo.drawRange.count === Infinity ? n : Math.min(n, geo.drawRange.count)) / 3 * (ic === Infinity ? 1 : ic); if (ic > 1) row.inst++; }
-        if (on && cat !== lastCat) { lastCat = cat; sec(String(cur).replace(/\|.*$/, '') + '|' + cat); }
-        if (on) { const t0 = performance.now(); try { return rbd.apply(this, arguments); } finally { addCpu('D ' + cat, performance.now() - t0); } }
+        if (on && !other && cat !== lastCat) { lastCat = cat; sec(String(cur).replace(/\|.*$/, '') + '|' + cat); }
+        if (on && !other) { const t0 = performance.now(); try { return rbd.apply(this, arguments); } finally { addCpu('D ' + cat, performance.now() - t0); } }
       }
       return rbd.apply(this, arguments);
     };
@@ -68,7 +70,7 @@
   W.__gpuPass = async (frames = 20) => {
     install();
     const g = gl(), e = ext(); if (!e) throw new Error('no timer ext');
-    const all = []; cpuAcc = {}; let tcpu = 0;
+    const all = []; cpuAcc = {}; callsAcc = {}; let tcpu = 0;
     const px1 = new Uint8Array(4); for (let i = 0; i < 3; i++) { W.__frames(1); g.readPixels(0, 0, 1, 1, g.RGBA, g.UNSIGNED_BYTE, px1); await new Promise(r => setTimeout(r, 0)); }
     for (let f = 0; f < frames; f++) {
       frameRecs = []; on = true; stack = []; cur = null; push('frame');
@@ -95,7 +97,8 @@
     for (const k in per) { const m = per[k].reduce((a, b) => a + (Number.isFinite(b) ? b : 0), 0) / frames; if (m > 0.05) sections[k] = +m.toFixed(2); }
     const sorted = Object.fromEntries(Object.entries(sections).sort((a, b) => b[1] - a[1]));
     const cpu = { frame: +(tcpu / frames).toFixed(2) }; for (const [k, v] of Object.entries(cpuAcc).sort((a, b) => b[1] - a[1])) if (v / frames > 0.08) cpu[k.replace(/\$[0-9a-f]+\$export\$[0-9a-f]+/g, 'N8AO')] = +(v / frames).toFixed(2);
-    return { total: +med(tot).toFixed(2), sections: sorted, cpu };
+    const calls = Object.fromEntries(Object.entries(callsAcc).map(([k, v]) => [k.replace(/\$[0-9a-f]+\$export\$[0-9a-f]+/g, 'N8AO'), Math.round(v / frames)]).filter(e => e[1] > 0));
+    return { total: +med(tot).toFixed(2), sections: sorted, cpu, calls };
   };
   // roll section labels up into coarse buckets
   W.__gpuRoll = (sections) => {
@@ -119,7 +122,7 @@
     const tot = { calls: info.render.calls, tris: info.render.triangles, programs: info.programs?.length, geos: info.memory.geometries, tex: info.memory.textures };
     info.reset();
     const rows = Object.entries(census.rows).sort((a, b) => b[1].draws - a[1].draws).map(([k, v]) => [k, v.draws, Math.round(v.tris / 1000) + 'k', v.inst]);
-    return { tot, mainDraws: rows.filter(r => !r[0].startsWith('SH')).reduce((a, r) => a + r[1], 0), shadowDraws: rows.filter(r => r[0].startsWith('SH')).reduce((a, r) => a + r[1], 0), rows };
+    return { tot, mainDraws: rows.filter(r => !/^(SH|X)/.test(r[0])).reduce((a, r) => a + r[1], 0), shadowDraws: rows.filter(r => r[0].startsWith('SH')).reduce((a, r) => a + r[1], 0), rows };
   };
   // CPU: mean ms per hooked update over n frames (hooks installed once; perf_drive's instrument() already wraps most)
   W.__cpuParts = async (frames = 60, move) => {

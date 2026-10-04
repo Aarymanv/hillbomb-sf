@@ -7,6 +7,7 @@ import { HeightFog, patchFogChunks, HB_FOG, HB_SUN, HB_SUNCOL, HB_KEY, HB_CLOUD_
 import { createHdriSky } from './hdrisky.js';
 import { createWeather } from './weather.js';
 import { createLampMap } from './lampmap.js';
+import { PERF } from './perfflags.js';
 
 const lum = c => 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
 const AGX = typeof location !== 'undefined' && /[?&]tm=agx/.test(location.search);
@@ -129,7 +130,43 @@ export function createEnvironment({ renderer, scene, quality }) {
     near3.shadow.autoUpdate = false; near3.shadow.needsUpdate = true;
     scene.add(near3, near3.target);
   }
+  if (near3) casterCull(near3, 5);
   const _n3 = new THREE.Vector3(); let near3Frame = 0;
+  // (perf 10/4) shadow caster culling against the view: a caster drawn into the sun / nearest map only if the volume its
+  // shadow can reach (its bounding sphere swept along the light down to ~100 m below the focus) touches the camera
+  // frustum. Casters behind / beside the view whose shadows can't land in it (cars, peds, props, landmark pieces: ~40 %
+  // of the shadow draws on a street view) are skipped; nothing in view changes. The nearest map is refreshed every other
+  // frame, so its test uses a frustum widened by 5 m. Water mirror / car probe reuse the map (their off-view shadows
+  // were never accurate at that resolution). ?noshadowcull = off.
+  const _vf = new THREE.Frustum(), _vpm = new THREE.Matrix4(), _cs = new THREE.Sphere(), _lt = new THREE.Vector3();
+  const cull = { on: false, groundY: 0, n: 0, kept: 0 };
+  function casterCull(light, margin) {
+    const sh = light.shadow, base = sh.getFrustum();
+    const proxy = {
+      intersectsSprite: (s) => base.intersectsSprite(s),
+      intersectsObject(o) {
+        if (!base.intersectsObject(o)) return false;
+        if (!cull.on || !PERF.shadowcull) return true;
+        let bs;
+        if (o.boundingSphere !== undefined) { if (o.boundingSphere === null) o.computeBoundingSphere(); bs = o.boundingSphere; }
+        else { const g = o.geometry; if (!g) return true; if (g.boundingSphere === null) g.computeBoundingSphere(); bs = g.boundingSphere; }
+        _cs.copy(bs).applyMatrix4(o.matrixWorld);
+        const c = _cs.center, r = _cs.radius + margin;
+        const ext = Math.min(1500, Math.max(0, c.y + r - cull.groundY) / Math.max(0.05, -_lt.y));
+        cull.n++;
+        for (const p of _vf.planes) {
+          const d0 = p.normal.dot(c) + p.constant;
+          if (d0 >= -r) continue;
+          const d1 = d0 + p.normal.dot(_lt) * ext;
+          if (d1 < -r) return false;
+        }
+        cull.kept++;
+        return true;
+      },
+    };
+    sh.getFrustum = () => proxy;
+  }
+  if (sun.castShadow) casterCull(sun, 1);
   const farAt = new THREE.Vector3(1e9, 0, 0), farDir = new THREE.Vector3(); let farTimer = 0;
   const hemi = new THREE.HemisphereLight(0xb4cbe6, 0x55503f, 1.0);
   scene.add(hemi);
@@ -250,6 +287,12 @@ export function createEnvironment({ renderer, scene, quality }) {
     lampMap?.update(dt, camera, nightF);
     if (PHYS) updatePhys(dt, camera, sunEl, nightF, cloud, dark, Wp, k, bank);
     else updateHdri(dt, camera, sunEl, nightF, cloud, dark, Wp, k, bank);
+    // view frustum + light travel direction for the shadow caster culling (casterCull)
+    if (camera) {
+      camera.updateMatrixWorld();
+      _vf.setFromProjectionMatrix(_vpm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse), camera.coordinateSystem);
+      _lt.copy(lightDir).negate(); cull.groundY = Math.min(camera.position.y, focus ? focus.y : camera.position.y) - 100; cull.on = _lt.y < -0.02;
+    } else cull.on = false;
     // shadow frustum follows the focus, snapped to texels
     const fx = focus ? focus.x : 0, fy = focus ? focus.y : 0, fz = focus ? focus.z : 0;
     const texel = (sun.shadow.camera.right - sun.shadow.camera.left) / sun.shadow.mapSize.x;

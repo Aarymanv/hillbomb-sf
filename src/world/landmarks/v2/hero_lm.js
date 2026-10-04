@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { HERO_SITES } from './hero_sites.js';
 import { heroMat, heroMatLM, heroMatLM1, updateHeroMats, setHeroScene, glowMat, GLOW_U, CT_NP, CT_WIN } from './hero_mats.js';
 import { loadPacked, texpackOn } from '../../texpack.js';
@@ -31,6 +32,7 @@ export function heroLoader() {
   return loader;
 }
 
+const HERO_MERGE = typeof location === 'undefined' || !/[?&]noheromerge/.test(location.search);
 const NOSHADOW = new Set(['lamp', 'neon', 'lantern', 'shopint', 'curtain', 'sign', 'cwin']);
 // glTF scene -> group of meshes with the shared slot materials (node names: L<lod>_<slot>[.001])
 export function prepHero(scene, matFor = heroMat) {
@@ -38,18 +40,39 @@ export function prepHero(scene, matFor = heroMat) {
   const meshes = [];
   scene.updateMatrixWorld(true);
   scene.traverse(o => { if (o.isMesh) meshes.push(o); });
+  // (perf 10/4) opaque pieces that share a slot material are merged into one mesh per material: the Chinatown blocks were
+  // ~165 draws each (ct_e / ct_w: ~330 of Chinatown's ~1260), every landmark a few dozen. Geometry is already baked to
+  // the site frame, so this only changes the draw count (and culls per material instead of per piece). ?noheromerge = A/B.
+  const groups = new Map();
   for (const o of meshes) {
     const nm = (o.name || o.parent?.name || '').replace(/\.\d+$/, '');
     const slot = nm.replace(/^L\d_/, '').replace(/^I_/, '');
     const g = o.geometry;
     g.applyMatrix4(o.matrixWorld);
-    const m = new THREE.Mesh(g, matFor(slot, g));
-    m.name = slot;
-    const opaque = !m.material.transparent;
-    m.castShadow = opaque && !NOSHADOW.has(slot);
-    m.receiveShadow = opaque;
-    m.matrixAutoUpdate = false; m.updateMatrix();
-    out.add(m);
+    const mat = matFor(slot, g);
+    const opaque = !mat.transparent;
+    const cast = opaque && !NOSHADOW.has(slot);
+    let key = null;
+    if (opaque && HERO_MERGE && !g.groups.length && !Object.keys(g.morphAttributes).length) {
+      key = [mat.uuid, cast, g.index ? 1 : 0, slot];
+      for (const a of Object.keys(g.attributes).sort()) { const A = g.attributes[a]; if (A.isInterleavedBufferAttribute) { key = null; break; } key.push(a, A.itemSize, A.normalized ? 1 : 0, A.array.constructor.name); }
+    }
+    const k = key ? key.join('|') : Symbol();
+    if (!groups.has(k)) groups.set(k, { slot, mat, opaque, cast, geos: [] });
+    groups.get(k).geos.push(g);
+  }
+  for (const { slot, mat, opaque, cast, geos } of groups.values()) {
+    let g = geos[0];
+    if (geos.length > 1) { const mg = mergeGeometries(geos, false); if (mg) { g = mg; for (const q of geos) q.dispose(); } else { for (const q of geos) add(q); continue; } }
+    add(g);
+    function add(geo) {
+      const m = new THREE.Mesh(geo, mat);
+      m.name = slot;
+      m.castShadow = cast;
+      m.receiveShadow = opaque;
+      m.matrixAutoUpdate = false; m.updateMatrix();
+      out.add(m);
+    }
   }
   return out;
 }

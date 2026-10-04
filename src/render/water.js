@@ -12,6 +12,7 @@
 //   -> { mesh, update(dt, { camera }), setState({ wind, windDir, rain, choppy }), addReflectable(obj), info, dispose }
 import * as THREE from 'three';
 import { HB_WET, HB_FOG, HB_NOISE_GLSL } from './fog.js';
+import { PERF } from './perfflags.js';
 
 export const REFLECT_LAYER = 5;
 const SEA = 0; // sea level
@@ -539,6 +540,15 @@ export function createWater({ scene, env, heightField = null, heightAt = null, b
   }
 
   const sunDir = new THREE.Vector3();
+  const NEAR_WATER = 320;
+  let nearT = 0, nearWater = true, lastRefl = -9;
+  function waterWithin(p, R) {
+    for (const r of [25, 60, 110, 170, 240, R]) for (let k = 0; k < 24; k++) {
+      const a = k / 24 * Math.PI * 2;
+      if (heightAt(p.x + Math.cos(a) * r, p.z + Math.sin(a) * r) < SEA + 0.4) return true;
+    }
+    return false;
+  }
   function update(dt, envInfo = {}) {
     const camera = envInfo.camera;
     frameNo++;
@@ -569,7 +579,16 @@ export function createWater({ scene, env, heightField = null, heightAt = null, b
     info.visible = frameNo - lastVisible < 45 || frameNo < 60;
     const t0 = performance.now();
     const want = tier > 0 && info.visible && camera.position.y > SEA + 0.25 && env.state?.reflections !== false;
-    if (want) { renderReflection(camera); uniforms.uReflOn.value = 1; }
+    // (perf 10/4) water far from the camera (none within NEAR_WATER m: a few heightAt rings twice a second) re-renders its
+    // mirror every 3rd frame (2.5-4 ms CPU + 4-5.5 ms GPU per render, Chinatown / FiDi see a sliver of the bay down the
+    // streets). The mirror is sampled through the matrix it was rendered with, so a skipped frame shows the same world
+    // positions, 1-2 frames old. ?nowaterthrottle = every frame.
+    if (want) {
+      nearT -= dt;
+      if (nearT <= 0 && heightAt) { nearT = 0.5; nearWater = waterWithin(camera.position, NEAR_WATER); }
+      if (!PERF.waterthrottle || nearWater || frameNo - lastRefl >= 3 || !uniforms.uReflOn.value) { renderReflection(camera); lastRefl = frameNo; }
+      uniforms.uReflOn.value = 1;
+    }
     else uniforms.uReflOn.value = 0;
     info.reflectMs = performance.now() - t0;
   }

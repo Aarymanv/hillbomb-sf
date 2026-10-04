@@ -87,6 +87,9 @@ export function buildCtStreet({ scene, segs, groundAt, night, onCt = () => true 
       if ((t -= dt) > 0 || !camera) return; t = 1.0;
       const c = camera.position;
       carShadows(c);
+      // (perf 10/4) the decal fades to neutral (x1) by 140 m: built segments past ~200 m are hidden (they were ~40-80 draws
+      // anywhere in the city once the hero streets had been visited)
+      for (const m of group.children) { if (m.name !== 'ct:asphalt') continue; const sp = m.geometry.boundingSphere; m.visible = Math.hypot(sp.center.x - c.x, sp.center.z - c.z) - sp.radius < 200; }
       for (let i = 0; i < segs.length; i++) {
         if (built.has(i)) continue;
         const [, a, b] = segs[i], mx = (a[0] + b[0]) / 2, mz = (a[1] + b[1]) / 2;
