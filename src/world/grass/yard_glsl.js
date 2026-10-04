@@ -34,7 +34,7 @@ vec4 yardCell(sampler2D L, vec4 xf, vec2 xz) {
   float h = yH(id * 0.731 + 17.3), h2 = yH(id * 1.177 + 3.9);
   // the mix drifts at neighbourhood scale (~300 m): some streets keep watered lawns, others are mostly paved or gone to seed
   float hood = yN(xz * 0.004 + 9.1);
-  float w0 = 0.08 + 0.16 * hood, w1 = 0.3, w2 = 0.1, w3 = 0.12 + 0.1 * (1.0 - hood), w4 = 0.06, w5 = 0.12, w6 = 0.08;
+  float w0 = 0.06 + 0.12 * hood, w1 = 0.3, w2 = 0.1, w3 = 0.12 + 0.1 * (1.0 - hood), w4 = 0.06, w5 = 0.12, w6 = 0.08;
   float r = h * (w0 + w1 + w2 + w3 + w4 + w5 + w6);
   float ty = r < w0 ? 0.0 : r < w0 + w1 ? 1.0 : r < w0 + w1 + w2 ? 2.0 : r < w0 + w1 + w2 + w3 ? 3.0 : r < w0 + w1 + w2 + w3 + w4 ? 4.0 : r < w0 + w1 + w2 + w3 + w4 + w5 ? 5.0 : 6.0;
   return vec4(ty, edge, h2, F.w);
@@ -44,7 +44,7 @@ float yardBed(vec4 c) { return c.z < 0.55 ? 0.55 + 0.4 * fract(c.z * 7.3) : 0.0;
 // lawn dryness 0 green .. 1 golden: dry spots in watered lawns, green survivors in dry ones
 float yardLawnDry(vec4 c, vec2 xz) {
   float b = yN(xz * 0.35 + c.z * 13.0) * 0.6 + yN(xz * 1.1) * 0.4;
-  return c.x < 0.5 ? clamp(0.06 + Y_SEASON * 0.22 + (b - 0.5) * 0.7, 0.0, 1.0) : clamp(0.48 + Y_SEASON * 0.36 + (b - 0.5) * 0.9 + (c.z - 0.5) * 0.3, 0.0, 1.0);
+  return c.x < 0.5 ? clamp(0.08 + Y_SEASON * 0.3 + (b - 0.5) * 0.7, 0.0, 1.0) : clamp(0.48 + Y_SEASON * 0.36 + (b - 0.5) * 0.9 + (c.z - 0.5) * 0.3, 0.0, 1.0);
 }
 vec3 yardLawnCol(float dry, float n) {
   vec3 g = mix(vec3(0.05, 0.12, 0.025), vec3(0.085, 0.16, 0.035), n);

@@ -34,8 +34,8 @@
     // Mission back yards (bld6 drone_low framing) and a Sunset block from above
     yards_drone: { mid: [['23rd Street', 'Alabama Street'], ['24th Street', 'Florida Street']], dist: 40, h: 42, yaw: 2.6, hr: 15.5 },
     yards_drone2: { at: ['Judah Street', '30th Avenue'], dist: 160, h: 120, yaw: -0.6, hr: 15.5 },
-    // from a back window (7 m) over the rear lot line of a Mission block, looking along the row of back yards
-    yards_street: { yardrow: [['23rd Street', 'Alabama Street'], ['24th Street', 'Alabama Street'], ['23rd Street', 'Florida Street']], h: 7, hr: 15.5, t0: 0.2, t1: 0.75 },
+    // low over a Richmond block (8 m, a back-window height): the row of back yards between 22nd and 23rd Ave
+    yards_street: { mid: [['Fulton Street', '22nd Avenue'], ['Cabrillo Street', '23rd Avenue']], dist: 30, h: 8, yaw: 0.5, hr: 15.5 },
   };
   function place(v) {
     let fx, fz, c;
@@ -88,7 +88,8 @@
   };
   // walk the on-foot player into the nearest back-yard fence (or, with no fence colliders, the same line) for 3 s
   W.__w2FenceSpot = () => {
-    const v = VIEWS.yards_street, A = X(...v.yardrow[0]), B = X(...v.yardrow[1]), C = X(...v.yardrow[2]);
+    // Mission block between Alabama and Florida (23rd -> 24th): its rear lot line runs halfway between the two streets
+    const A = X('23rd Street', 'Alabama Street'), B = X('24th Street', 'Alabama Street'), C = X('23rd Street', 'Florida Street');
     const ox = (C.x - A.x) / 2, oz = (C.z - A.z) / 2;
     const x = A.x + ox + (B.x - A.x) * 0.3, z = A.z + oz + (B.z - A.z) * 0.3;
     // the rear fence runs along the block centre line: walk across it (perpendicular = toward avenue C)
