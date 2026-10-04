@@ -1,0 +1,81 @@
+{
+ "version": 2,
+ "heightEncoding": "int16 cm, residual of left+up-upleft predictor",
+ "created": "2026-10-01",
+ "projection": {
+  "lat0": 37.7749,
+  "lon0": -122.4194,
+  "kx": 88100.2238999239,
+  "kz": 110992.2282353035,
+  "scale": 1
+ },
+ "extent": {
+  "x0": -10240.0,
+  "z0": -8192.0,
+  "x1": 6144.0,
+  "z1": 8704.0
+ },
+ "cell": 4.0,
+ "nx": 4097,
+ "nz": 4225,
+ "tile": 512.0,
+ "tiles": [
+  32,
+  33
+ ],
+ "counts": {
+  "nodes": 22373,
+  "edges": 30292,
+  "buildings": 178202,
+  "rails": 463,
+  "paths": 14663,
+  "trees": 10842,
+  "lakes": 105
+ },
+ "surfaces": [
+  "water",
+  "asphalt",
+  "concrete",
+  "grass",
+  "sand",
+  "dirt",
+  "rock",
+  "forest",
+  "scrub",
+  "yard"
+ ],
+ "buildingKinds": [
+  "generic",
+  "house",
+  "apartments",
+  "commercial",
+  "industrial",
+  "civic",
+  "garage",
+  "roof",
+  "landmark",
+  "transit"
+ ],
+ "roofShapes": [
+  "flat",
+  "gabled",
+  "hipped",
+  "pyramidal",
+  "dome",
+  "skillion",
+  "onion",
+  "round"
+ ],
+ "attribution": [
+  "Map data (c) OpenStreetMap contributors, ODbL 1.0 (https://www.openstreetmap.org/copyright), via BBBike extract",
+  "Elevation: AWS Terrain Tiles (Mapzen/Tilezen), incl. USGS 3DEP (public domain) and NOAA/GEBCO bathymetry"
+ ],
+ "sizes": {
+  "height.bin.gz": 7093694,
+  "surf.bin.gz": 676210,
+  "roads.json.gz": 2203496,
+  "buildings.bin.gz": 7554083,
+  "extras.json.gz": 540833,
+  "map_base.png": 2901466
+ }
+}
