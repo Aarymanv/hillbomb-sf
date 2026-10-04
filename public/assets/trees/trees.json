@@ -1,0 +1,490 @@
+{
+ "version": 1,
+ "generator": "tools/blender/trees.py",
+ "uv": "gl",
+ "atlas": {
+  "albedo": "leaves_albedo.webp",
+  "normal": "leaves_normal.webp",
+  "size": 4096,
+  "premultiplied": "linear"
+ },
+ "impostor": {
+  "albedo": "impostors_albedo.webp",
+  "normal": "impostors_normal.webp",
+  "frames": 8,
+  "cols": 6,
+  "rows": 5,
+  "slot": 768,
+  "mapping": "hemi-octahedral, frame (i,j) at uv ((i+fu)/N, (j+fv)/N), GL v-up; normals in frame space (right, up, view)"
+ },
+ "species": {
+  "plane": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 14.65,
+   "collider": 0.35,
+   "crownR": 7.02,
+   "tris": [
+    7356,
+    954,
+    326
+   ],
+   "cy": 7.167,
+   "R": 9.2,
+   "slot": 0,
+   "lod0": "plane_lod0.glb",
+   "lod1": "plane_lod1.glb",
+   "lod2": "plane_lod2.glb"
+  },
+  "plane2": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 12.84,
+   "collider": 0.3,
+   "crownR": 5.69,
+   "tris": [
+    7154,
+    784,
+    294
+   ],
+   "cy": 6.263,
+   "R": 7.957,
+   "slot": 1,
+   "lod0": "plane2_lod0.glb",
+   "lod1": "plane2_lod1.glb",
+   "lod2": "plane2_lod2.glb"
+  },
+  "ficus": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 8.97,
+   "collider": 0.3,
+   "crownR": 3.81,
+   "tris": [
+    7532,
+    1210,
+    276
+   ],
+   "cy": 4.326,
+   "R": 5.042,
+   "slot": 2,
+   "lod0": "ficus_lod0.glb",
+   "lod1": "ficus_lod1.glb",
+   "lod2": "ficus_lod2.glb"
+  },
+  "ficus2": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 7.57,
+   "collider": 0.28,
+   "crownR": 3.26,
+   "tris": [
+    8162,
+    840,
+    260
+   ],
+   "cy": 3.631,
+   "R": 4.388,
+   "slot": 3,
+   "lod0": "ficus2_lod0.glb",
+   "lod1": "ficus2_lod1.glb",
+   "lod2": "ficus2_lod2.glb"
+  },
+  "oak": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 11.17,
+   "collider": 0.55,
+   "crownR": 7.14,
+   "tris": [
+    8352,
+    1010,
+    244
+   ],
+   "cy": 5.35,
+   "R": 8.267,
+   "slot": 4,
+   "lod0": "oak_lod0.glb",
+   "lod1": "oak_lod1.glb",
+   "lod2": "oak_lod2.glb"
+  },
+  "oak2": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 9.54,
+   "collider": 0.45,
+   "crownR": 5.53,
+   "tris": [
+    8324,
+    1174,
+    248
+   ],
+   "cy": 4.53,
+   "R": 6.679,
+   "slot": 5,
+   "lod0": "oak2_lod0.glb",
+   "lod1": "oak2_lod1.glb",
+   "lod2": "oak2_lod2.glb"
+  },
+  "brisbox": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 13.04,
+   "collider": 0.3,
+   "crownR": 3.78,
+   "tris": [
+    7432,
+    1002,
+    268
+   ],
+   "cy": 6.362,
+   "R": 6.785,
+   "slot": 6,
+   "lod0": "brisbox_lod0.glb",
+   "lod1": "brisbox_lod1.glb",
+   "lod2": "brisbox_lod2.glb"
+  },
+  "cherry": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 7.24,
+   "collider": 0.25,
+   "crownR": 3.21,
+   "tris": [
+    5006,
+    766,
+    220
+   ],
+   "cy": 3.46,
+   "R": 4.911,
+   "slot": 7,
+   "lod0": "cherry_lod0.glb",
+   "lod1": "cherry_lod1.glb",
+   "lod2": "cherry_lod2.glb"
+  },
+  "plum": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 6.89,
+   "collider": 0.22,
+   "crownR": 2.92,
+   "tris": [
+    5234,
+    800,
+    190
+   ],
+   "cy": 3.284,
+   "R": 3.829,
+   "slot": 8,
+   "lod0": "plum_lod0.glb",
+   "lod1": "plum_lod1.glb",
+   "lod2": "plum_lod2.glb"
+  },
+  "euc": {
+   "kind": "broad",
+   "cls": "forest",
+   "H": 41.13,
+   "collider": 0.6,
+   "crownR": 9.55,
+   "tris": [
+    9488,
+    842,
+    210
+   ],
+   "cy": 20.402,
+   "R": 21.519,
+   "slot": 9,
+   "lod0": "euc_lod0.glb",
+   "lod1": "euc_lod1.glb",
+   "lod2": "euc_lod2.glb"
+  },
+  "euc2": {
+   "kind": "broad",
+   "cls": "forest",
+   "H": 27.0,
+   "collider": 0.5,
+   "crownR": 7.39,
+   "tris": [
+    8348,
+    1000,
+    284
+   ],
+   "cy": 13.345,
+   "R": 14.526,
+   "slot": 10,
+   "lod0": "euc2_lod0.glb",
+   "lod1": "euc2_lod1.glb",
+   "lod2": "euc2_lod2.glb"
+  },
+  "pine": {
+   "kind": "broad",
+   "cls": "forest",
+   "H": 26.9,
+   "collider": 0.55,
+   "crownR": 9.8,
+   "tris": [
+    10488,
+    1112,
+    186
+   ],
+   "cy": 13.289,
+   "R": 15.082,
+   "slot": 11,
+   "lod0": "pine_lod0.glb",
+   "lod1": "pine_lod1.glb",
+   "lod2": "pine_lod2.glb"
+  },
+  "pine2": {
+   "kind": "broad",
+   "cls": "forest",
+   "H": 23.55,
+   "collider": 0.48,
+   "crownR": 8.49,
+   "tris": [
+    9400,
+    1128,
+    220
+   ],
+   "cy": 11.618,
+   "R": 12.603,
+   "slot": 12,
+   "lod0": "pine2_lod0.glb",
+   "lod1": "pine2_lod1.glb",
+   "lod2": "pine2_lod2.glb"
+  },
+  "cypress": {
+   "kind": "broad",
+   "cls": "forest",
+   "H": 20.04,
+   "collider": 0.7,
+   "crownR": 11.35,
+   "tris": [
+    10808,
+    1050,
+    196
+   ],
+   "cy": 9.834,
+   "R": 15.942,
+   "slot": 13,
+   "lod0": "cypress_lod0.glb",
+   "lod1": "cypress_lod1.glb",
+   "lod2": "cypress_lod2.glb"
+  },
+  "cypress2": {
+   "kind": "broad",
+   "cls": "forest",
+   "H": 15.94,
+   "collider": 0.6,
+   "crownR": 9.47,
+   "tris": [
+    10048,
+    1114,
+    184
+   ],
+   "cy": 7.721,
+   "R": 12.394,
+   "slot": 14,
+   "lod0": "cypress2_lod0.glb",
+   "lod1": "cypress2_lod1.glb",
+   "lod2": "cypress2_lod2.glb"
+  },
+  "canary": {
+   "kind": "palm",
+   "cls": "street",
+   "H": 16.11,
+   "collider": 0.55,
+   "crownR": 6.43,
+   "tris": [
+    4936,
+    1204,
+    480
+   ],
+   "cy": 7.905,
+   "R": 9.059,
+   "slot": 15,
+   "lod0": "canary_lod0.glb",
+   "lod1": "canary_lod1.glb",
+   "lod2": "canary_lod2.glb"
+  },
+  "canary2": {
+   "kind": "palm",
+   "cls": "street",
+   "H": 12.29,
+   "collider": 0.55,
+   "crownR": 6.15,
+   "tris": [
+    4240,
+    1040,
+    400
+   ],
+   "cy": 5.991,
+   "R": 7.496,
+   "slot": 16,
+   "lod0": "canary2_lod0.glb",
+   "lod1": "canary2_lod1.glb",
+   "lod2": "canary2_lod2.glb"
+  },
+  "fanpalm": {
+   "kind": "fan",
+   "cls": "street",
+   "H": 23.84,
+   "collider": 0.35,
+   "crownR": 3.51,
+   "tris": [
+    1128,
+    368,
+    346
+   ],
+   "cy": 11.765,
+   "R": 12.482,
+   "slot": 17,
+   "lod0": "fanpalm_lod0.glb",
+   "lod1": "fanpalm_lod1.glb",
+   "lod2": "fanpalm_lod2.glb"
+  },
+  "fanpalm2": {
+   "kind": "fan",
+   "cls": "street",
+   "H": 17.7,
+   "collider": 0.35,
+   "crownR": 2.93,
+   "tris": [
+    1002,
+    326,
+    304
+   ],
+   "cy": 8.7,
+   "R": 9.113,
+   "slot": 18,
+   "lod0": "fanpalm2_lod0.glb",
+   "lod1": "fanpalm2_lod1.glb",
+   "lod2": "fanpalm2_lod2.glb"
+  },
+  "scrub": {
+   "kind": "broad",
+   "cls": "scrub",
+   "H": 2.35,
+   "collider": 0.0,
+   "crownR": 1.8,
+   "tris": [
+    1556,
+    152,
+    72
+   ],
+   "cy": 1.008,
+   "R": 2.197,
+   "slot": 19,
+   "lod0": "scrub_lod0.glb",
+   "lod1": "scrub_lod1.glb",
+   "lod2": "scrub_lod2.glb"
+  },
+  "redwood": {
+   "kind": "broad",
+   "cls": "forest",
+   "H": 39.67,
+   "collider": 1.0,
+   "crownR": 5.98,
+   "tris": [
+    13440,
+    1152,
+    274
+   ],
+   "cy": 19.677,
+   "R": 21.28,
+   "slot": 20,
+   "lod0": "redwood_lod0.glb",
+   "lod1": "redwood_lod1.glb",
+   "lod2": "redwood_lod2.glb"
+  },
+  "redwood2": {
+   "kind": "broad",
+   "cls": "forest",
+   "H": 31.11,
+   "collider": 0.8,
+   "crownR": 4.63,
+   "tris": [
+    11032,
+    1216,
+    300
+   ],
+   "cy": 15.39,
+   "R": 16.074,
+   "slot": 21,
+   "lod0": "redwood2_lod0.glb",
+   "lod1": "redwood2_lod1.glb",
+   "lod2": "redwood2_lod2.glb"
+  },
+  "cypress3": {
+   "kind": "broad",
+   "cls": "forest",
+   "H": 12.36,
+   "collider": 0.7,
+   "crownR": 12.07,
+   "tris": [
+    10200,
+    986,
+    296
+   ],
+   "cy": 5.752,
+   "R": 15.461,
+   "slot": 22,
+   "lod0": "cypress3_lod0.glb",
+   "lod1": "cypress3_lod1.glb",
+   "lod2": "cypress3_lod2.glb"
+  },
+  "ginkgo": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 11.23,
+   "collider": 0.25,
+   "crownR": 2.92,
+   "tris": [
+    6170,
+    968,
+    252
+   ],
+   "cy": 5.457,
+   "R": 5.982,
+   "slot": 23,
+   "lod0": "ginkgo_lod0.glb",
+   "lod1": "ginkgo_lod1.glb",
+   "lod2": "ginkgo_lod2.glb"
+  },
+  "vbox": {
+   "kind": "broad",
+   "cls": "street",
+   "H": 8.94,
+   "collider": 0.25,
+   "crownR": 3.51,
+   "tris": [
+    7554,
+    1018,
+    268
+   ],
+   "cy": 4.307,
+   "R": 4.865,
+   "slot": 24,
+   "lod0": "vbox_lod0.glb",
+   "lod1": "vbox_lod1.glb",
+   "lod2": "vbox_lod2.glb"
+  },
+  "pampas": {
+   "kind": "tuft",
+   "cls": "scrub",
+   "H": 3.02,
+   "collider": 0.0,
+   "crownR": 1.34,
+   "tris": [
+    1344,
+    304,
+    96
+   ],
+   "cy": 1.46,
+   "R": 1.929,
+   "slot": 25,
+   "lod0": "pampas_lod0.glb",
+   "lod1": "pampas_lod1.glb",
+   "lod2": "pampas_lod2.glb"
+  }
+ }
+}
