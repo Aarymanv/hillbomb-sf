@@ -63,6 +63,9 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
   };
   tiles.addEventListener('load-model', ({ scene: s }) => {
     s.traverse(o => { if (o.isMesh && o.material) { const old = o.material; o.material = patch(old); old.dispose?.(); o.castShadow = false; o.receiveShadow = false; } });
+    // (perf 10/4) tile content never moves inside its tile (re-anchoring moves tiles.group): no per-frame matrix recompose
+    // for the ~600 tile nodes in every scene.updateMatrixWorld
+    s.updateMatrix(); s.traverse(o => { o.updateMatrix(); o.matrixAutoUpdate = false; });
   });
 
   // ENU frame at the anchor -> our world (+X east, +Y up, +Z south), anchored so the anchor lat/lon sits at its world x/z
@@ -99,7 +102,7 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
   const _ob = new THREE.Box3(), _om = new THREE.Matrix4(), _oc = new THREE.Vector3();
   let fx = 0, fz = 0;
   const maskStats = { culled: 0 };
-  const TPAD = 8, TCOS = Math.cos(THREE.MathUtils.degToRad(TPAD / 2));
+  const TPAD = 10, TSKIP = 3, TCOS = Math.cos(THREE.MathUtils.degToRad(TPAD / 2));
   const tcam = new THREE.PerspectiveCamera(); tcam.matrixAutoUpdate = false; tcam.matrixWorldAutoUpdate = false;
   const tLast = { n: 9, fwd: new THREE.Vector3(), pos: new THREE.Vector3(1e9, 0, 0), fov: 0, aspect: 0 }, _tf = new THREE.Vector3(), _tv = new THREE.Vector2();
   const cellsInMask = (x0, z0, x1, z1) => {
@@ -191,7 +194,7 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
       if (city && U.uNightL.value > 0) city.ensure();
       fx = focus.x; fz = focus.z;
       camera.updateMatrixWorld();
-      // (perf 10/4) the tiles traversal (3-4.5 ms CPU) runs every other frame: it selects tiles for a frustum widened by
+      // (perf 10/4) the tiles traversal (3-5 ms CPU) runs every TSKIP-th frame: it selects tiles for a frustum widened by
       // TPAD degrees (same pixel scale, so the same LOD) and the tile meshes are frustum-culled by three every frame, so a
       // tile turning into view between two traversals is already shown. A turn of more than TPAD / 2, a fov / aspect change
       // or a jump traverses at once. ?notilesthrottle = every frame on the real camera.
@@ -201,7 +204,7 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
         const k = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2 + TPAD)) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
         camera.getWorldDirection(_tf);
         const turned = _tf.dot(tLast.fwd) < TCOS, jumped = camera.position.distanceToSquared(tLast.pos) > 400;
-        if (++tLast.n >= 2 || turned || jumped || camera.fov !== tLast.fov || camera.aspect !== tLast.aspect || !tiles.cameras.length) {
+        if (++tLast.n >= TSKIP || turned || jumped || camera.fov !== tLast.fov || camera.aspect !== tLast.aspect || !tiles.cameras.length) {
           tLast.n = 0; tLast.fwd.copy(_tf); tLast.pos.copy(camera.position); tLast.fov = camera.fov; tLast.aspect = camera.aspect;
           tcam.fov = camera.fov + 2 * TPAD; tcam.aspect = camera.aspect; tcam.near = camera.near; tcam.far = camera.far; tcam.zoom = camera.zoom; tcam.updateProjectionMatrix();
           tcam.matrixWorld.copy(camera.matrixWorld); tcam.matrixWorldInverse.copy(camera.matrixWorldInverse); tcam.position.setFromMatrixPosition(camera.matrixWorld);
