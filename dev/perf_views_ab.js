@@ -16,7 +16,12 @@ const ROUTES = {
   twinpeaks: [[37.7525, -122.4475], [37.7576, -122.4468]],
 };
 const flags = (H.get('flags') || '').split(',').filter(Boolean), reps = +(H.get('reps') || 3), N = +(H.get('n') || 60), WARM = +(H.get('warm') || 40);
-const setArm = (on) => { for (const f of flags) W.__perf[f] = on; };
+// dev-only pseudo switches (measurement of what other owners' content costs; not game options):
+//   nocars  = B arm hides every car:* group except the player's; noprobe = B arm turns the car reflection probe off
+const setArm = (on) => { for (const f of flags) {
+  if (f === 'nocars') { const pr = W.__player.vehicle?.root; for (const c of W.__scene.children) if (/^car:/.test(c.name)) { let has = false; c.traverse(o => { if (o === pr) has = true; }); if (!has) c.visible = !on; } }
+  else if (f === 'noprobe') { if (W.__carProbe) W.__carProbe.enabled = !on; }
+  else W.__perf[f] = on; } };
 if (W.__G.state === 'title') document.querySelector('.modebtn')?.click();
 W.__regNoPolice?.();
 W.__manual = true; W.__setWx?.(H.get('wx') || 'clear'); W.__env.state.hours = +(H.get('h') || 15.5); W.__env.state.paused = true; W.__look(null);

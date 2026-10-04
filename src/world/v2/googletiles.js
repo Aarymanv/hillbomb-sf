@@ -99,6 +99,9 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
   const _ob = new THREE.Box3(), _om = new THREE.Matrix4(), _oc = new THREE.Vector3();
   let fx = 0, fz = 0;
   const maskStats = { culled: 0 };
+  const TPAD = 8, TCOS = Math.cos(THREE.MathUtils.degToRad(TPAD / 2));
+  const tcam = new THREE.PerspectiveCamera(); tcam.matrixAutoUpdate = false; tcam.matrixWorldAutoUpdate = false;
+  const tLast = { n: 9, fwd: new THREE.Vector3(), pos: new THREE.Vector3(1e9, 0, 0), fov: 0, aspect: 0 }, _tf = new THREE.Vector3(), _tv = new THREE.Vector2();
   const cellsInMask = (x0, z0, x1, z1) => {
     const i0 = Math.floor((x0 - cx) / T0), i1 = Math.floor((x1 - cx) / T0), j0 = Math.floor((z0 - cz) / T0), j1 = Math.floor((z1 - cz) / T0);
     if (i0 < 0 || j0 < 0 || i1 > 2 || j1 > 2) return false;
@@ -186,11 +189,35 @@ if (uNightL > 0.01) diffuseColor.rgb += hbCityNight(vGw, hbPhoto) * uNightL;`);
       U.uDay.value = THREE.MathUtils.lerp(0.9 * 0.86 / Math.max(0.5, expo) * (1 - 0.2 * warm) * dayK, phys ? 0.05 : 0.12, nightF);
       U.uNightL.value = city ? THREE.MathUtils.smoothstep(nightF, 0.25, 0.9) : 0;
       if (city && U.uNightL.value > 0) city.ensure();
-      fx = focus.x; fz = focus.z; maskStats.culled = 0;
+      fx = focus.x; fz = focus.z;
       camera.updateMatrixWorld();
-      tiles.setCamera(camera);
-      tiles.setResolutionFromRenderer(camera, renderer);
-      tiles.update();
+      // (perf 10/4) the tiles traversal (3-4.5 ms CPU) runs every other frame: it selects tiles for a frustum widened by
+      // TPAD degrees (same pixel scale, so the same LOD) and the tile meshes are frustum-culled by three every frame, so a
+      // tile turning into view between two traversals is already shown. A turn of more than TPAD / 2, a fov / aspect change
+      // or a jump traverses at once. ?notilesthrottle = every frame on the real camera.
+      if (PERF.tilesthrottle) {
+        if (tiles.autoDisableRendererCulling) tiles.autoDisableRendererCulling = false;
+        if (tiles.cameras.includes(camera)) tiles.deleteCamera(camera);
+        const k = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2 + TPAD)) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+        camera.getWorldDirection(_tf);
+        const turned = _tf.dot(tLast.fwd) < TCOS, jumped = camera.position.distanceToSquared(tLast.pos) > 400;
+        if (++tLast.n >= 2 || turned || jumped || camera.fov !== tLast.fov || camera.aspect !== tLast.aspect || !tiles.cameras.length) {
+          tLast.n = 0; tLast.fwd.copy(_tf); tLast.pos.copy(camera.position); tLast.fov = camera.fov; tLast.aspect = camera.aspect;
+          tcam.fov = camera.fov + 2 * TPAD; tcam.aspect = camera.aspect; tcam.near = camera.near; tcam.far = camera.far; tcam.zoom = camera.zoom; tcam.updateProjectionMatrix();
+          tcam.matrixWorld.copy(camera.matrixWorld); tcam.matrixWorldInverse.copy(camera.matrixWorldInverse); tcam.position.setFromMatrixPosition(camera.matrixWorld);
+          tiles.setCamera(tcam);
+          renderer.getSize(_tv); tiles.setResolution(tcam, _tv.x * k, _tv.y * k);
+          maskStats.culled = 0;
+          tiles.update();
+        }
+      } else {
+        if (!tiles.autoDisableRendererCulling) tiles.autoDisableRendererCulling = true;
+        if (tiles.cameras.includes(tcam)) tiles.deleteCamera(tcam);
+        maskStats.culled = 0;
+        tiles.setCamera(camera);
+        tiles.setResolutionFromRenderer(camera, renderer);
+        tiles.update();
+      }
       const a = tiles.getAttributions?.() || [];
       const txt = a.map(x => x.value).filter(Boolean).join(' ');
       attr.textContent = 'Google' + (txt ? ' · ' + txt : '');
