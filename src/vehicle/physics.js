@@ -2,6 +2,7 @@
 // a friction circle, engine torque curve + automatic gearbox, drag/downforce, chassis-vs-ground and chassis-vs-wall
 // impulse contacts. Frames: body local +X right, +Y up, -Z forward (CONVENTIONS.md).
 import * as THREE from 'three';
+import { PERF } from '../render/perfflags.js';
 
 const G = 9.81;
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _v3 = new THREE.Vector3(), _r = new THREE.Vector3();
@@ -246,8 +247,9 @@ export class CarBody {
       const maxLen = w.rest + w.radius;
       w.contact0 = w.contact; w.contact = false;
       if (down.y < -0.25) {
-        // ray-heightfield: two refinement steps
-        let gy = world.groundAt(mountW.x, mountW.z, mountW.y, _gn);
+        // ray-heightfield: two refinement steps (perf r2: the first probe's normal / surface are never read, the contact
+        // test below only passes when the refined probe ran: ground height only)
+        let gy = world.groundAt(mountW.x, mountW.z, mountW.y, PERF.physlite ? null : _gn);
         let t = (mountW.y - gy) / -down.y;
         if (t > -0.6 && t < maxLen + 0.4) {
           const hx = mountW.x + down.x * t, hz = mountW.z + down.z * t;
@@ -443,9 +445,11 @@ export class CarBody {
     let scr = 0;
     for (const c of this.corners) {
       const p = _gp.copy(c).applyQuaternion(R).add(this.pos);
-      const gy = world.groundAt(p.x, p.z, p.y + 0.5, _gn);
+      // (perf r2) height first; the normal / surface (4 more terrain taps) only for a corner that is actually below ground
+      const lite = PERF.physlite, gy = world.groundAt(p.x, p.z, p.y + 0.5, lite ? null : _gn);
       const depth = gy - p.y;
       if (depth <= 0) continue;
+      if (lite) world.groundAt(p.x, p.z, p.y + 0.5, _gn);
       const n = _gnrm.set(_gn.x, _gn.y, _gn.z);
       const pv = this.pointVel(p, _gpv);
       const vn = pv.dot(n);
@@ -485,18 +489,19 @@ export class CarBody {
       if (yHi < c.yMin || yLo > c.yMax) continue;
       if (c.kind === 'rail' && this.pos.y > c.yMax + 0.2) continue;
       if (c.broken || c.converting) continue;
-      // SAT with 4 axes
-      const axes = [[rx, rz], [fx, fz], [c.c, -c.s], [c.s, c.c]];
-      let best = Infinity, bn = null;
+      // SAT with 4 axes (perf r2: no per-collider arrays)
+      _ax[0] = rx; _ax[1] = rz; _ax[2] = fx; _ax[3] = fz; _ax[4] = c.c; _ax[5] = -c.s; _ax[6] = c.s; _ax[7] = c.c;
+      let best = Infinity, bnx = 0, bnz = 0;
       let sep = false;
       const dx = c.x - cx, dz = c.z - cz;
-      for (const [ax, az] of axes) {
+      for (let a = 0; a < 8; a += 2) {
+        const ax = _ax[a], az = _ax[a + 1];
         const ra = Math.abs(rx * ax + rz * az) * hx + Math.abs(fx * ax + fz * az) * hz;
         const rb = Math.abs(c.c * ax - c.s * az) * c.hx + Math.abs(c.s * ax + c.c * az) * c.hz;
         const d = dx * ax + dz * az;
         const o = ra + rb - Math.abs(d);
         if (o <= 0) { sep = true; break; }
-        if (o < best) { best = o; bn = [d > 0 ? -ax : ax, d > 0 ? -az : az]; }
+        if (o < best) { best = o; bnx = d > 0 ? -ax : ax; bnz = d > 0 ? -az : az; }
       }
       if (sep) continue;
       // light street furniture gets knocked over instead of stopping the car dead
@@ -504,9 +509,10 @@ export class CarBody {
       // parked cars: let the game swap in a real physics car (handled synchronously via the event)
       if (c.kind === 'parked' && this.speed > (this.isPlayer ? 2.5 : 9)) { c.converting = true; this.events.push({ type: 'parked', collider: c, speed: this.speed }); continue; }
       // contact point: car corner deepest along -n, else centre offset
-      const nx = bn[0], nz = bn[1];
+      const nx = bnx, nz = bnz;
       let px = cx, pz = cz, minD = Infinity;
-      for (const [sx, sz] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+      for (let k = 0; k < 8; k += 2) {
+        const sx = _sq[k], sz = _sq[k + 1];
         const qx = cx + rx * hx * sx + fx * hz * sz, qz = cz + rz * hx * sx + fz * hz * sz;
         const dd = qx * nx + qz * nz;
         if (dd < minD) { minD = dd; px = qx; pz = qz; }
@@ -536,6 +542,7 @@ const _accF = new THREE.Vector3(), _accT = new THREE.Vector3(), _jv = new THREE.
 const _qi = new THREE.Quaternion(), _ai1 = new THREE.Vector3(), _ai2 = new THREE.Vector3(), _ia1 = new THREE.Vector3(), _ia2 = new THREE.Vector3(), _ia3 = new THREE.Vector3();
 const _gp = new THREE.Vector3(), _gnrm = new THREE.Vector3(), _gpv = new THREE.Vector3(), _spv = new THREE.Vector3();
 const _cp = new THREE.Vector3(), _cn = new THREE.Vector3(), _cand = [];
+const _ax = new Float64Array(8), _sq = [-1, -1, 1, -1, 1, 1, -1, 1];
 
 // ------------------------------------------------------------------ car vs car (2D OBB SAT, impulse)
 const _pa = new THREE.Vector3(), _na = new THREE.Vector3(), _va = new THREE.Vector3(), _vb = new THREE.Vector3(), _J = new THREE.Vector3();
