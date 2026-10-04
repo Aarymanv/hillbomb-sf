@@ -5393,6 +5393,16 @@ function xformGeo(g, m) {
   }
   return out;
 }
+function sharedLamps(A, code, u) {
+  const C = A.lampMats || (A.lampMats = new Map());
+  let e = C.get(code);
+  if (!e) {
+    const lamps = makeLamps(); lamps.userData.uLamp.value.set(u); lamps.aoMap = A.ao;
+    e = { lamps, lens: makeLens(lamps) };
+    C.set(code, e);
+  }
+  return e;
+}
 /** (perf r2) street-car warm-up behind the loading screen (game/sys_carwarm.js): the procedural build (P, lamp anchors,
  *  fallback geometry: 30-66 ms on a model's first spawn), the baked asset, its AO atlas upload and the far shadow proxies. */
 export function prewarmCarModel(id, renderer = null) {
@@ -5820,14 +5830,16 @@ export function buildCarModel(id, opts = {}) {
   };
   function addParts(parent, g) {
     add(parent, g.paint, paint); add(parent, g.paint2, paint2); add(parent, g.details, detailsMat);
-    add(parent, g.lamps, lamps);
-    if (g.lens) { lensMat = lensMat || makeLens(lamps); const lm = add(parent, g.lens, lensMat, false); lm.renderOrder = 1; }
+    const lp = add(parent, g.lamps, lamps); if (lp) lampMeshes.push(lp);
+    if (g.lens) { lensMat = lensMat || makeLens(lamps); const lm = add(parent, g.lens, lensMat, false); lm.renderOrder = 1; lensMeshes.push(lm); }
     const gm = add(parent, g.glass, glassMat, false);
     if (gm) { gm.receiveShadow = false; gm.renderOrder = 1; glassMeshes.push(gm); }
   }
   // cars pass 4: front doors hang on a hinge pivot (vertical axis through the front edge on the outer skin)
   const doorPivots = { L: [], R: [] }, doorOpen = { L: 0, R: 0 };
   const proxyLevels = [];
+  const lampMeshes = [], lensMeshes = [];
+  let lampCode = -1;
   function addBodyLevel(parent, g) {
     addParts(parent, g);
     const H = asset?.doors;
@@ -5868,7 +5880,7 @@ export function buildCarModel(id, opts = {}) {
     }
   }
   function mountBody() {
-    body.clear(); glassMeshes.length = 0; doorPivots.L.length = 0; doorPivots.R.length = 0;
+    body.clear(); glassMeshes.length = 0; doorPivots.L.length = 0; doorPivots.R.length = 0; lampMeshes.length = 0; lensMeshes.length = 0; lampCode = -1;
     asset = ASSET.get(id) || null;
     if (!asset) { requestCar(id); addBodyLevel(body, G.geoms); return; }
     detailsMat = asset.details;
@@ -5941,6 +5953,17 @@ export function buildCarModel(id, opts = {}) {
     u[9] = (o.head ? 0.55 : 0.8) * kc;   // centre screen: dimmed (2.2 x the cockpit gain burned to white)
     // LED tail light bar: a saturated running light that blooms at night (the plain tail level read as a dim stripe), brighter braking
     u[10] = o.brake ? (o.head ? 9.0 : 4.5) : o.head ? 5.5 : 1.1;
+    // (perf r2) street cars share one lamp + lens material per light state and model (the uniforms above are a pure
+    // function of these few switches): no per-car material refresh in every pass. The in-car view keeps its own.
+    if (lean && asset && PERF.carlampshare) {
+      const code = cabinOn ? -2 : (o.head ? 1 : 0) | (o.brake ? 2 : 0) | (o.reverse ? 4 : 0) | (o.siren ? 8 : 0) | (u[5] > 1 ? 16 : 0) | (u[6] > 1 ? 32 : 0);
+      if (code !== lampCode) {
+        lampCode = code;
+        const sm = code === -2 ? null : sharedLamps(asset, code, u);
+        for (const m of lampMeshes) m.material = sm ? sm.lamps : lamps;
+        if (lensMeshes.length) { const lens = sm ? sm.lens : (lensMat = lensMat || makeLens(lamps)); for (const m of lensMeshes) m.material = lens; }
+      }
+    }
   }
   setLights({});
   const spec = getModelSpec(id);
