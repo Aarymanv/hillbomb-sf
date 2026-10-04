@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HILLBOMB audio bench</title>
+<style>
+  :root { --bg:#111418; --panel:#1a1f26; --line:#2a313b; --text:#e6e9ee; --dim:#8b95a3; --accent:#ff7a3d; --accent2:#3dc6ff; --ok:#5ad17a; --bad:#ff5a5a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif; }
+  header { position:sticky; top:0; z-index:2; display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:10px 16px; background:#0c0f12; border-bottom:1px solid var(--line); }
+  header h1 { font-size:15px; margin:0; letter-spacing:.08em; } header h1 b { color:var(--accent); }
+  main { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:12px; padding:12px 16px 40px; }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+  section h2 { font-size:12px; margin:0 0 8px; text-transform:uppercase; letter-spacing:.1em; color:var(--dim); }
+  .wide { grid-column:1/-1; }
+  label.row { display:grid; grid-template-columns:96px 1fr 58px; gap:8px; align-items:center; margin:4px 0; }
+  label.row span:last-child { text-align:right; font-variant-numeric:tabular-nums; color:var(--dim); }
+  input[type=range] { width:100%; accent-color:var(--accent); }
+  button, select { background:#252c36; color:var(--text); border:1px solid #36404c; border-radius:5px; padding:5px 9px; font:inherit; cursor:pointer; }
+  button:hover { border-color:var(--accent2); } button.primary { background:var(--accent); border-color:var(--accent); color:#140a05; font-weight:600; }
+  .btns { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0; }
+  .readout { font-variant-numeric:tabular-nums; color:var(--dim); white-space:pre; font:12px/1.4 ui-monospace,Consolas,monospace; }
+  pre { margin:0; white-space:pre-wrap; font:12px/1.35 ui-monospace,Consolas,monospace; color:#cfd6df; max-height:420px; overflow:auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>HILLBOMB <b>audio bench</b></h1>
+  <button id="unlock" class="primary">Start audio</button>
+  <span class="readout" id="meter">-</span>
+</header>
+<main>
+  <section>
+    <h2>Engine</h2>
+    <div class="btns"><select id="profile"></select><label><input type="checkbox" id="engOn"> running</label><label><input type="checkbox" id="cab"> cabin</label><label><input type="checkbox" id="sweep"> auto sweep</label></div>
+    <label class="row"><span>rpm</span><input id="rpm" type="range" min="700" max="9000" step="10" value="900"><span></span></label>
+    <label class="row"><span>idle rpm</span><input id="idle" type="range" min="500" max="1200" step="10" value="850"><span></span></label>
+    <label class="row"><span>redline</span><input id="red" type="range" min="2500" max="9500" step="50" value="7000"><span></span></label>
+    <label class="row"><span>throttle</span><input id="thr" type="range" min="0" max="1" step="0.01" value="0"><span></span></label>
+    <label class="row"><span>distance m</span><input id="dist" type="range" min="0" max="120" step="1" value="0"><span></span></label>
+    <div class="btns"><button id="shiftUp">shift up</button><button id="shiftDn">shift down</button><button id="backfire">backfire</button><button id="starter">starter</button></div>
+  </section>
+  <section>
+    <h2>Tyres / wind / body</h2>
+    <label class="row"><span>speed m/s</span><input id="speed" type="range" min="0" max="80" step="0.5" value="0"><span></span></label>
+    <label class="row"><span>slip</span><input id="slip" type="range" min="0" max="1" step="0.01" value="0"><span></span></label>
+    <label class="row"><span>scrape</span><input id="scrape" type="range" min="0" max="1" step="0.01" value="0"><span></span></label>
+    <div class="btns"><select id="surface"><option>asphalt</option><option>dirt</option><option>gravel</option><option>grass</option></select><button id="brake">brake to stop</button></div>
+    <h2>Impacts</h2>
+    <label class="row"><span>strength</span><input id="imp" type="range" min="0" max="1" step="0.01" value="0.6"><span></span></label>
+    <div class="btns" id="impacts"></div>
+    <div class="btns"><button id="horn">horn (hold)</button><select id="hornType"><option>car</option><option>truck</option><option>bus</option></select><button id="siren">siren</button><button id="yelp">yelp</button><button id="bell">cable car bell</button><button id="passby">pass-by</button></div>
+  </section>
+  <section>
+    <h2>Ambience + weather</h2>
+    <div class="btns"><select id="district"></select></div>
+    <label class="row"><span>night</span><input id="night" type="range" min="0" max="1" step="0.01" value="0"><span></span></label>
+    <label class="row"><span>water</span><input id="water" type="range" min="0" max="1" step="0.01" value="0"><span></span></label>
+    <label class="row"><span>altitude</span><input id="alt" type="range" min="0" max="300" step="1" value="0"><span></span></label>
+    <label class="row"><span>fog</span><input id="fog" type="range" min="0" max="1" step="0.01" value="0"><span></span></label>
+    <label class="row"><span>rain</span><input id="rain" type="range" min="0" max="1" step="0.01" value="0"><span></span></label>
+    <label class="row"><span>wind</span><input id="wind" type="range" min="0" max="1" step="0.01" value="0"><span></span></label>
+    <div class="btns"><label><input type="checkbox" id="ambOn"> ambience on</label><button id="thunderN">thunder near</button><button id="thunderF">thunder far</button><button id="foghorn">foghorn</button></div>
+  </section>
+  <section>
+    <h2>Radio + mix</h2>
+    <div class="btns"><button id="radioOn">radio on/off</button><button id="prevSt">&lt; station</button><button id="nextSt">station &gt;</button></div>
+    <div class="readout" id="track">-</div>
+    <div id="vols"></div>
+    <h2>UI</h2>
+    <div class="btns" id="ui"></div>
+  </section>
+  <section class="wide">
+    <h2>Offline scenarios (measured through the real master chain)</h2>
+    <div class="btns"><button id="runAll">render all scenarios</button></div>
+    <pre id="out"></pre>
+  </section>
+</main>
+<script type="module" src="./audio.js"></script>
+</body>
+</html>
