@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HILLBOMB landmarks preview</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0d1116; font: 13px/1.35 system-ui, -apple-system, Segoe UI, sans-serif; color: #e8ecef; }
+  canvas { display: block; }
+  #ui { position: fixed; top: 10px; left: 10px; background: rgba(12, 16, 22, 0.82); padding: 10px 12px; border-radius: 8px; min-width: 250px; z-index: 2; }
+  #ui h1 { font-size: 13px; margin: 0 0 8px; letter-spacing: 0.08em; color: #ffb199; }
+  #ui label { display: flex; align-items: center; gap: 6px; margin: 5px 0; }
+  #ui select, #ui button { font: inherit; background: #1f2731; color: #e8ecef; border: 1px solid #3a4655; border-radius: 5px; padding: 3px 6px; }
+  #ui button { cursor: pointer; }
+  #ui .row { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+  #stats { white-space: pre; font: 11px/1.4 ui-monospace, Consolas, monospace; color: #b8c4cf; margin-top: 8px; }
+  #angles button { padding: 2px 6px; }
+</style>
+</head>
+<body>
+<div id="ui">
+  <h1>HILLBOMB · LANDMARKS</h1>
+  <label>Landmark <select id="pick"></select></label>
+  <div class="row" id="angles">
+    <button data-a="front">front</button><button data-a="side">side</button><button data-a="back">back</button>
+    <button data-a="top">top</button><button data-a="far">far</button><button data-a="low">low</button>
+  </div>
+  <div class="row"><button id="night">Toggle night</button><label><input type="checkbox" id="isolate" /> isolate</label><label><input type="checkbox" id="cols" /> colliders</label></div>
+  <label>Night <input type="range" id="nightR" min="0" max="1" step="0.01" value="0" style="flex:1" /></label>
+  <label><input type="checkbox" id="fog" checked /> fog</label>
+  <div id="stats"></div>
+</div>
+<script type="module" src="./landmarks.js"></script>
+</body>
+</html>
