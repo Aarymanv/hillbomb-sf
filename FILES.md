@@ -32,6 +32,15 @@ HILLBOMB status (2026-09-28 late)
 - 2026-10-01 `1288a60` changed: NEXT_SESSION / QUALITY: gameplay round 2
 - 2026-10-02 `118b6be` changed: Road 2: before/after shots (shots/road2_*), concept sheet shots/road2_vs_ref.jpg, notes; harness: unthrottled settle/ctShot, wet-pass GPU timer
 - 2026-10-02 `1671ce8` changed: Road 3: no grey lamp veil in rain (lampmap broad sheen x(1 - 0.9 wet), the reflection is the streak), mirror-sharp puddles (standing-water-only gloss mask, roughness 0.02 -> unblurred trace); regression chase views start in the car; road3 shots + sheet
+- 2026-10-03 `84fdab5` changed: NEXT_SESSION / QUALITY: cars pass 3
+- 2026-10-04 `ec737ee` changed: NEXT_SESSION / QUALITY: people round 2 + interiors round 3 notes, perf / VRAM numbers
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+- 2026-10-04 `bbcbc13` changed: NEXT_SESSION / QUALITY: gameplay + nature round 3 (off-road routing / AI, police spawns, Pier 39 deck, ice plant / lupines, rain flicker measurement)
+- 2026-10-04 `954f475` changed: NEXT_SESSION: world round 2 notes; dev/world2_flick.js (real-time flicker probe on the yard views + regression set), dev/world2_perf.js (1920x1080 district drives: frame / GPU / VRAM)
+- 2026-10-04 `b9878c1` changed: NEXT_SESSION / QUALITY: cars pass 4 (doors, interior materials, light bars, 45 bodies) notes + checks
+- 2026-10-04 `8238972` changed: NEXT_SESSION / QUALITY: perf pass 10/4 (measurements, switches, open items for the cars owner)
+- 2026-10-04 `14bef88` changed: NEXT_SESSION / QUALITY: perf round 2 (cars) notes, measurements, open items
+- 2026-10-04 `d1a4a79` changed: NEXT_SESSION / QUALITY: perf round 3 (tiles slicing, spikes, streaming, physics smoothing) notes, interleaved before / after, open items; boot stage text 'Decoding textures'
 
 ### `QUALITY.md`
 HILLBOMB quality scorecard
@@ -46,6 +55,14 @@ HILLBOMB quality scorecard
 - 2026-10-01 `1288a60` changed: NEXT_SESSION / QUALITY: gameplay round 2
 - 2026-10-01 `0543bf1` changed: Chinatown: lantern halos toned down and kept out of the street mirror, comparison sheet (shots/chinatown_vs_ref.jpg), review views (ref / refday / drives), QUALITY note
 - 2026-10-02 `118b6be` changed: Road 2: before/after shots (shots/road2_*), concept sheet shots/road2_vs_ref.jpg, notes; harness: unthrottled settle/ctShot, wet-pass GPU timer
+- 2026-10-03 `84fdab5` changed: NEXT_SESSION / QUALITY: cars pass 3
+- 2026-10-04 `ec737ee` changed: NEXT_SESSION / QUALITY: people round 2 + interiors round 3 notes, perf / VRAM numbers
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+- 2026-10-04 `bbcbc13` changed: NEXT_SESSION / QUALITY: gameplay + nature round 3 (off-road routing / AI, police spawns, Pier 39 deck, ice plant / lupines, rain flicker measurement)
+- 2026-10-04 `b9878c1` changed: NEXT_SESSION / QUALITY: cars pass 4 (doors, interior materials, light bars, 45 bodies) notes + checks
+- 2026-10-04 `8238972` changed: NEXT_SESSION / QUALITY: perf pass 10/4 (measurements, switches, open items for the cars owner)
+- 2026-10-04 `14bef88` changed: NEXT_SESSION / QUALITY: perf round 2 (cars) notes, measurements, open items
+- 2026-10-04 `d1a4a79` changed: NEXT_SESSION / QUALITY: perf round 3 (tiles slicing, spikes, streaming, physics smoothing) notes, interleaved before / after, open items; boot stage text 'Decoding textures'
 
 ### `README.md`
 HILLBOMB: San Francisco
@@ -280,6 +297,51 @@ dev-only capture helper for the buildings v5 pass (massing variety / near shadow
 - 2026-10-01 `b4b520e` changed: Buildings v5: dithered cross-fade MID <-> v3 facades / facade kit / front yards / city kit (pop fix)
 - 2026-10-01 `64aab3f` changed: Buildings v5: MID stoops, NEAR detail tiles dither in at 450 m, ?nov5 reaches the build workers
 
+### `dev/bld6_alt.js`
+headless body: frame-parity flicker check (__altStat, load-independent) at aerial views, env paused
+
+- 2026-10-04 `b9d1ee2` added: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+
+### `dev/bld6_close.js`
+headless body: close-ups of v6 features (stucco oriel bay, arched Marina windows) via bld5shots __bld5Close
+
+- 2026-10-04 `b9d1ee2` added: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+
+### `dev/bld6_dbg.js`
+headless body: debug the v6 yard emission on the MID tile around a point (window.__dbgAt)
+
+- 2026-10-04 `b9d1ee2` added: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+
+### `dev/bld6_gpu.js`
+headless body: GPU A/B at fixed spots (5 x 40-frame medians), page variants via the URL (&nov6, &noyardtrees)
+
+- 2026-10-04 `b9d1ee2` added: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+
+### `dev/bld6_perf.js`
+headless body (perf / memory A/B for the buildings v6 pass), page with &memtrack, A = &nov6: node dev/car3cdp.mjs "http://127.0.0.1:5191/?mute&prologue=0&memtrack[&nov6]" dev/bld6_perf.js
+
+- 2026-10-04 `b9d1ee2` added: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+
+### `dev/bld6_reg.js`
+headless body: regression views + real-time flicker probe for the buildings v6 pass node dev/car3cdp.mjs "http://127.0.0.1:5191/?mute&prologue=0[&nov6]" dev/bld6_reg.js   (&noreg = flicker only)
+
+- 2026-10-04 `b9d1ee2` added: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+
+### `dev/bld6_run.js`
+headless body for dev/car3cdp.mjs: node dev/car3cdp.mjs "http://127.0.0.1:5191/?mute&prologue=0[&nov6]" dev/bld6_run.js shots: ?nov6 -> bld6_<view>_before.jpg, otherwise _after. window.__bld6Only = [...] (via &views=a,b) limits the set.
+
+- 2026-10-04 `b9d1ee2` added: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+
+### `dev/bld6_stats.js`
+headless body: node dev/car3cdp.mjs "http://127.0.0.1:5191/?mute&prologue=0" dev/bld6_stats.js  -> feature census
+
+- 2026-10-04 `b9d1ee2` added: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+
+### `dev/bld6shots.js`
+dev-only capture helper for the buildings v6 pass (variety + aerial roofs). Game page (5191 tab, ?mute): for (const f of ['bld5shots.js', 'regress_shots.js', 'bld6shots.js']) await import('http://127.0.0.1:5190/dev/' + f);
+
+- 2026-10-04 `b9d1ee2` added: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+
 ### `dev/buildings.html`
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
@@ -308,6 +370,33 @@ dev-only capture rig for the car body pass 2 (not shipped). In the game page: aw
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 
+### `dev/car3cdp.mjs`
+dev-only: silent headless Chrome driver (no browser pane needed). Launches Chrome --headless=new --mute-audio on its own profile, opens ONE tab at <url> (add ?mute), waits for window.__shot, evaluates <script.js> (an async function body;
+
+- 2026-10-03 `42da11e` added: Cars body pass 3: sculpted shells for the 13 hero / top-traffic cars (models.js SCULPT: arch flares + haunches, coke-bottle waist, shoulder / cove / rocker section, raked nose + tail via split end-rounding lengths, bonnet dome + fender crowns, greenhouse tumblehome + plan taper; physics spec unchanged), quarter lights + glass-wrapped slim A-pillars, Blender aero add-ons (splitter, skirts: tools/blender/car_body.py), rebuilt GLBs/AO; shape review sheet tools/blender/car_shape_sheet.py; headless silent CDP harness dev/car3cdp.mjs + dev/car3shots.js; parked geometry bbox (ct_street crash)
+- 2026-10-03 `4dd68cb` changed: Cars in-car view: window-lit cabin (street probe / sky IBL sampled along the horizon-bent normal x CABIN.gain 3.2, baked AO softened in the cabin), gauges + screen x2.5 in cockpit, camera at the real driver eye point (no pulled-back / inboard offset), cockpit FOV 54 (+6 with speed)
+- 2026-10-04 `1723f8b` changed: Dev: perf_rt.js real-time frame rate (the game's own rAF loop driving the world2_perf routes; car3cdp HB_UNCAP=1 uncaps rAF)
+
+### `dev/car3shots.js`
+dev-only capture rig for the car body pass 3 (not shipped). In the game page (or via dev/car3cdp.mjs): await import('http://127.0.0.1:5190/dev/car3shots.js?' + Date.now()); await __car3Shots('before', ['sedan', 'tora']) Writes shots/car3_<f...
+
+- 2026-10-03 `42da11e` added: Cars body pass 3: sculpted shells for the 13 hero / top-traffic cars (models.js SCULPT: arch flares + haunches, coke-bottle waist, shoulder / cove / rocker section, raked nose + tail via split end-rounding lengths, bonnet dome + fender crowns, greenhouse tumblehome + plan taper; physics spec unchanged), quarter lights + glass-wrapped slim A-pillars, Blender aero add-ons (splitter, skirts: tools/blender/car_body.py), rebuilt GLBs/AO; shape review sheet tools/blender/car_shape_sheet.py; headless silent CDP harness dev/car3cdp.mjs + dev/car3shots.js; parked geometry bbox (ct_street crash)
+
+### `dev/car4_sheet.py`
+Stitch the car pass 4 frame strips (shots/car4_<name>_<suffix>_<k>.jpg) into shots/car4_<name>_<suffix>.jpg.
+
+- 2026-10-04 `cb8e3ac` added: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
+
+### `dev/car4_spec.mjs`
+dump getModelSpec for every model id (physics dims check: node dev/car4_spec.mjs > file.json; diff before/after)
+
+- 2026-10-04 `cb8e3ac` added: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
+
+### `dev/car4shots.js`
+dev-only capture rig for cars pass 4 (doors, cabin materials, EV light bar, 45 sculpted bodies). Not shipped. node dev/car3cdp.mjs "http://127.0.0.1:5190/?play&mute&prologue=0" dev/car4run.js   (car4run.js imports this + calls __car4Shots)
+
+- 2026-10-04 `cb8e3ac` added: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
+
 ### `dev/cars.html`
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
@@ -332,6 +421,16 @@ Dev collider audit: invisible obstacles (load in the game page: await import('ht
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 
+### `dev/cpuprof_cdp.mjs`
+dev-only CPU profile variant of car3cdp.mjs: after <script.js> resolves, if it defined window.__profRun (async fn), runs it under the V8 sampling profiler (100 us) and prints the top self-time + inclusive-time functions (minified names on :...
+
+- 2026-10-04 `3125624` added: Perf: cull Google tiles lying wholly inside our near block (every fragment there was discarded by the uNear mask) before the tiles renderer refines / loads / draws them, within 340 m of the focus (cells hand over at 420 m). Tile census: Mission ~190 of ~280 tile draws, FiDi 109 of 119, Chinatown 177 of 347 were fully masked. ?nomaskcull = A/B; look A/B (dev/perf_shots.js + perf_diff.py) only moving traffic / peds differ. Dev: perf_prof.js (per-pass GPU timer sections + CPU per render / draw category), perf_prof_run.js (district drive + profile), cpuprof_cdp.mjs (V8 sampling profile in the silent harness)
+
+### `dev/crowd_bake.js`
+Far-crowd impostor bake (run in the game page, any spot): renders 16 Rocketbox avatars walking (8 phases of their gait cycle) from 8 horizontal directions into a 2048x1024 atlas (32x64 px cells), albedo (sRGB, alpha = coverage) and view-spa...
+
+- 2026-10-03 `e911b3a` added: People 2c: far crowds = multi-angle impostors. 16 Rocketbox avatars baked walking (8 views x 8 gait phases, 32x64 cells, albedo + view normals; dev/crowd_bake.js + tools/crowd_bake.mjs, BC3 via texpack) drawn as one instanced draw of camera-facing quads (view sector + phase picked in the vertex shader, baked normals lit by the PBR path, mip-safe coverage, dithered 132-158 m hand-off from the real peds, fade 360-420 m). Agents walk the block sidewalk rings around the camera by district density x night x rain, budget weighted toward nearer blocks (High 2600 / Medium 1400 / Low 600, ~0.1-0.2 ms CPU); ?nocrowd = off
+
 ### `dev/ct_sheet.py`
 Chinatown side-by-side sheet: the concept vs our same framing (night rain), daytime, drive-through (chase cam) frames.
 
@@ -346,6 +445,11 @@ Chinatown hero set review views (tools/blender/hero_ctown.py). Load after sky_sh
 - 2026-10-01 `0543bf1` changed: Chinatown: lantern halos toned down and kept out of the street mirror, comparison sheet (shots/chinatown_vs_ref.jpg), review views (ref / refday / drives), QUALITY note
 - 2026-10-02 `af8b9db` changed: Chinatown round 2: rebake (brick-heavy, a lit box sign per shop bay + neon frames, more blades, lantern rows at 2-3 heights, interior-mapped window rooms, ground strips on the road surface, stray Old St. Mary's sliver removed), night look (lightmap pow/gain + normal-map relief, dark hero ambient, zone hemi/IBL/sky/fog darkening), darker puddled asphalt + sharper hero mirror with cars in it, harness fixes (lastSafe follows teleports, prologue=0, detached chase car), sheet shots/chinatown_vs_ref_v2.jpg
 
+### `dev/flicker_map.js`
+Per-pixel temporal flicker map (dev): the concept framing (ctshots 'ref', Sacramento St in rain) with traffic / peds off, the rain streak + splash particles hidden, film grain off and time of day frozen, 12 s real-time warm-up (streaming / ...
+
+- 2026-10-04 `2a850c7` added: Rain flicker probe: __flickRT still / noRain / rows options; dev/flicker_map.js per-pixel temporal std map. Measured road fix 1 (03c10d9) vs road fix 3 (HEAD) render files on the concept framing, same conditions: frame-region probe (traffic + peds off) max 3.1-3.7 vs 3.0-3.6, road-row mean |diff| 0.357 vs 0.306; std map (grain off, rain particles hidden, frozen hour) lower half 0.26-0.27 vs 0.28-0.35 luma: no wet-pass regression beyond run-to-run noise. The 9-11 / 47-121 readings came from moving traffic (a passing car: region jumps 38-180) and the rain streak particles crossing lit tower windows (regions 5-6,1); softer puddle mask + weaker ripples measured no better (0.36-0.39) and were not kept. Post / lampmap unchanged.
+
 ### `dev/flicker_probe.js`
 Dev probe for night flicker / strobing (load in the game page: await import('/dev/flicker_probe.js')). __rb(w, h)            -> Float32Array luminance (0..255) of a w x h readback of the game canvas __flick(n)            -> steps n frames; ...
 
@@ -356,6 +460,7 @@ Real-time flicker probe (works in a hidden tab): drives the game's frame(dt) wit
 
 - 2026-09-30 `9b6cda8` added: Hero interiors: BC1 .dds lightmaps, night lightmap bake + time-of-day windows, residency cap, ambient people + indoor reverb bed, landmark map markers + door labels
 - 2026-09-30 `5aef278` changed: Fix night strobing: dress/lantern/nightdress tickers culled from the car-probe cube cameras (origin) on alternate frames; rain occlusion render exception-safe; lantern night colour deep red; dev/flicker_rt.js real-time flicker probe
+- 2026-10-04 `2a850c7` changed: Rain flicker probe: __flickRT still / noRain / rows options; dev/flicker_map.js per-pixel temporal std map. Measured road fix 1 (03c10d9) vs road fix 3 (HEAD) render files on the concept framing, same conditions: frame-region probe (traffic + peds off) max 3.1-3.7 vs 3.0-3.6, road-row mean |diff| 0.357 vs 0.306; std map (grain off, rain particles hidden, frozen hour) lower half 0.26-0.27 vs 0.28-0.35 luma: no wet-pass regression beyond run-to-run noise. The 9-11 / 47-121 readings came from moving traffic (a passing car: region jumps 38-180) and the rain streak particles crossing lit tower windows (regions 5-6,1); softer puddle mask + weaker ripples measured no better (0.36-0.39) and were not kept. Post / lampmap unchanged.
 
 ### `dev/gameplay_audit.js`
 Gameplay audit (dev). Load in a game page (5190 or 5191, ideally /?sandbox so the real save is untouched): await import('http://127.0.0.1:5190/dev/gameplay_audit.js?' + Date.now()) __gpRoutes()          every festival event / prologue / sto...
@@ -366,12 +471,18 @@ Gameplay audit (dev). Load in a game page (5190 or 5191, ideally /?sandbox so th
 - 2026-10-01 `ceacd8a` changed: Prologue: beach drive on the sand (started on the Sutro bluff, fell onto Point Lobos and sat against a pole), stuck / lost cars put back on the route; Ocean Beach Scramble on the sand line; route missions auto-recover a wedged car
 - 2026-10-01 `0091c1a` changed: dev: gameplay audit keys on document (UI shell path), prologue segment probe, lighter event runs
 - 2026-10-01 `0eae56c` changed: gameplay_audit: progress trace, fade nudge for fresh pages
+- 2026-10-04 `e1f7e96` changed: Off-road races: Headlands Dirt / XC rerouted on Conzelman + the Julian fire road, terrain router directional (climb <= 25 % on grass, grip-scaled, roads 30 %, descents <= 42 %), trail / fire-road preferred, hero landmark solids + inland lakes + raised decks as walls, building-proximity cost, no hairpin hooks, finer-grid fallback; race AI grip-aware corner / braking limits + side-slope margin, rollover cap for tall 4x4s, back-out recovery before respawn, queued rivals not 'stuck', runtime line guard (re-routes the line round colliders that stream in, hides parked cars on it); sprint finish 12 m before the route end; wrong-way allowed on minor one-ways when the legal way is a big detour.
 
 ### `dev/gpu.js`
 dev-only GPU timing (EXT_disjoint_timer_query_webgl2): __gpu(n) median ms of n frames; __gpuAt(place) settles first
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `999dcf5` changed: dev: memspots result posting + throttle-proof waits, gpu.js waits; NEXT_SESSION VRAM pass notes
+
+### `dev/grass_shots.js`
+Ground-cover review views (ice plant mats, lupine patches) at golden hour and noon. Load after sky_shots.js: for (const f of ['sky_shots.js', 'grass_shots.js']) await import('http://127.0.0.1:5190/dev/' + f + '?' + Date.now())
+
+- 2026-10-04 `be044ba` added: Ground cover: ice plant = closed fleshy yellow-green / glaucous mats (wider finger leaves, 1.6x density, shallow base shade, no dry-grass tip bleach: the 0.35 base AO under warm light read olive-brown), red-tinged tips + whole red-bronze mats by patch, broad magenta flowers in flowering patches; lupines = slender spindle racemes (~16 x 2 cm on a shorter stem) with whorls of small florets (dark gaps, pale banner flecks, paler buds at the tip) in a deeper purple, less backlit translucency (were solid 13 cm cones). dev/grass_shots.js: CPU port of the flower / ice noise to find patches + review views. Shots (untracked shots/): fix_{iceplant,lupine}_{before,after}.jpg (top 18:20 golden hour, bottom 12:30).
 
 ### `dev/hb_contact.js`
 Dev: wheel-contact audit on real SF routes (load in the game page: await import('http://127.0.0.1:5190/dev/hb_contact.js?'+Date.now())). await __hbContact()   -> drives the player's car (direct 120 Hz body steps, pure-pursuit, no rendering)...
@@ -446,11 +557,78 @@ Dev-only helpers for testing pedestrians in the running game (paste / import in 
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 
+### `dev/peds2_sheet.py`
+Stitch the people round 2 frame strips: shots/peds2_<name>_<suf>_<k>.jpg -> shots/peds2_<name>_<suf>.jpg (one row), and (with two suffixes) a before/after sheet shots/peds2_sheet.jpg. usage: python dev/peds2_sheet.py after [before]
+
+- 2026-10-03 `b51235b` added: People 2a: mocap one-shots + ragdoll. Car entry/exit = Rocketbox sit-down / stand-up clips gliding the body door<->seat (anchored rig, side-aware); knockdowns = Verlet ragdoll (18 particles, hinge + anti-fold limits, sloped ground, follows the wall-aware tumble) then CMU get-up from back / front placed on the body (owners adopt getupRoot); jump / air / land from CMU 105_39; player jump no longer swallowed by the ground snap; avatar loads retried; tools/blender/peds/cmu.py + build_clips_extra.py; dev/peds2_shots.js
+- 2026-10-03 `2c844f6` changed: People 2b: real hand-held props (tools/blender/peds/build_props.py -> peds/props.glb): smartphone with a lit app screen (brighter at night), 8-rib umbrella open (rain) / furled in hand (drizzle, wet streets) in 8 colours, coffee cup (right hand, drink-idle arm), shopping bag / briefcase hanging from the hand with a lagging swing (hold-bag arm at half weight; swaps hands under an open umbrella); carry assigned by crowd style; peds/props.js HeldProps
+- 2026-10-03 `dc0aa6e` changed: People 2d: phone sits on the palm with the screen out of it (Bip01 hands: palm +Z, left frame mirrored in Y), calmer night screen glow; shot harness: texting close-up + over-shoulder, drone crowd view with zoom inset, studio car / knock / jump strips, sheet
+
+### `dev/peds2_shots.js`
+People round 2 shots (props, far crowds, car entry / knockdown animation). In the game page (?play&foot&mute&tiles=0): await import('http://127.0.0.1:5190/dev/peds2_shots.js'); await __p2All('after') -> shots/peds2_<closeup_phone|umbrella_r...
+
+- 2026-10-03 `b51235b` added: People 2a: mocap one-shots + ragdoll. Car entry/exit = Rocketbox sit-down / stand-up clips gliding the body door<->seat (anchored rig, side-aware); knockdowns = Verlet ragdoll (18 particles, hinge + anti-fold limits, sloped ground, follows the wall-aware tumble) then CMU get-up from back / front placed on the body (owners adopt getupRoot); jump / air / land from CMU 105_39; player jump no longer swallowed by the ground snap; avatar loads retried; tools/blender/peds/cmu.py + build_clips_extra.py; dev/peds2_shots.js
+- 2026-10-03 `2c844f6` changed: People 2b: real hand-held props (tools/blender/peds/build_props.py -> peds/props.glb): smartphone with a lit app screen (brighter at night), 8-rib umbrella open (rain) / furled in hand (drizzle, wet streets) in 8 colours, coffee cup (right hand, drink-idle arm), shopping bag / briefcase hanging from the hand with a lagging swing (hold-bag arm at half weight; swaps hands under an open umbrella); carry assigned by crowd style; peds/props.js HeldProps
+- 2026-10-03 `e911b3a` changed: People 2c: far crowds = multi-angle impostors. 16 Rocketbox avatars baked walking (8 views x 8 gait phases, 32x64 cells, albedo + view normals; dev/crowd_bake.js + tools/crowd_bake.mjs, BC3 via texpack) drawn as one instanced draw of camera-facing quads (view sector + phase picked in the vertex shader, baked normals lit by the PBR path, mip-safe coverage, dithered 132-158 m hand-off from the real peds, fade 360-420 m). Agents walk the block sidewalk rings around the camera by district density x night x rain, budget weighted toward nearer blocks (High 2600 / Medium 1400 / Low 600, ~0.1-0.2 ms CPU); ?nocrowd = off
+- 2026-10-03 `dc0aa6e` changed: People 2d: phone sits on the palm with the screen out of it (Bip01 hands: palm +Z, left frame mirrored in Y), calmer night screen glow; shot harness: texting close-up + over-shoulder, drone crowd view with zoom inset, studio car / knock / jump strips, sheet
+
+### `dev/perf_ab.js`
+headless body for dev/car3cdp.mjs: interleaved A/B of runtime perf switches (render/perfflags.js) in ONE session, so machine drift (thermals, other GPU work) hits both arms alike. Per district: warm drive, then reps x [A: switches off, B: o...
+
+- 2026-10-04 `0c76264` added: Perf: no first-use shader stalls (render/shaderwarm.js): with KHR_parallel_shader_compile a game-scene draw whose new program is not linked yet is skipped (status query throws a sentinel inside the draw) and retried next frame, capped at 600 ms; drive hitches from compiles (peds 404-445 ms, safehouse 783 ms, Bay Bridge tower / rooftile in the water reflection 428-481 ms) gone: Sunset max 824 -> 104 ms, Chinatown 862 -> 120 ms. Interior-site exterior shells hidden past 650 m (photogrammetry there; ~90 draws at any distance). Runtime switches render/perfflags.js (window.__perf, ?no<name>) for in-session A/B; dev/perf_ab.js (interleaved drives), perf_views_ab.js (fixed views), profiler shadow-pass categories
+
+### `dev/perf_diff.py`
+dev-only: compare perf_shots.js captures. python dev/perf_diff.py before after [--sheet name] per view: mean abs diff (0-255), share of pixels differing > 24, and a before | after | diff x4 sheet in shots/.
+
+- 2026-10-04 `3125624` added: Perf: cull Google tiles lying wholly inside our near block (every fragment there was discarded by the uNear mask) before the tiles renderer refines / loads / draws them, within 340 m of the focus (cells hand over at 420 m). Tile census: Mission ~190 of ~280 tile draws, FiDi 109 of 119, Chinatown 177 of 347 were fully masked. ?nomaskcull = A/B; look A/B (dev/perf_shots.js + perf_diff.py) only moving traffic / peds differ. Dev: perf_prof.js (per-pass GPU timer sections + CPU per render / draw category), perf_prof_run.js (district drive + profile), cpuprof_cdp.mjs (V8 sampling profile in the silent harness)
+
 ### `dev/perf_drive.js`
 Dev hitch profiler (load in the game page: await import('http://127.0.0.1:5190/dev/perf_drive.js')). __route(pts)                 -> street route (A* over the graph) through [[x,z], ...] as a dense polyline await __perfDrive(opts)      -> m...
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `8f40932` changed: dev: memtrack S3TC sizes + re-import, heapwalk, perf_drive caps pending GPU timer queries (hidden tab slowed to ~1 fps)
+
+### `dev/perf_prof.js`
+dev-only per-pass GPU + per-system CPU profiler (load in the game page after gpu.js / perf_drive.js). await __gpuPass(frames = 20)  -> { total, sections: { label: medianMs }, draws, tris, programs } GPU time per section via EXT_disjoint_tim...
+
+- 2026-10-04 `3125624` added: Perf: cull Google tiles lying wholly inside our near block (every fragment there was discarded by the uNear mask) before the tiles renderer refines / loads / draws them, within 340 m of the focus (cells hand over at 420 m). Tile census: Mission ~190 of ~280 tile draws, FiDi 109 of 119, Chinatown 177 of 347 were fully masked. ?nomaskcull = A/B; look A/B (dev/perf_shots.js + perf_diff.py) only moving traffic / peds differ. Dev: perf_prof.js (per-pass GPU timer sections + CPU per render / draw category), perf_prof_run.js (district drive + profile), cpuprof_cdp.mjs (V8 sampling profile in the silent harness)
+- 2026-10-04 `0c76264` changed: Perf: no first-use shader stalls (render/shaderwarm.js): with KHR_parallel_shader_compile a game-scene draw whose new program is not linked yet is skipped (status query throws a sentinel inside the draw) and retried next frame, capped at 600 ms; drive hitches from compiles (peds 404-445 ms, safehouse 783 ms, Bay Bridge tower / rooftile in the water reflection 428-481 ms) gone: Sunset max 824 -> 104 ms, Chinatown 862 -> 120 ms. Interior-site exterior shells hidden past 650 m (photogrammetry there; ~90 draws at any distance). Runtime switches render/perfflags.js (window.__perf, ?no<name>) for in-session A/B; dev/perf_ab.js (interleaved drives), perf_views_ab.js (fixed views), profiler shadow-pass categories
+- 2026-10-04 `fc00ce2` changed: Perf: shadow caster culling against the view (environment.js: a caster draws into the sun / nearest map only if its bounding sphere swept along the light to ~100 m below the focus touches the camera frustum; nearest map +5 m margin for its every-other-frame refresh): fixed-view A/B GPU -1.35 ms (Mission -0.7..-2.5), -100..-350 draws. Hero landmarks merged per slot material at load (Chinatown blocks ~165 -> ~60-90 draws each; ?noheromerge). Chinatown asphalt decal segments hidden past 200 m (fades to neutral by 140 m; were 40-80 draws anywhere). Water mirror re-rendered every 3rd frame while no water is within 320 m (sampled through the matrix it was rendered with). Look A/B (perf_shots s0/s1, shots/perf_shadowcull_ab.jpg): only moving peds / traffic differ. Switches: shadowcull, waterthrottle (render/perfflags.js)
+
+### `dev/perf_prof_run.js`
+headless body for dev/car3cdp.mjs: per-district profile at 1920x1080 (world2_perf.js routes). For each district: settle at the route start, ~700-frame drive (frame p50/p95/p99/max, CPU/GPU p50), then at the drive's end: draw census (main be...
+
+- 2026-10-04 `3125624` added: Perf: cull Google tiles lying wholly inside our near block (every fragment there was discarded by the uNear mask) before the tiles renderer refines / loads / draws them, within 340 m of the focus (cells hand over at 420 m). Tile census: Mission ~190 of ~280 tile draws, FiDi 109 of 119, Chinatown 177 of 347 were fully masked. ?nomaskcull = A/B; look A/B (dev/perf_shots.js + perf_diff.py) only moving traffic / peds differ. Dev: perf_prof.js (per-pass GPU timer sections + CPU per render / draw category), perf_prof_run.js (district drive + profile), cpuprof_cdp.mjs (V8 sampling profile in the silent harness)
+- 2026-10-04 `0c76264` changed: Perf: no first-use shader stalls (render/shaderwarm.js): with KHR_parallel_shader_compile a game-scene draw whose new program is not linked yet is skipped (status query throws a sentinel inside the draw) and retried next frame, capped at 600 ms; drive hitches from compiles (peds 404-445 ms, safehouse 783 ms, Bay Bridge tower / rooftile in the water reflection 428-481 ms) gone: Sunset max 824 -> 104 ms, Chinatown 862 -> 120 ms. Interior-site exterior shells hidden past 650 m (photogrammetry there; ~90 draws at any distance). Runtime switches render/perfflags.js (window.__perf, ?no<name>) for in-session A/B; dev/perf_ab.js (interleaved drives), perf_views_ab.js (fixed views), profiler shadow-pass categories
+- 2026-10-04 `fc00ce2` changed: Perf: shadow caster culling against the view (environment.js: a caster draws into the sun / nearest map only if its bounding sphere swept along the light to ~100 m below the focus touches the camera frustum; nearest map +5 m margin for its every-other-frame refresh): fixed-view A/B GPU -1.35 ms (Mission -0.7..-2.5), -100..-350 draws. Hero landmarks merged per slot material at load (Chinatown blocks ~165 -> ~60-90 draws each; ?noheromerge). Chinatown asphalt decal segments hidden past 200 m (fades to neutral by 140 m; were 40-80 draws anywhere). Water mirror re-rendered every 3rd frame while no water is within 320 m (sampled through the matrix it was rendered with). Look A/B (perf_shots s0/s1, shots/perf_shadowcull_ab.jpg): only moving peds / traffic differ. Switches: shadowcull, waterthrottle (render/perfflags.js)
+
+### `dev/perf_rt.js`
+headless body for dev/car3cdp.mjs (run with HB_UNCAP=1): REAL-TIME frame rate, i.e. the game's own rAF loop (CPU and GPU overlap as in play, dynamic resolution off unless #dynres=1) while the car is moved along the world2_perf routes at 15 ...
+
+- 2026-10-04 `1723f8b` added: Dev: perf_rt.js real-time frame rate (the game's own rAF loop driving the world2_perf routes; car3cdp HB_UNCAP=1 uncaps rAF)
+- 2026-10-04 `8481ae8` changed: Dynamic resolution: a step down is a trial, kept only if the smoothed frame interval improves >= 6 % within ~2 s (else undone, no step down for 20 s). The GPU timer counts the GPU waiting on a CPU-bound frame, so on High (CPU-bound, ~21-26 ms frame CPU) it sank to minScale 0.65 for no frame-rate gain; real-time runs (dev/perf_rt.js dynres=1): every trial undone (24.9 -> 24.4 ms, 31.2 -> 31.3), native 1080p kept
+
+### `dev/perf_rt2.js`
+headless body for dev/car3cdp.mjs (run with HB_UNCAP=1): REAL-TIME frame rate like dev/perf_rt.js (the game's own rAF loop, dynres off) plus per-frame attribution: frame CPU, GPU time (one TIME_ELAPSED query per frame), draw calls (renderer...
+
+- 2026-10-04 `a3d8f4c` added: Dev: perf_rt2.js (real-time drive at #v= m/s: rAF interval histogram, frame CPU / gap / GPU timer / draw calls per frame, physics steps, per-part mean + max, attributed slow frames) and trace_cdp.mjs (Chrome trace of the same drive: outside-frame tasks by kind; SPIKE=1 V8 samples per long frame; PROF=1 in / out of frame() split)
+- 2026-10-04 `7fd3e16` changed: Perf r3: tiles cycle time-sliced (tilesphase.js: one generator per update, markUsedTiles and toggleTiles yield every 16 tiles once the frame's ~1 ms slice is spent; the visibility changes of a pass are queued and applied together so a parent hidden in one slice and its children shown in the next never leave a hole), a cycle starts every 5 frames or when the last ends; the tile view error runs without the library's per-tile plugin-list copies / closures (resetFrameState was the top allocation site, 8.3 MB/s). Drive FiDi / Chinatown: gtiles mean 1.5-1.7 -> 1.1-1.2 ms; a sharp turn / jump still finishes the cycle at once. Pan test 120 deg/s: FiDi 117 / 52 differing cells vs A/A noise 202 / 96. Dev: perf_rt2 slowExcess (parts of the >= p90 CPU frames minus the median ones), trace_cdp ALLOC=1 (sampling heap profiler)
+
+### `dev/perf_shots.js`
+headless body for dev/car3cdp.mjs: look check for perf work. Same views with and without an optimisation (A/B URL flags), then python dev/perf_diff.py <a> <b> for per-view pixel stats + a side-by-side sheet. node dev/car3cdp.mjs "http://127...
+
+- 2026-10-04 `3125624` added: Perf: cull Google tiles lying wholly inside our near block (every fragment there was discarded by the uNear mask) before the tiles renderer refines / loads / draws them, within 340 m of the focus (cells hand over at 420 m). Tile census: Mission ~190 of ~280 tile draws, FiDi 109 of 119, Chinatown 177 of 347 were fully masked. ?nomaskcull = A/B; look A/B (dev/perf_shots.js + perf_diff.py) only moving traffic / peds differ. Dev: perf_prof.js (per-pass GPU timer sections + CPU per render / draw category), perf_prof_run.js (district drive + profile), cpuprof_cdp.mjs (V8 sampling profile in the silent harness)
+
+### `dev/perf_views_ab.js`
+headless body for dev/car3cdp.mjs: low-noise A/B of runtime perf switches (render/perfflags.js) on FIXED chase-cam views (no streaming between arms): per district 3 spots along the world2_perf route (start / middle / end); at each spot reps...
+
+- 2026-10-04 `0c76264` added: Perf: no first-use shader stalls (render/shaderwarm.js): with KHR_parallel_shader_compile a game-scene draw whose new program is not linked yet is skipped (status query throws a sentinel inside the draw) and retried next frame, capped at 600 ms; drive hitches from compiles (peds 404-445 ms, safehouse 783 ms, Bay Bridge tower / rooftile in the water reflection 428-481 ms) gone: Sunset max 824 -> 104 ms, Chinatown 862 -> 120 ms. Interior-site exterior shells hidden past 650 m (photogrammetry there; ~90 draws at any distance). Runtime switches render/perfflags.js (window.__perf, ?no<name>) for in-session A/B; dev/perf_ab.js (interleaved drives), perf_views_ab.js (fixed views), profiler shadow-pass categories
+- 2026-10-04 `9659fd1` changed: Perf: Google tiles traversal every other frame (3-4.5 ms CPU) on a camera widened by 8 deg per side at the same pixel scale (same LOD), tile meshes frustum-culled by three every frame; a turn > 4 deg, fov / aspect change or jump traverses at once. Fixed-view A/B CPU -2.4 ms (Mission / FiDi); pan test (240 deg/s, throttled vs forced traversal per frame) differs no more than the A/A noise (max 6 vs 9 of 14400 cells). ?notilesthrottle. perf_views_ab.js: dev-only nocars / noprobe arms (traffic cars cost -2.4 ms CPU / -1.2 GPU, car probe -1.9 / -2.5 at the same views)
+
+### `dev/police_probe.js`
+Police arrival probe (dev). Load in a `/?sandbox&mode=gta&mute` page: await import('http://127.0.0.1:5190/dev/police_probe.js?' + Date.now()) await __copProbe()            -> per downtown spot: seconds until the first unit is < 30 m from a ...
+
+- 2026-10-04 `852703f` added: Police: route-aware pursuit spawns - one-way streets only in their legal direction (random dir put units nose-first against the flow), two-way spawns face the end with the shorter legal A* route, route <= 1.4x + 30 m and <= 14 s at 12 m/s, the shortest of the first 4 valid spots, first leg clear of building colliders (Falmouth St overhangs pinned a unit). dev/police_probe.js: 6 downtown spots by real lat/lon, parked suspect, 2 stars.
 
 ### `dev/pop_probe.js`
 Dev pop / flash probes (load in the game page after dev/perf_drive.js: await import('http://127.0.0.1:5190/dev/pop_probe.js')). __popDrive({ route, speed = 60, R = 250 })  -> drive a __route() polyline; counts visible POPS: an object (mesh,...
@@ -492,6 +670,43 @@ dev: contact sheet of shots.  python dev/sheet.py out.jpg cols w a.jpg b.jpg ...
 Sky / night capture helpers (load in the game page: await import('http://127.0.0.1:5190/dev/sky_shots.js')). await __skyShot(name, hours, kind)          wide view from Twin Peaks toward downtown (skyline + sky) await __nightShot(name, stree...
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+
+### `dev/tiles_pan.js`
+headless body for dev/car3cdp.mjs: Google-tiles selection lag test. A free camera pans (#rate deg/s, #frames frames of 1/60 s) over the city from a rooftop view; every frame is read back at 160x90 and compared with the same pan run with a
+
+- 2026-10-04 `72ef212` added: Perf r3: tiles phases start every 5th frame (A, B, C, two idle frames; was back to back): ~40 % less traversal CPU. dev/tiles_pan.js (free-camera pan, 160x90 readback per frame vs a full traversal on the real camera every frame): FiDi max / mean differing cells 115 / 51 (cycle 3) and 121 / 53 (cycle 5), A/A noise 202 / 93; Mission 584 / 332 and 1016 / 726, noise 761 / 500 and 1209 / 858 (tiles still streaming). gtiles.phCycle is runtime-tunable
+
+### `dev/trace_cdp.mjs`
+dev-only: Chrome performance trace of a real-time drive (silent headless Chrome, like car3cdp.mjs + HB_UNCAP). Runs <script.js> (an async function body) which must leave the game running and define window.__traceRun (async; resolves
+
+- 2026-10-04 `a3d8f4c` added: Dev: perf_rt2.js (real-time drive at #v= m/s: rAF interval histogram, frame CPU / gap / GPU timer / draw calls per frame, physics steps, per-part mean + max, attributed slow frames) and trace_cdp.mjs (Chrome trace of the same drive: outside-frame tasks by kind; SPIKE=1 V8 samples per long frame; PROF=1 in / out of frame() split)
+- 2026-10-04 `7fd3e16` changed: Perf r3: tiles cycle time-sliced (tilesphase.js: one generator per update, markUsedTiles and toggleTiles yield every 16 tiles once the frame's ~1 ms slice is spent; the visibility changes of a pass are queued and applied together so a parent hidden in one slice and its children shown in the next never leave a hole), a cycle starts every 5 frames or when the last ends; the tile view error runs without the library's per-tile plugin-list copies / closures (resetFrameState was the top allocation site, 8.3 MB/s). Drive FiDi / Chinatown: gtiles mean 1.5-1.7 -> 1.1-1.2 ms; a sharp turn / jump still finishes the cycle at once. Pan test 120 deg/s: FiDi 117 / 52 differing cells vs A/A noise 202 / 96. Dev: perf_rt2 slowExcess (parts of the >= p90 CPU frames minus the median ones), trace_cdp ALLOC=1 (sampling heap profiler)
+
+### `dev/world2_flick.js`
+headless body for dev/car3cdp.mjs: real-time flicker probe parked on the world2 yard views (+ the regression set with &reg=<suffix>) node dev/car3cdp.mjs "http://127.0.0.1:5191/?mute&prologue=0[&noyardground]&reg=w2" dev/world2_flick.js
+
+- 2026-10-04 `954f475` added: NEXT_SESSION: world round 2 notes; dev/world2_flick.js (real-time flicker probe on the yard views + regression set), dev/world2_perf.js (1920x1080 district drives: frame / GPU / VRAM)
+
+### `dev/world2_gpu.js`
+headless body: static GPU A/B (median of 3 x 40 frames, dev/gpu.js) at 1920x1080 on yard-heavy views node dev/car3cdp.mjs "http://127.0.0.1:5191/?mute&prologue=0&q=high[&noyardground&noyardcol]" dev/world2_gpu.js
+
+- 2026-10-04 `703022a` added: Terrain: inside yards skip the natural layers (grass / forest / sand / rock taps + noise) that the yard patchwork replaces. Idle-machine GPU A/B at 1920x1080 (dev/world2_gpu.js, 2 rounds x 3 views, medians): yard views 13.6 vs 13.7 ms (min-of-reps), within run-to-run noise (+-3 ms)
+
+### `dev/world2_perf.js`
+headless body for dev/car3cdp.mjs: frame-time / GPU / GPU-memory report at 1920x1080 for 5 districts, each a ~700-frame drive (15 m/s, GPU-synced frames, real wall time) on a local route. Use ?q=high&memtrack&mute&prologue=0[&tiles=..].
+
+- 2026-10-04 `954f475` added: NEXT_SESSION: world round 2 notes; dev/world2_flick.js (real-time flicker probe on the yard views + regression set), dev/world2_perf.js (1920x1080 district drives: frame / GPU / VRAM)
+
+### `dev/world2_run.js`
+headless body for dev/car3cdp.mjs: node dev/car3cdp.mjs "http://127.0.0.1:5191/?mute&prologue=0&suffix=after&views=yards_drone,crowds" dev/world2_run.js views: any of window.__w2Views, plus 'crowds' (census) and 'fence' (walk into a yard fe...
+
+- 2026-10-04 `6395401` added: Yard fences + sheds collide: v6yard.js collects fence runs (both lot lines + the rear line, 0.3 m thick) and sheds as boxes while the MID tile builds (worker), mergeYardCols joins collinear touching boxes (back-to-back rear / shared side fences), the result rides with the MID result; v2city adds them as kind 'fence' only while the tile's bld-col (600 m) is live, dropping boxes that sample asphalt / paved raster cells (through-lot yards reaching a street), filtered lazily on collider load (<= 1.1 ms per tile). Fences are now double-sided (outer faces were missing: an invisible wall from the neighbour's side). Measured (Mission, dev/world2_shots.js __w2ColPerf): +7.8k colliders (33.5k -> 41.3k), collision queries 0.329 -> 0.312-0.336 ms / frame (noise), walking into a rear fence stops at the fence (7.9 m through -> 4.4 m). ?noyardcol = A/B. dev/world2_shots.js + world2_run.js: hot spot census, yard views, fence walk, collision cost.
+
+### `dev/world2_shots.js`
+World round 2 shots (ped hot spots on the 1:1 map, residential yard ground, yard fence colliders). Headless + muted: node dev/car3cdp.mjs "http://127.0.0.1:5191/?mute&prologue=0[&noyardground&noyardcol]" dev/world2_run.js
+
+- 2026-10-04 `6395401` added: Yard fences + sheds collide: v6yard.js collects fence runs (both lot lines + the rear line, 0.3 m thick) and sheds as boxes while the MID tile builds (worker), mergeYardCols joins collinear touching boxes (back-to-back rear / shared side fences), the result rides with the MID result; v2city adds them as kind 'fence' only while the tile's bld-col (600 m) is live, dropping boxes that sample asphalt / paved raster cells (through-lot yards reaching a street), filtered lazily on collider load (<= 1.1 ms per tile). Fences are now double-sided (outer faces were missing: an invisible wall from the neighbour's side). Measured (Mission, dev/world2_shots.js __w2ColPerf): +7.8k colliders (33.5k -> 41.3k), collision queries 0.329 -> 0.312-0.336 ms / frame (noise), walking into a rear fence stops at the fence (7.9 m through -> 4.4 m). ?noyardcol = A/B. dev/world2_shots.js + world2_run.js: hot spot census, yard views, fence walk, collision cost.
+- 2026-10-04 `dbb6485` changed: Yard ground: fewer watered lawns (6-18 % by neighbourhood) and those a little drier in the fall; world2 yards_street view = a Richmond block from back-window height
 
 
 ## `(root)`
@@ -615,6 +830,7 @@ AI driving: lane waypoints over the road graph, pure-pursuit steering, speed con
 - 2026-10-01 `157fb1a` changed: Outlaw: cops drive the last metres up to a stopped suspect (route ended at the road node, 20-30 m off: no bust ever), box in instead of shoving, only player-initiated rams add stars, the search widens and lying low evades (a parked player out of sight stayed wanted forever)
 - 2026-10-01 `838c23b` changed: Race AI: pop waypoints along the path tangent (corner overshoot popped the cross street), curvature-capped lane offsets, TCS + STM for rivals (power-oversteer spins at junctions); respawn log names nearby obstacle kinds
 - 2026-10-01 `33cfbba` changed: Police: pursuit spawns need a short legal drive (<= 1.6x + 40 m) and a clear spot, far patrols recycled when a chase starts, units drive to the last-seen spot for 12 s before the search ring; pursuit routing takes the A* road route (greedy edge choice circled blocks). Parked-suspect probe: first unit < 30 m in 3.5-10 s at 4/6 spots (was 0/6 within the 22 s star timeout)
+- 2026-10-04 `e1f7e96` changed: Off-road races: Headlands Dirt / XC rerouted on Conzelman + the Julian fire road, terrain router directional (climb <= 25 % on grass, grip-scaled, roads 30 %, descents <= 42 %), trail / fire-road preferred, hero landmark solids + inland lakes + raised decks as walls, building-proximity cost, no hairpin hooks, finer-grid fallback; race AI grip-aware corner / braking limits + side-slope margin, rollover cap for tall 4x4s, back-out recovery before respawn, queued rivals not 'stuck', runtime line guard (re-routes the line round colliders that stream in, hides parked cars on it); sprint finish 12 m before the route end; wrong-way allowed on minor one-ways when the legal way is a big detour.
 
 ### `src/game/economy.js`
 Money (credits), XP / player level, owned cars, records and settings. Persisted through the versioned profile save (festival/save.js: 'hillbomb.save.v2', migrated from 'hillbomb.save.v1'). Level-ups: in the festival (forza mode) every level...
@@ -647,6 +863,7 @@ HILLBOMB Festival San Francisco: the whole content catalog in one place. EVERY p
 - 2026-10-01 `ceacd8a` changed: Prologue: beach drive on the sand (started on the Sutro bluff, fell onto Point Lobos and sat against a pole), stuck / lost cars put back on the route; Ocean Beach Scramble on the sand line; route missions auto-recover a wedged car
 - 2026-10-01 `25ac7ef` changed: Golden Gate Park Loop: one lap (9.4 km per lap on the real map, two ran ~15 min); '1 lap' not '1 laps'
 - 2026-10-01 `d0f8b14` changed: Crissy Field Dash on the airfield lawn (south leg was on the Presidio Parkway ramps); Headlands XC without the US 101 U-turn keys
+- 2026-10-04 `e1f7e96` changed: Off-road races: Headlands Dirt / XC rerouted on Conzelman + the Julian fire road, terrain router directional (climb <= 25 % on grass, grip-scaled, roads 30 %, descents <= 42 %), trail / fire-road preferred, hero landmark solids + inland lakes + raised decks as walls, building-proximity cost, no hairpin hooks, finer-grid fallback; race AI grip-aware corner / braking limits + side-slope margin, rollover cap for tall 4x4s, back-out recovery before respawn, queued rivals not 'stuck', runtime line guard (re-routes the line round colliders that stream in, hides parked cars on it); sprint finish 12 m before the route end; wrong-way allowed on minor one-ways when the legal way is a big detour.
 
 ### `src/game/festival/collectibles.js`
 Open-world collectibles: bonus boards (smashable XP / fast-travel signs), barn finds (rumour -> search area -> discovery -> restoration -> car), player houses (buy, fast travel, perks), roads discovered (% of the network),
@@ -681,6 +898,7 @@ HILLBOMB Festival San Francisco: the festival / campaign / events layer (G.festi
 - 2026-10-01 `19ebdb0` changed: Controls: pad View tap = map / hold = reset (every map open also reset the car), Tab / d-pad down opens the Campaign tab, pad d-pad / stick pick the title mode, controls help lists garage / campaign / photo
 - 2026-10-01 `b19378b` changed: Race corridors also hide parked cars that stream in after the start (they were only cleared on loaded tiles: obstacles further along, e.g. Macalla Rd)
 - 2026-10-01 `afaae5a` changed: Race corridors: world/keepout.js; props/v2 hides trees / street props + colliders inside an active race line (loaded and streamed tiles), +3 m at corners; street furniture on carriageways not placed
+- 2026-10-04 `e1f7e96` changed: Off-road races: Headlands Dirt / XC rerouted on Conzelman + the Julian fire road, terrain router directional (climb <= 25 % on grass, grip-scaled, roads 30 %, descents <= 42 %), trail / fire-road preferred, hero landmark solids + inland lakes + raised decks as walls, building-proximity cost, no hairpin hooks, finer-grid fallback; race AI grip-aware corner / braking limits + side-slope margin, rollover cap for tall 4x4s, back-out recovery before respawn, queued rivals not 'stuck', runtime line guard (re-routes the line round colliders that stream in, hides parked cars on it); sprint finish 12 m before the route end; wrong-way allowed on minor one-ways when the legal way is a big detour.
 
 ### `src/game/festival/gates.js`
 Checkpoint gates for races / missions: light-pillar arches on roads, inflatable arches off-road, a chequered finish. A small fixed pool is repositioned as checkpoints are passed (no per-checkpoint allocation).
@@ -722,6 +940,7 @@ Race runtime shared by every racing activity: road / street / dirt / cross count
 - 2026-10-01 `e5c901d` changed: Race grid: slots clear of solid obstacles (re-checked once colliders stream in before the countdown); audit: Outlaw loop + prologue runners
 - 2026-10-01 `fec3c05` changed: Races: a checkpoint missed by > 400 m rewinds the player to it (progress only grows, so the race could never finish: Crissy Field Dash ran past twice its length); dirt gates as forgiving as cross-country
 - 2026-10-01 `838c23b` changed: Race AI: pop waypoints along the path tangent (corner overshoot popped the cross street), curvature-capped lane offsets, TCS + STM for rivals (power-oversteer spins at junctions); respawn log names nearby obstacle kinds
+- 2026-10-04 `e1f7e96` changed: Off-road races: Headlands Dirt / XC rerouted on Conzelman + the Julian fire road, terrain router directional (climb <= 25 % on grass, grip-scaled, roads 30 %, descents <= 42 %), trail / fire-road preferred, hero landmark solids + inland lakes + raised decks as walls, building-proximity cost, no hairpin hooks, finer-grid fallback; race AI grip-aware corner / braking limits + side-slope margin, rollover cap for tall 4x4s, back-out recovery before respawn, queued rivals not 'stuck', runtime line guard (re-routes the line round colliders that stream in, hides parked cars on it); sprint finish 12 m before the route end; wrong-way allowed on minor one-ways when the legal way is a big detour.
 
 ### `src/game/festival/rivals.js`
 Persistent named Rivals: grid selection per event, car choice, AI tuning (difficulty + personal skill / aggression), and head-to-head records saved in the festival state.
@@ -774,6 +993,7 @@ Festival shared helpers: lat/lon placement + road snapping, route threading over
 - 2026-10-01 `0a670cf` changed: Circuits: start / finish moved onto a straight and seam stubs removed (Golden Gate Park Loop rivals sat pinned at a hairpin start line for 12 s, 81 respawns, nobody finished)
 - 2026-10-01 `ca6f511` changed: Off-road legs: prefer <= 45 % terrain paths, straight legs only up to ~27 deg (Headlands XC rivals stalled on 31 deg grass faces)
 - 2026-10-01 `838c23b` changed: Race AI: pop waypoints along the path tangent (corner overshoot popped the cross street), curvature-capped lane offsets, TCS + STM for rivals (power-oversteer spins at junctions); respawn log names nearby obstacle kinds
+- 2026-10-04 `e1f7e96` changed: Off-road races: Headlands Dirt / XC rerouted on Conzelman + the Julian fire road, terrain router directional (climb <= 25 % on grass, grip-scaled, roads 30 %, descents <= 42 %), trail / fire-road preferred, hero landmark solids + inland lakes + raised decks as walls, building-proximity cost, no hairpin hooks, finer-grid fallback; race AI grip-aware corner / braking limits + side-slope margin, rollover cap for tall 4x4s, back-out recovery before respawn, queued rivals not 'stuck', runtime line guard (re-routes the line round colliders that stream in, hides parked cars on it); sprint finish 12 m before the route end; wrong-way allowed on minor one-ways when the legal way is a big detour.
 
 ### `src/game/game.js`
 Game hub: owns vehicles, the sim, the player, and wires systems (traffic, police, activities, skills, economy, audio, HUD) together through events.
@@ -814,6 +1034,11 @@ Game modes. Every system reads G.flags (or G.mode). Keys stay 'forza' | 'gta' | 
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 
+### `src/game/peds/crowd.js`
+HILLBOMB: far crowds. Beyond the real (skinned) pedestrians (~150 m) busy sidewalks keep people out to ~420 m as multi-angle impostors: 16 Rocketbox avatars walking, baked from 8 directions x 8 gait phases (dev/crowd_bake.js ->
+
+- 2026-10-03 `e911b3a` added: People 2c: far crowds = multi-angle impostors. 16 Rocketbox avatars baked walking (8 views x 8 gait phases, 32x64 cells, albedo + view normals; dev/crowd_bake.js + tools/crowd_bake.mjs, BC3 via texpack) drawn as one instanced draw of camera-facing quads (view sector + phase picked in the vertex shader, baked normals lit by the PBR path, mip-safe coverage, dithered 132-158 m hand-off from the real peds, fade 360-420 m). Agents walk the block sidewalk rings around the camera by district density x night x rain, budget weighted toward nearer blocks (High 2600 / Medium 1400 / Low 600, ~0.1-0.2 ms CPU); ?nocrowd = off
+
 ### `src/game/peds/looks.js`
 HILLBOMB pedestrians: appearance presets per crowd style + a small pool of pre-built humans. Humans are expensive to create (a new body variant builds its geometry once, ~15 ms; every human bakes its own colours, ~2.5 ms), so the crowd reus...
 
@@ -824,11 +1049,26 @@ HILLBOMB pedestrians: appearance presets per crowd style + a small pool of pre-b
 HILLBOMB pedestrians: navigation data. Built lazily from world.blocks / world.graph and cached. SIDEWALK RING. Every block's curb polygon `poly` is convex; the sidewalk is the 3.6 m band between `poly` and `inner`. A walker is parametrised ...
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `01d64e8` changed: Peds on the 1:1 map: tourist spots + tourist zones by real lat/lon (Union Square plaza, Dragon Gate, Wharf sign, Pier 39, Ferry plaza, Lombard, Painted Ladies, Palace, Coit, City Hall, Twin Peaks, Dolores, Castro Theatre, Balmy Alley; v2 had no spots and the Union Square tourist boost used old-map x/z), plaza footways at the sights as busy walker paths, spot sampling allowed on plazas inside a block's lot line (not yards). Census (dev/world2_shots.js __w2Crowds, 90 m): Union Sq 57 (10 at the spot, 24 tourists), Wharf 55, Chinatown 67, Castro 59, Mission 58, Ferry Building 0 -> 54.
+
+### `src/game/peds/props.js`
+HILLBOMB: hand-held pedestrian props (tools/blender/peds/build_props.py -> public/assets/peds/props.glb): smartphone with a lit screen, open / furled umbrellas (rain), paper coffee cup, shopping bag, briefcase. Each RealHuman owns a HeldPro...
+
+- 2026-10-03 `2c844f6` added: People 2b: real hand-held props (tools/blender/peds/build_props.py -> peds/props.glb): smartphone with a lit app screen (brighter at night), 8-rib umbrella open (rain) / furled in hand (drizzle, wet streets) in 8 colours, coffee cup (right hand, drink-idle arm), shopping bag / briefcase hanging from the hand with a lagging swing (hold-bag arm at half weight; swaps hands under an open umbrella); carry assigned by crowd style; peds/props.js HeldProps
+- 2026-10-03 `dc0aa6e` changed: People 2d: phone sits on the palm with the screen out of it (Bip01 hands: palm +Z, left frame mirrored in Y), calmer night screen glow; shot harness: texting close-up + over-shoulder, drone crowd view with zoom inset, studio car / knock / jump strips, sheet
+
+### `src/game/peds/ragdoll.js`
+HILLBOMB: a light Verlet ragdoll for the realistic humans (knocked down by cars, shoves, carjack ejections). 18 particles (pelvis, hips, knees, ankles, toes, chest, neck, head, shoulders, elbows, wrists) with distance constraints (stiff tor...
+
+- 2026-10-03 `b51235b` added: People 2a: mocap one-shots + ragdoll. Car entry/exit = Rocketbox sit-down / stand-up clips gliding the body door<->seat (anchored rig, side-aware); knockdowns = Verlet ragdoll (18 particles, hinge + anti-fold limits, sloped ground, follows the wall-aware tumble) then CMU get-up from back / front placed on the body (owners adopt getupRoot); jump / air / land from CMU 105_39; player jump no longer swallowed by the ground snap; avatar loads retried; tools/blender/peds/cmu.py + build_clips_extra.py; dev/peds2_shots.js
 
 ### `src/game/peds/realhuman.js`
 HILLBOMB realistic humans: Microsoft Rocketbox avatars (MIT) for pedestrians and the player on foot. Assets: public/assets/peds (tools/blender/peds/*): <id>.glb (LOD0 source mesh ~7-10k tris, LOD1 ~3.5k, LOD2 ~1.5k, skinned to one shared 34...
 
 - 2026-09-30 `be35afd` added: Peds: realistic Rocketbox humans (MIT) for pedestrians + player on foot
+- 2026-10-03 `b51235b` changed: People 2a: mocap one-shots + ragdoll. Car entry/exit = Rocketbox sit-down / stand-up clips gliding the body door<->seat (anchored rig, side-aware); knockdowns = Verlet ragdoll (18 particles, hinge + anti-fold limits, sloped ground, follows the wall-aware tumble) then CMU get-up from back / front placed on the body (owners adopt getupRoot); jump / air / land from CMU 105_39; player jump no longer swallowed by the ground snap; avatar loads retried; tools/blender/peds/cmu.py + build_clips_extra.py; dev/peds2_shots.js
+- 2026-10-03 `2c844f6` changed: People 2b: real hand-held props (tools/blender/peds/build_props.py -> peds/props.glb): smartphone with a lit app screen (brighter at night), 8-rib umbrella open (rain) / furled in hand (drizzle, wet streets) in 8 colours, coffee cup (right hand, drink-idle arm), shopping bag / briefcase hanging from the hand with a lagging swing (hold-bag arm at half weight; swaps hands under an open umbrella); carry assigned by crowd style; peds/props.js HeldProps
+- 2026-10-03 `e911b3a` changed: People 2c: far crowds = multi-angle impostors. 16 Rocketbox avatars baked walking (8 views x 8 gait phases, 32x64 cells, albedo + view normals; dev/crowd_bake.js + tools/crowd_bake.mjs, BC3 via texpack) drawn as one instanced draw of camera-facing quads (view sector + phase picked in the vertex shader, baked normals lit by the PBR path, mip-safe coverage, dithered 132-158 m hand-off from the real peds, fade 360-420 m). Agents walk the block sidewalk rings around the camera by district density x night x rain, budget weighted toward nearer blocks (High 2600 / Medium 1400 / Low 600, ~0.1-0.2 ms CPU); ?nocrowd = off
 
 ### `src/game/peds/yell.js`
 HILLBOMB pedestrians: short comic speech bubbles ("HEY! MY CAR!") above a pedestrian's head. A handful of pooled sprites; canvas textures are cached per line of text. No audio.
@@ -839,6 +1079,7 @@ HILLBOMB pedestrians: short comic speech bubbles ("HEY! MY CAR!") above a pedest
 Graphics presets, first-run auto-detect + benchmark, dynamic resolution. Presets: low / medium / high / ultra. 'ultra' runs every 'high' code path (quality.name === 'high') plus the 4096 sun shadow map, a sharper Google-tiles target and a b...
 
 - 2026-09-30 `4075efc` added: Perf/VRAM: BC1/BC3 textures, Low/Medium/High/Ultra presets, dynamic resolution, smaller tile cache, free building geometry
+- 2026-10-04 `8481ae8` changed: Dynamic resolution: a step down is a trial, kept only if the smoothed frame interval improves >= 6 % within ~2 s (else undone, no step down for 20 s). The GPU timer counts the GPU waiting on a CPU-bound frame, so on High (CPU-bound, ~21-26 ms frame CPU) it sank to minScale 0.65 for no frame-rate gain; real-time runs (dev/perf_rt.js dynres=1): every trial undone (24.9 -> 24.4 ms, 31.2 -> 31.3), native 1080p kept
 
 ### `src/game/skills.js`
 Skill chain: drift, air, near miss, speed, wreckage. Banks after 3 s without a crash. Emits 'nearMiss' (other car) and 'skillBank' (points, state) for the festival (accolades, Festival Points).
@@ -854,6 +1095,11 @@ San Francisco cable cars: kinematic cars running the real lines (Powell, Hyde, C
 Reflection probe that follows the player's car (render/carprobe.js). Off on low quality or on foot. Debug: window.__carProbe (.enabled, .stats.ms = smoothed CPU ms per frame).
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+
+### `src/game/sys_carwarm.js`
+(perf r2) Street-car warm-up at boot (behind the loading screen): every traffic model's procedural build (30-66 ms the first time a model spawned mid-drive), its baked asset (loads in the background), the AO atlas upload and the far
+
+- 2026-10-04 `d3bd755` added: Perf r2: street-car warm-up behind the loading screen (game/sys_carwarm.js): every TRAFFIC_MIX model's procedural build (P, lamp anchors, fallback geometry), its baked asset, the AO atlas upload (renderer.initTexture) and the far shadow proxies. First spawn of a model mid-drive (new Vehicle) 26-43 ms -> 0.1-0.5 ms (kodiak, elektra, stallion18, police). main.js: comment touch so the watch build re-scans the sys_* glob. ?nocarwarm = A/B
 
 ### `src/game/sys_creative.js`
 Free Roam "Creative" tab in the pause menu: time of day, weather, reflections / lighting / graphics switches, map layers, quick teleports. Visible only in Free Roam (G.flags.creative). Settings persist in economy.settings.creative.
@@ -885,6 +1131,8 @@ Walk-in interiors of the hero landmarks (logic in src/world/interiors/hero_int.j
 Enterable buildings: safehouse (Russian Hill), Bay Motors showroom (SoMa), multi-level parking garage (SoMa), diner (Fisherman's Wharf), bodega (Mission), cafe (Hayes Valley). Colliders + drivable decks are registered at install (cheap, per...
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `0c76264` changed: Perf: no first-use shader stalls (render/shaderwarm.js): with KHR_parallel_shader_compile a game-scene draw whose new program is not linked yet is skipped (status query throws a sentinel inside the draw) and retried next frame, capped at 600 ms; drive hitches from compiles (peds 404-445 ms, safehouse 783 ms, Bay Bridge tower / rooftile in the water reflection 428-481 ms) gone: Sunset max 824 -> 104 ms, Chinatown 862 -> 120 ms. Interior-site exterior shells hidden past 650 m (photogrammetry there; ~90 draws at any distance). Runtime switches render/perfflags.js (window.__perf, ?no<name>) for in-session A/B; dev/perf_ab.js (interleaved drives), perf_views_ab.js (fixed views), profiler shadow-pass categories
+- 2026-10-04 `3acfc6b` changed: Perf r3: walk-in interior sites stay built once built at boot (hidden past HIDE_R as before) instead of being dropped past 450 m and rebuilt on the next approach (bodega: 56 ms, emit + vertex bake, while driving Mission). ?nointkeep
 
 ### `src/game/sys_menus.js`
 Pause / festival menu, big map and settings wiring (the UI itself lives in src/ui: shell.js, menu.js, bigmap.js, tabs.js). Also radio hotkeys and car delivery. G.menus.update() is called by main.js every frame (also while
@@ -897,6 +1145,10 @@ HILLBOMB: pedestrians. A living-city crowd around the player: sidewalk walkers, 
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `be35afd` changed: Peds: realistic Rocketbox humans (MIT) for pedestrians + player on foot
+- 2026-10-03 `b51235b` changed: People 2a: mocap one-shots + ragdoll. Car entry/exit = Rocketbox sit-down / stand-up clips gliding the body door<->seat (anchored rig, side-aware); knockdowns = Verlet ragdoll (18 particles, hinge + anti-fold limits, sloped ground, follows the wall-aware tumble) then CMU get-up from back / front placed on the body (owners adopt getupRoot); jump / air / land from CMU 105_39; player jump no longer swallowed by the ground snap; avatar loads retried; tools/blender/peds/cmu.py + build_clips_extra.py; dev/peds2_shots.js
+- 2026-10-03 `2c844f6` changed: People 2b: real hand-held props (tools/blender/peds/build_props.py -> peds/props.glb): smartphone with a lit app screen (brighter at night), 8-rib umbrella open (rain) / furled in hand (drizzle, wet streets) in 8 colours, coffee cup (right hand, drink-idle arm), shopping bag / briefcase hanging from the hand with a lagging swing (hold-bag arm at half weight; swaps hands under an open umbrella); carry assigned by crowd style; peds/props.js HeldProps
+- 2026-10-03 `e911b3a` changed: People 2c: far crowds = multi-angle impostors. 16 Rocketbox avatars baked walking (8 views x 8 gait phases, 32x64 cells, albedo + view normals; dev/crowd_bake.js + tools/crowd_bake.mjs, BC3 via texpack) drawn as one instanced draw of camera-facing quads (view sector + phase picked in the vertex shader, baked normals lit by the PBR path, mip-safe coverage, dithered 132-158 m hand-off from the real peds, fade 360-420 m). Agents walk the block sidewalk rings around the camera by district density x night x rain, budget weighted toward nearer blocks (High 2600 / Medium 1400 / Low 600, ~0.1-0.2 ms CPU); ?nocrowd = off
+- 2026-10-04 `01d64e8` changed: Peds on the 1:1 map: tourist spots + tourist zones by real lat/lon (Union Square plaza, Dragon Gate, Wharf sign, Pier 39, Ferry plaza, Lombard, Painted Ladies, Palace, Coit, City Hall, Twin Peaks, Dolores, Castro Theatre, Balmy Alley; v2 had no spots and the Union Square tourist boost used old-map x/z), plaza footways at the sights as busy walker paths, spot sampling allowed on plazas inside a block's lot line (not yards). Census (dev/world2_shots.js __w2Crowds, 90 m): Union Sq 57 (10 at the spot, 24 tourists), Wharf 55, Chinatown 67, Castro 59, Mission 58, Ferry Building 0 -> 54.
 
 ### `src/game/sys_photo.js`
 Photo mode (G.state = 'photo') + weather wiring. freezes the game (physics, traffic, particles, rain, water, clock), hides the HUD, frees the mouse orbit camera around the car, or a free camera constrained to 45 m around it (never below the...
@@ -910,6 +1162,7 @@ SFPD: patrols, wanted stars, witnesses, pursuit AI, roadblocks, busted / evaded.
 - 2026-10-01 `157fb1a` changed: Outlaw: cops drive the last metres up to a stopped suspect (route ended at the road node, 20-30 m off: no bust ever), box in instead of shoving, only player-initiated rams add stars, the search widens and lying low evades (a parked player out of sight stayed wanted forever)
 - 2026-10-01 `1e2df5f` changed: Police: pursuit units spawn 60-120 m out, out of sight (behind / beside, or hidden by a building)
 - 2026-10-01 `33cfbba` changed: Police: pursuit spawns need a short legal drive (<= 1.6x + 40 m) and a clear spot, far patrols recycled when a chase starts, units drive to the last-seen spot for 12 s before the search ring; pursuit routing takes the A* road route (greedy edge choice circled blocks). Parked-suspect probe: first unit < 30 m in 3.5-10 s at 4/6 spots (was 0/6 within the 22 s star timeout)
+- 2026-10-04 `852703f` changed: Police: route-aware pursuit spawns - one-way streets only in their legal direction (random dir put units nose-first against the flow), two-way spawns face the end with the shorter legal A* route, route <= 1.4x + 30 m and <= 14 s at 12 m/s, the shortest of the first 4 valid spots, first leg clear of building colliders (Falmouth St overhangs pinned a unit). dev/police_probe.js: 6 downtown spots by real lat/lon, parked suspect, 2 stars.
 
 ### `src/game/sys_spotify.js`
 Spotify on the in-game radio: connect panel (PKCE login on Spotify's own page), a "Spotify" station registered with G.audio.radio, and a small now-playing card. Exposes G.spotify = { openPanel, closePanel, connect, disconnect, state, statio...
@@ -957,6 +1210,10 @@ HILLBOMB: San Francisco. Boot, loading screen, title, main loop.
 - 2026-10-01 `272db80` changed: Chinatown hero set: 16 baked blocks + Dragon Gate (day/night lightmaps, BC1), lantern festoons + rain-haze halos, LOD1 night tint, pavement light pools, mirror rendered inside the wet pass (after the main render), stronger soaked sheen on the hero streets, ?noct A/B
 - 2026-10-02 `af8b9db` changed: Chinatown round 2: rebake (brick-heavy, a lit box sign per shop bay + neon frames, more blades, lantern rows at 2-3 heights, interior-mapped window rooms, ground strips on the road surface, stray Old St. Mary's sliver removed), night look (lightmap pow/gain + normal-map relief, dark hero ambient, zone hemi/IBL/sky/fog darkening), darker puddled asphalt + sharper hero mirror with cars in it, harness fixes (lastSafe follows teleports, prologue=0, detached chase car), sheet shots/chinatown_vs_ref_v2.jpg
 - 2026-10-02 `03c10d9` changed: Road 2: wet reflections = roughness-driven anisotropic streak blur (masked, half res) + full-res sharp water, no per-pixel normal jitter / time-varying SSR jitter (no sparkle), luminance knee on the rough film; Chinatown mirror 0.85x + 4x MSAA on high; asphalt: warm neutral, darker, rough dry (0.8) + street-canyon spec occlusion, block resurfacing age + slow mottle, near aggregate contrast + detail relief; full anisotropy on road textures; marking chips fade by pixel footprint; calmer hero street decal; dev/road2shots.js + road2_sheet.py
+- 2026-10-04 `0c76264` changed: Perf: no first-use shader stalls (render/shaderwarm.js): with KHR_parallel_shader_compile a game-scene draw whose new program is not linked yet is skipped (status query throws a sentinel inside the draw) and retried next frame, capped at 600 ms; drive hitches from compiles (peds 404-445 ms, safehouse 783 ms, Bay Bridge tower / rooftile in the water reflection 428-481 ms) gone: Sunset max 824 -> 104 ms, Chinatown 862 -> 120 ms. Interior-site exterior shells hidden past 650 m (photogrammetry there; ~90 draws at any distance). Runtime switches render/perfflags.js (window.__perf, ?no<name>) for in-session A/B; dev/perf_ab.js (interleaved drives), perf_views_ab.js (fixed views), profiler shadow-pass categories
+- 2026-10-04 `d3bd755` changed: Perf r2: street-car warm-up behind the loading screen (game/sys_carwarm.js): every TRAFFIC_MIX model's procedural build (P, lamp anchors, fallback geometry), its baked asset, the AO atlas upload (renderer.initTexture) and the far shadow proxies. First spawn of a model mid-drive (new Vehicle) 26-43 ms -> 0.1-0.5 ms (kodiak, elektra, stallion18, police). main.js: comment touch so the watch build re-scans the sys_* glob. ?nocarwarm = A/B
+- 2026-10-04 `f6379ba` changed: Perf r3: texture uploads off the first-draw frame (render/texwarm.js): image textures are queued when they become ready and uploaded by renderer.initTexture from the frame loop (2.5 ms budget, first of a frame always), big <img> sources (>= 1 Mpx) converted to ImageBitmap first (createImageBitmap, flipY / premultiply baked, colour conversion none; ~4x cheaper upload), small photo-tile bitmaps skipped; boot flushes the queue behind the loading screen. Gone mid-drive: facade_nrm.png 164 ms, fac3_nrm 87, facade_ma 85, leaves_normal 74, city_nrm 58 ms uploads. Look A/B (shots/r3_all_ab.jpg, all r3 switches off vs on): only traffic / signals / peds / clouds differ. ?notexwarm
+- 2026-10-04 `d1a4a79` changed: NEXT_SESSION / QUALITY: perf round 3 (tiles slicing, spikes, streaming, physics smoothing) notes, interleaved before / after, open items; boot stage text 'Decoding textures'
 
 
 ## `src/player`
@@ -966,6 +1223,7 @@ Chase camera (car), hood / bumper camera, in-car (cockpit) camera, on-foot orbit
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `8c2adff` changed: Handling: latched input + per-step pad poll, grip-limited player steering, wired ABS/TCS/STM, contact smoothing, render interpolation, camera spring
+- 2026-10-03 `4dd68cb` changed: Cars in-car view: window-lit cabin (street probe / sky IBL sampled along the horizon-bent normal x CABIN.gain 3.2, baked AO softened in the cabin), gauges + screen x2.5 in cockpit, camera at the real driver eye point (no pulled-back / inboard offset), cockpit FOV 54 (+6 with speed)
 
 ### `src/player/human.js`
 HILLBOMB: procedural low-poly human (player on foot + pedestrians). One SkinnedMesh (one draw call) per human, 18 bones, procedural animation (no clips). LOCAL FRAME: +X right, +Y up, -Z forward. Feet at y = 0. See CONVENTIONS.md.
@@ -985,6 +1243,8 @@ The player: on foot (GTA-style) or driving. Enter/exit/carjack, reset, horn, cam
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `8c2adff` changed: Handling: latched input + per-step pad poll, grip-limited player steering, wired ABS/TCS/STM, contact smoothing, render interpolation, camera spring
+- 2026-10-03 `b51235b` changed: People 2a: mocap one-shots + ragdoll. Car entry/exit = Rocketbox sit-down / stand-up clips gliding the body door<->seat (anchored rig, side-aware); knockdowns = Verlet ragdoll (18 particles, hinge + anti-fold limits, sloped ground, follows the wall-aware tumble) then CMU get-up from back / front placed on the body (owners adopt getupRoot); jump / air / land from CMU 105_39; player jump no longer swallowed by the ground snap; avatar loads retried; tools/blender/peds/cmu.py + build_clips_extra.py; dev/peds2_shots.js
+- 2026-10-04 `cb8e3ac` changed: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
 
 
 ## `src/render`
@@ -1009,6 +1269,7 @@ Night car lighting: two real spotlights for the player's headlights (always pres
 Dynamic reflection probe around the player's car: a small cube map (128 px, half-float) re-rendered one face per frame (full refresh every 6 frames) from ~1 m above the car, with the player's car, grass and rain hidden and no
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `032b7e1` changed: Perf r2: car probe renders with the last main render's world matrices (scene.matrixWorldAutoUpdate off during the cube face: renderer.render walked the whole ~5.5 k node graph a second time each frame). Probe CPU (sys3) 3.0-3.5 -> 1.6-1.7 ms; fixed-view A/B (perf_views_ab, FiDi + Mission) frame CPU -1.0 ms mean. ?noprobeumw = A/B
 
 ### `src/render/carshadow.js`
 Contact shadows: a soft ambient-occlusion blob under every car (driven vehicles + parked instances) so cars sit ON the road instead of hovering over it. One InstancedMesh (one draw call): a unit quad in XZ, oriented to the ground under
@@ -1023,6 +1284,8 @@ Time of day, sun/moon light with a camera-following shadow frustum, hemisphere l
 - 2026-09-30 `bb3858b` changed: Look: deep-blue sky (sat 0.8) + white cumulus again, less rain skyglow (muddy veil), night walls lifted under ACES (facade lamp-wall response)
 - 2026-10-01 `aaa9e34` changed: Buildings v5: near sun-shadow cascade on by default (high/ultra), detail-only casters + every-other-frame refresh
 - 2026-10-02 `af8b9db` changed: Chinatown round 2: rebake (brick-heavy, a lit box sign per shop bay + neon frames, more blades, lantern rows at 2-3 heights, interior-mapped window rooms, ground strips on the road surface, stray Old St. Mary's sliver removed), night look (lightmap pow/gain + normal-map relief, dark hero ambient, zone hemi/IBL/sky/fog darkening), darker puddled asphalt + sharper hero mirror with cars in it, harness fixes (lastSafe follows teleports, prologue=0, detached chase car), sheet shots/chinatown_vs_ref_v2.jpg
+- 2026-10-04 `fc00ce2` changed: Perf: shadow caster culling against the view (environment.js: a caster draws into the sun / nearest map only if its bounding sphere swept along the light to ~100 m below the focus touches the camera frustum; nearest map +5 m margin for its every-other-frame refresh): fixed-view A/B GPU -1.35 ms (Mission -0.7..-2.5), -100..-350 draws. Hero landmarks merged per slot material at load (Chinatown blocks ~165 -> ~60-90 draws each; ?noheromerge). Chinatown asphalt decal segments hidden past 200 m (fades to neutral by 140 m; were 40-80 draws anywhere). Water mirror re-rendered every 3rd frame while no water is within 320 m (sampled through the matrix it was rendered with). Look A/B (perf_shots s0/s1, shots/perf_shadowcull_ab.jpg): only moving peds / traffic differ. Switches: shadowcull, waterthrottle (render/perfflags.js)
+- 2026-10-04 `0a5722a` changed: Perf: hero landmark shadow proxies: the casting slots of a hero LOD are merged into one position-only depth proxy per material side (slot meshes stop casting); the proxy's geometry bounds are parked out of every camera's view and environment.js' caster test uses userData.shadowSphere (far cascade wrapped too, no view cull). Chinatown shadow draws 434 -> 142; look A/B (shots/perf_heroshadow_ab.jpg) identical shadows. ?noheroshadow = A/B
 
 ### `src/render/fog.js`
 Karl the Fog": replaces three's fog chunks with an analytic exponential HEIGHT fog + a thin global haze, plus a second, much denser and lower "bank" layer (rolling marine-layer fog that pours in from the west and leaves the bridge
@@ -1052,6 +1315,22 @@ Pooled GPU particles (one Points draw call per blend mode): tyre smoke, dust, en
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 
+### `src/render/perfflags.js`
+(perf 10/4) runtime switches for the performance passes, so a single session can A/B them (dev/perf_ab.js flips them between drive segments). Defaults on; ?no<name> in the URL turns one off at load, window.__perf.<name> = false at run time.
+
+- 2026-10-04 `0c76264` added: Perf: no first-use shader stalls (render/shaderwarm.js): with KHR_parallel_shader_compile a game-scene draw whose new program is not linked yet is skipped (status query throws a sentinel inside the draw) and retried next frame, capped at 600 ms; drive hitches from compiles (peds 404-445 ms, safehouse 783 ms, Bay Bridge tower / rooftile in the water reflection 428-481 ms) gone: Sunset max 824 -> 104 ms, Chinatown 862 -> 120 ms. Interior-site exterior shells hidden past 650 m (photogrammetry there; ~90 draws at any distance). Runtime switches render/perfflags.js (window.__perf, ?no<name>) for in-session A/B; dev/perf_ab.js (interleaved drives), perf_views_ab.js (fixed views), profiler shadow-pass categories
+- 2026-10-04 `fc00ce2` changed: Perf: shadow caster culling against the view (environment.js: a caster draws into the sun / nearest map only if its bounding sphere swept along the light to ~100 m below the focus touches the camera frustum; nearest map +5 m margin for its every-other-frame refresh): fixed-view A/B GPU -1.35 ms (Mission -0.7..-2.5), -100..-350 draws. Hero landmarks merged per slot material at load (Chinatown blocks ~165 -> ~60-90 draws each; ?noheromerge). Chinatown asphalt decal segments hidden past 200 m (fades to neutral by 140 m; were 40-80 draws anywhere). Water mirror re-rendered every 3rd frame while no water is within 320 m (sampled through the matrix it was rendered with). Look A/B (perf_shots s0/s1, shots/perf_shadowcull_ab.jpg): only moving peds / traffic differ. Switches: shadowcull, waterthrottle (render/perfflags.js)
+- 2026-10-04 `9659fd1` changed: Perf: Google tiles traversal every other frame (3-4.5 ms CPU) on a camera widened by 8 deg per side at the same pixel scale (same LOD), tile meshes frustum-culled by three every frame; a turn > 4 deg, fov / aspect change or jump traverses at once. Fixed-view A/B CPU -2.4 ms (Mission / FiDi); pan test (240 deg/s, throttled vs forced traversal per frame) differs no more than the A/A noise (max 6 vs 9 of 14400 cells). ?notilesthrottle. perf_views_ab.js: dev-only nocars / noprobe arms (traffic cars cost -2.4 ms CPU / -1.2 GPU, car probe -1.9 / -2.5 at the same views)
+- 2026-10-04 `032b7e1` changed: Perf r2: car probe renders with the last main render's world matrices (scene.matrixWorldAutoUpdate off during the cube face: renderer.render walked the whole ~5.5 k node graph a second time each frame). Probe CPU (sys3) 3.0-3.5 -> 1.6-1.7 ms; fixed-view A/B (perf_views_ab, FiDi + Mission) frame CPU -1.0 ms mean. ?noprobeumw = A/B
+- 2026-10-04 `46ea26f` changed: Perf r2: lean street cars. Traffic / AI / parked-hit cars (Vehicle role != player) mount their LOD levels with the shut front doors merged into the body per material (asset.lean, built once when the GLB arrives), only the drawn LOD level hangs in the graph, static sub-nodes skip the per-frame matrix recompose. A door that opens (carjack, getting in) remounts the hinged split levels. FiDi: car nodes 2894 -> 1121, car meshes 1728 -> 555; draw calls 691 -> 579 (FiDi), 825 -> 671 (Sunset). ?nocarlean = A/B
+- 2026-10-04 `0345c33` changed: Perf r2: far street cars (LOD 1 / 2) cast the sun shadow from one depth-only proxy per level (lean body paint + details + the four wheels at rest, positions merged once per asset; bounds parked out of every colour pass, environment.js caster test via userData.shadowSphere like the hero proxies). Shadow draws (both cascades, same frame, in-session A/B) FiDi 168 -> 82, Sunset 224 -> 120, Mission 211 -> 111; look A/B shots/r2_carshadowproxy_ab.jpg: only moving peds differ. ?nocarshadowproxy = A/B
+- 2026-10-04 `6027db5` changed: Perf r2: car physics ground probes: the wheel ray's first probe and the 20 chassis corner probes ask for the height only (the normal / surface taps, 4 more terrain samples + the surface raster, are taken only where they are read: a refined wheel contact or a corner below ground); SAT vs static colliders without per-collider arrays. Bit-identical trajectories (fresh body, 1800 scripted steps, physlite on / off: every state value equal to 17 digits); 7.0-7.7 -> 4.5-5.9 us per body step. ?nophyslite = A/B
+- 2026-10-04 `d3bd755` changed: Perf r2: street-car warm-up behind the loading screen (game/sys_carwarm.js): every TRAFFIC_MIX model's procedural build (P, lamp anchors, fallback geometry), its baked asset, the AO atlas upload (renderer.initTexture) and the far shadow proxies. First spawn of a model mid-drive (new Vehicle) 26-43 ms -> 0.1-0.5 ms (kodiak, elektra, stallion18, police). main.js: comment touch so the watch build re-scans the sys_* glob. ?nocarwarm = A/B
+- 2026-10-04 `78c4ced` changed: Perf r2: street cars past 75 m (lean LOD 2): the four wheels at rest are merged into the body details (same material; positions / normals transformed, mirrored wheels' winding flipped back), the wheel meshes hide at that level: 9 -> 5 meshes per far car (staged 8-car street: meshes per car 13,9,9,9,9,9,9,9 -> 13,9,9,5,5,5,5,5). At 75 m+ a wheel is ~8 px: spin / steer / suspension travel are sub-pixel; staged 4K A/B (shots/r2_carfarwheels_crop.jpg) shows no difference beyond the A/A foliage noise. ?nocarfarwheels = A/B
+- 2026-10-04 `c1d20b8` changed: Perf r2: street cars share their lamp + lens materials per model and light state (head / brake / reverse / siren bits: the lamp uniforms are a pure function of them), so the renderer no longer refreshes a per-car lamp material in the main, probe and shadow passes; the in-car view keeps the car's own. Staged night A/B (shots/r2_carlampshare_night.jpg): identical lamps, only a walking ped differs. ?nocarlampshare = A/B
+- 2026-10-04 `e506c0c` changed: Perf r3: Google tiles traversal in three phases on consecutive frames (world/v2/tilesphase.js: A = markUsedTiles, B = leaves / visible / toggle, C = LRU hand-over, requests, scheduleUnload, update-after; traversal functions copied from 3d-tiles-renderer 0.5.3, the previous used set stays marked until C so no unload pass can evict on-screen tiles mid-cycle). Per-frame tiles cost 0.3-0.6 ms per phase instead of 4-12 ms every 3rd frame; a sharp turn / jump finishes the cycle at once. Look A/B (shots/r3_tilesphase_ab.jpg): only peds / signals / clouds differ. ?notilesphase. perfflags.js also registers the other round-3 switches (intprobe, simsmooth, streamslice, texwarm, intkeep)
+- 2026-10-04 `ef382e1` changed: Perf r3: Chinatown asphalt decal segments merged per 120 m cell (ct_street.js; multiply blend, no depth write: order-independent, same overlaps), the 200 m hiding per cell: 40-55 transparent draws -> a handful. Night-rain look A/B (shots/r3_ctmerge_ab.jpg): rows b / c mean 3.4 / 3.6 (peds, rain), row a differs by a headlight / spray pool around the car (additive light, not the decal). ?noctmerge
+
 ### `src/render/photo/looks.js`
 Photo-mode colour looks (display-referred, applied by post.js FinishShader) and the PNG capture helper.
 
@@ -1074,6 +1353,12 @@ Road surface wear, painted in the asphalt shader (makeRoadMaterial in terrainmat
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-02 `03c10d9` changed: Road 2: wet reflections = roughness-driven anisotropic streak blur (masked, half res) + full-res sharp water, no per-pixel normal jitter / time-varying SSR jitter (no sparkle), luminance knee on the rough film; Chinatown mirror 0.85x + 4x MSAA on high; asphalt: warm neutral, darker, rough dry (0.8) + street-canyon spec occlusion, block resurfacing age + slow mottle, near aggregate contrast + detail relief; full anisotropy on road textures; marking chips fade by pixel footprint; calmer hero street decal; dev/road2shots.js + road2_sheet.py
 
+### `src/render/shaderwarm.js`
+(perf 10/4) No first-use shader stalls while playing. ANGLE / D3D11 compiles our big patched shaders in 0.1-0.8 s, and three blocks on an object's first draw with a new program (onFirstUse -> getProgramInfoLog / getProgramParameter wait for
+
+- 2026-10-04 `0c76264` added: Perf: no first-use shader stalls (render/shaderwarm.js): with KHR_parallel_shader_compile a game-scene draw whose new program is not linked yet is skipped (status query throws a sentinel inside the draw) and retried next frame, capped at 600 ms; drive hitches from compiles (peds 404-445 ms, safehouse 783 ms, Bay Bridge tower / rooftile in the water reflection 428-481 ms) gone: Sunset max 824 -> 104 ms, Chinatown 862 -> 120 ms. Interior-site exterior shells hidden past 650 m (photogrammetry there; ~90 draws at any distance). Runtime switches render/perfflags.js (window.__perf, ?no<name>) for in-session A/B; dev/perf_ab.js (interleaved drives), perf_views_ab.js (fixed views), profiler shadow-pass categories
+- 2026-10-04 `4c056cf` changed: Perf r3: hero-interior reflection probe without the compile freeze: one PMREM generator kept for every probe (warmed at install at the probe size; a new one per probe released and recompiled its shaders), the cube capture's draws go through shaderwarm (extra guarded scenes): a capture with materials still compiling is dropped and retried 250 ms later. Hobart lobby while driving FiDi: 84-112 ms frame -> 8 ms. ?nointprobe
+
 ### `src/render/skidmarks.js`
 Skid marks: a ring buffer of quad strips (one draw call). Each sliding wheel extends its own strip.
 
@@ -1091,17 +1376,27 @@ Wet-street planar mirror for the Chinatown hero streets (Grant Ave + the hero si
 - 2026-10-01 `d4b928d` added: Chinatown hero set (WIP): Blender block builder (hero_ctown.py: Grant Ave + side streets + Waverly, shops, signs, fire escapes, lanterns, Dragon Gate), day/night exterior lightmaps, sign/shop atlases, wet-street planar mirror in the SSR pass
 - 2026-10-02 `af8b9db` changed: Chinatown round 2: rebake (brick-heavy, a lit box sign per shop bay + neon frames, more blades, lantern rows at 2-3 heights, interior-mapped window rooms, ground strips on the road surface, stray Old St. Mary's sliver removed), night look (lightmap pow/gain + normal-map relief, dark hero ambient, zone hemi/IBL/sky/fog darkening), darker puddled asphalt + sharper hero mirror with cars in it, harness fixes (lastSafe follows teleports, prologue=0, detached chase car), sheet shots/chinatown_vs_ref_v2.jpg
 - 2026-10-02 `03c10d9` changed: Road 2: wet reflections = roughness-driven anisotropic streak blur (masked, half res) + full-res sharp water, no per-pixel normal jitter / time-varying SSR jitter (no sparkle), luminance knee on the rough film; Chinatown mirror 0.85x + 4x MSAA on high; asphalt: warm neutral, darker, rough dry (0.8) + street-canyon spec occlusion, block resurfacing age + slow mottle, near aggregate contrast + detail relief; full anisotropy on road textures; marking chips fade by pixel footprint; calmer hero street decal; dev/road2shots.js + road2_sheet.py
+- 2026-10-04 `0a5722a` changed: Perf: hero landmark shadow proxies: the casting slots of a hero LOD are merged into one position-only depth proxy per material side (slot meshes stop casting); the proxy's geometry bounds are parked out of every camera's view and environment.js' caster test uses userData.shadowSphere (far cascade wrapped too, no view cull). Chinatown shadow draws 434 -> 142; look A/B (shots/perf_heroshadow_ab.jpg) identical shadows. ?noheroshadow = A/B
 
 ### `src/render/terrainmat.js`
 Photo-scanned ground materials: terrain splatting (grass / forest floor / sand / cliff rock by per-vertex weights, two-scale sampling against tiling), asphalt and sidewalk concrete with world-space UVs. Weather: every lit material gets wet ...
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-02 `03c10d9` changed: Road 2: wet reflections = roughness-driven anisotropic streak blur (masked, half res) + full-res sharp water, no per-pixel normal jitter / time-varying SSR jitter (no sparkle), luminance knee on the rough film; Chinatown mirror 0.85x + 4x MSAA on high; asphalt: warm neutral, darker, rough dry (0.8) + street-canyon spec occlusion, block resurfacing age + slow mottle, near aggregate contrast + detail relief; full anisotropy on road textures; marking chips fade by pixel footprint; calmer hero street decal; dev/road2shots.js + road2_sheet.py
+- 2026-10-04 `3c697b8` changed: Yard ground: residential back yards (surface class 9) are a lot patchwork instead of one bright green lawn. grass/yard_glsl.js (shared by the terrain material and the grass blades): every yard point falls in a 25 ft lot of its block (v2/lotframe.js: block long side + centre line from props/v2blocks.js, per-cell frame in a float lot texture beside the biome window, capture.js) and gets watered lawn / dry golden lawn / bare dirt (darker leaf litter in shaded lots) / concrete slabs / brick pavers / bark mulch / decomposed granite, mix drifting per neighbourhood, fence-line planting beds in half the lots, SF fall season (Y_SEASON 0.75: most lawns golden-brown with green survivors). Blades only grow on the lawn lots (taller unmown dry lawns, no flowers on hard / mulched lots). Terrain tiles carry aYard (yard share per vertex); far lots fade to the mean colour (no shimmer). Parks keep their lawns. ?noyardground = A/B.
+- 2026-10-04 `703022a` changed: Terrain: inside yards skip the natural layers (grass / forest / sand / rock taps + noise) that the yard patchwork replaces. Idle-machine GPU A/B at 1920x1080 (dev/world2_gpu.js, 2 rounds x 3 views, medians): yard views 13.6 vs 13.7 ms (min-of-reps), within run-to-run noise (+-3 ms)
+
+### `src/render/texwarm.js`
+(perf r3 10/4) Big <img> textures decoded off the main thread. three uploads a texture the first time a draw samples it; for an <img> source the browser decodes the image inside that texImage / texSubImage call, so shared atlases that
+
+- 2026-10-04 `f6379ba` added: Perf r3: texture uploads off the first-draw frame (render/texwarm.js): image textures are queued when they become ready and uploaded by renderer.initTexture from the frame loop (2.5 ms budget, first of a frame always), big <img> sources (>= 1 Mpx) converted to ImageBitmap first (createImageBitmap, flipY / premultiply baked, colour conversion none; ~4x cheaper upload), small photo-tile bitmaps skipped; boot flushes the queue behind the loading screen. Gone mid-drive: facade_nrm.png 164 ms, fac3_nrm 87, facade_ma 85, leaves_normal 74, city_nrm 58 ms uploads. Look A/B (shots/r3_all_ab.jpg, all r3 switches off vs on): only traffic / signals / peds / clouds differ. ?notexwarm
+- 2026-10-04 `50d18b4` changed: Perf r3: texwarm is conversion-only: big (>= 1 Mpx) <img> textures become ImageBitmaps off the main thread (started before any upload work so the title camera cannot draw them first), nothing is uploaded ahead of its first draw. Uploading early (every image texture: +0.5 GB; every big one: +0.35-0.45 GB at the memspots) filled VRAM with interior / prop library maps nothing drew; a scan of the scene graph for the textures in use cost ~1 ms per frame and more > 50 ms frames. Memspots 2.36-2.80 GB (?notexwarm 2.37-2.80); first-draw uploads are copies: facade_nrm 4K 27-36 ms (was 130-196 ms decode), 2K 8-12 ms (26-90)
 
 ### `src/render/water.js`
 HILLBOMB water: the Bay + the Pacific. planar reflection (reduced resolution, oblique near-plane clip at sea level, a cheap scene layer: sky, terrain, decks, landmarks/bridges, buildings), skipped while no water pixel is visible (occlusion ...
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `fc00ce2` changed: Perf: shadow caster culling against the view (environment.js: a caster draws into the sun / nearest map only if its bounding sphere swept along the light to ~100 m below the focus touches the camera frustum; nearest map +5 m margin for its every-other-frame refresh): fixed-view A/B GPU -1.35 ms (Mission -0.7..-2.5), -100..-350 draws. Hero landmarks merged per slot material at load (Chinatown blocks ~165 -> ~60-90 draws each; ?noheromerge). Chinatown asphalt decal segments hidden past 200 m (fades to neutral by 140 m; were 40-80 draws anywhere). Water mirror re-rendered every 3rd frame while no water is within 320 m (sampled through the matrix it was rendered with). Look A/B (perf_shots s0/s1, shots/perf_shadowcull_ab.jpg): only moving peds / traffic differ. Switches: shadowcull, waterthrottle (render/perfflags.js)
 
 ### `src/render/weather.js`
 HILLBOMB weather: clear | fog (Karl the Fog) | overcast | rain | storm, with smooth transitions and a slow random cycle in free roam. Drives: sky (storm HDRI blend, see hdrisky.js), sun/shadow strength, fog + the low marine-layer bank,
@@ -1183,11 +1478,14 @@ Car roster (fictional makes/models, handling + economy) and the Vehicle wrapper 
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `8c2adff` changed: Handling: latched input + per-step pad poll, grip-limited player steering, wired ABS/TCS/STM, contact smoothing, render interpolation, camera spring
+- 2026-10-04 `cb8e3ac` changed: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
+- 2026-10-04 `46ea26f` changed: Perf r2: lean street cars. Traffic / AI / parked-hit cars (Vehicle role != player) mount their LOD levels with the shut front doors merged into the body per material (asset.lean, built once when the GLB arrives), only the drawn LOD level hangs in the graph, static sub-nodes skip the per-frame matrix recompose. A door that opens (carjack, getting in) remounts the hinged split levels. FiDi: car nodes 2894 -> 1121, car meshes 1728 -> 555; draw calls 691 -> 579 (FiDi), 825 -> 671 (Sunset). ?nocarlean = A/B
 
 ### `src/vehicle/carshade.js`
 Car surface layers patched into the car materials (vehicle/models.js): wheel zone shading on the baked details material: the Blender tyre (tools/blender/cars.py tyre_mesh) and brake rotor carry marker UVs (uv.y 2..3 road tyre, 6..7 off-road...
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `cb8e3ac` changed: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
 
 ### `src/vehicle/models.js`
 HILLBOMB: San Francisco. Procedural car models (no asset files). Owner: car models agent. See CONVENTIONS.md. Local frame: +X right, +Y up, -Z forward. Origin on the ground (y = 0 = tyre contact), x = 0 centre line, z = 0 midway between the...
@@ -1195,6 +1493,15 @@ HILLBOMB: San Francisco. Procedural car models (no asset files). Owner: car mode
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `4075efc` changed: Perf/VRAM: BC1/BC3 textures, Low/Medium/High/Ultra presets, dynamic resolution, smaller tile cache, free building geometry
 - 2026-10-01 `c750d23` changed: Cars pass 2: all 13 garage/traffic bodies rebuilt (hero detail pass), traffic-only L0 decimated to ~43k, cabin fill 3.5, perf A/B helper
+- 2026-10-03 `42da11e` changed: Cars body pass 3: sculpted shells for the 13 hero / top-traffic cars (models.js SCULPT: arch flares + haunches, coke-bottle waist, shoulder / cove / rocker section, raked nose + tail via split end-rounding lengths, bonnet dome + fender crowns, greenhouse tumblehome + plan taper; physics spec unchanged), quarter lights + glass-wrapped slim A-pillars, Blender aero add-ons (splitter, skirts: tools/blender/car_body.py), rebuilt GLBs/AO; shape review sheet tools/blender/car_shape_sheet.py; headless silent CDP harness dev/car3cdp.mjs + dev/car3shots.js; parked geometry bbox (ct_street crash)
+- 2026-10-03 `4dd68cb` changed: Cars in-car view: window-lit cabin (street probe / sky IBL sampled along the horizon-bent normal x CABIN.gain 3.2, baked AO softened in the cabin), gauges + screen x2.5 in cockpit, camera at the real driver eye point (no pulled-back / inboard offset), cockpit FOV 54 (+6 with speed)
+- 2026-10-04 `cb8e3ac` changed: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
+- 2026-10-04 `46ea26f` changed: Perf r2: lean street cars. Traffic / AI / parked-hit cars (Vehicle role != player) mount their LOD levels with the shut front doors merged into the body per material (asset.lean, built once when the GLB arrives), only the drawn LOD level hangs in the graph, static sub-nodes skip the per-frame matrix recompose. A door that opens (carjack, getting in) remounts the hinged split levels. FiDi: car nodes 2894 -> 1121, car meshes 1728 -> 555; draw calls 691 -> 579 (FiDi), 825 -> 671 (Sunset). ?nocarlean = A/B
+- 2026-10-04 `0345c33` changed: Perf r2: far street cars (LOD 1 / 2) cast the sun shadow from one depth-only proxy per level (lean body paint + details + the four wheels at rest, positions merged once per asset; bounds parked out of every colour pass, environment.js caster test via userData.shadowSphere like the hero proxies). Shadow draws (both cascades, same frame, in-session A/B) FiDi 168 -> 82, Sunset 224 -> 120, Mission 211 -> 111; look A/B shots/r2_carshadowproxy_ab.jpg: only moving peds differ. ?nocarshadowproxy = A/B
+- 2026-10-04 `d3bd755` changed: Perf r2: street-car warm-up behind the loading screen (game/sys_carwarm.js): every TRAFFIC_MIX model's procedural build (P, lamp anchors, fallback geometry), its baked asset, the AO atlas upload (renderer.initTexture) and the far shadow proxies. First spawn of a model mid-drive (new Vehicle) 26-43 ms -> 0.1-0.5 ms (kodiak, elektra, stallion18, police). main.js: comment touch so the watch build re-scans the sys_* glob. ?nocarwarm = A/B
+- 2026-10-04 `78c4ced` changed: Perf r2: street cars past 75 m (lean LOD 2): the four wheels at rest are merged into the body details (same material; positions / normals transformed, mirrored wheels' winding flipped back), the wheel meshes hide at that level: 9 -> 5 meshes per far car (staged 8-car street: meshes per car 13,9,9,9,9,9,9,9 -> 13,9,9,5,5,5,5,5). At 75 m+ a wheel is ~8 px: spin / steer / suspension travel are sub-pixel; staged 4K A/B (shots/r2_carfarwheels_crop.jpg) shows no difference beyond the A/A foliage noise. ?nocarfarwheels = A/B
+- 2026-10-04 `8583d68` changed: Perf r2: far street cars with merged wheels also take their four wheel pivots (pivot / spin / wheel / caliper) out of the graph while at LOD 2 (applied from setLights during the car's sync, never inside LOD.update, which runs while the renderer walks the car's children). FiDi scene nodes 3739 -> 3097 (car nodes 1121 -> 491); 700-frame drives: draw calls FiDi 589 -> 430, Twin Peaks 551 -> 392, Sunset 759 -> 593. Under ?nocarfarwheels
+- 2026-10-04 `c1d20b8` changed: Perf r2: street cars share their lamp + lens materials per model and light state (head / brake / reverse / siren bits: the lamp uniforms are a pure function of them), so the renderer no longer refreshes a per-car lamp material in the main, probe and shadow passes; the in-car view keeps the car's own. Staged night A/B (shots/r2_carlampshare_night.jpg): identical lamps, only a walking ped differs. ?nocarlampshare = A/B
 
 ### `src/vehicle/physics.js`
 Raycast-suspension rigid-body car. Arcade-leaning but physical: springs/dampers per wheel, slip-based tyre forces with a friction circle, engine torque curve + automatic gearbox, drag/downforce, chassis-vs-ground and chassis-vs-wall
@@ -1202,12 +1509,14 @@ Raycast-suspension rigid-body car. Arcade-leaning but physical: springs/dampers 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `8c2adff` changed: Handling: latched input + per-step pad poll, grip-limited player steering, wired ABS/TCS/STM, contact smoothing, render interpolation, camera spring
 - 2026-10-01 `838c23b` changed: Race AI: pop waypoints along the path tangent (corner overshoot popped the cross street), curvature-capped lane offsets, TCS + STM for rivals (power-oversteer spins at junctions); respawn log names nearby obstacle kinds
+- 2026-10-04 `6027db5` changed: Perf r2: car physics ground probes: the wheel ray's first probe and the 20 chassis corner probes ask for the height only (the normal / surface taps, 4 more terrain samples + the surface raster, are taken only where they are read: a refined wheel contact or a corner below ground); SAT vs static colliders without per-collider arrays. Bit-identical trajectories (fresh body, 1800 scripted steps, physlite on / off: every state value equal to 17 digits); 7.0-7.7 -> 4.5-5.9 us per body step. ?nophyslite = A/B
 
 ### `src/vehicle/sim.js`
 Fixed-step vehicle simulation (120 Hz) with car-vs-car contacts and sleeping.
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `8c2adff` changed: Handling: latched input + per-step pad poll, grip-limited player steering, wired ABS/TCS/STM, contact smoothing, render interpolation, camera spring
+- 2026-10-04 `500bd8f` changed: Perf r3: physics catch-up smoothing (vehicle/sim.js): steps per frame capped at the recent need (EMA of dt / h, rounded up, >= 2), the rest stays in the accumulator (<= 8 steps as before) and is worked off over the next frames; interpolation alpha clamped to 1 while behind. FiDi 45 m/s drive: 5-6 step frames 78 -> 5. ?nosimsmooth
 
 ### `src/vehicle/tuning.js`
 Car builds: upgrades, tuning, derived physics params and the Performance Index. Pipeline (pure functions, no THREE, no DOM; runs in Node for the lab): stock roster def ──applyUpgrades(def, build.up)──► upgraded def ──deriveParams(def, spec,...
@@ -1254,6 +1563,7 @@ Buildings v2 (1:1 OSM city): design + progress
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `d3f79ed` changed: Buildings v5: notes (PROGRESS_V2 / NEXT_SESSION)
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
 
 ### `src/world/facade/beacons.js`
 Red aviation beacons on tall towers: one Points draw, blinking in the shader, only visible at dusk / night.
@@ -1322,6 +1632,8 @@ Buildings v2 tile builders: pure functions over typed arrays, run in the build w
 - 2026-10-01 `a61b163` changed: Buildings v5: massing variety (lot setbacks, bay forms, corner turrets / chamfers, mansards, balconies, real eaves)
 - 2026-10-01 `fedfd56` changed: Buildings v5: Tenderloin bay stacks, per-lot window types, French doors at balconies, stoop hoods, loft parapet crests
 - 2026-10-01 `64aab3f` changed: Buildings v5: MID stoops, NEAR detail tiles dither in at 450 m, ?nov5 reaches the build workers
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+- 2026-10-04 `6395401` changed: Yard fences + sheds collide: v6yard.js collects fence runs (both lot lines + the rear line, 0.3 m thick) and sheds as boxes while the MID tile builds (worker), mergeYardCols joins collinear touching boxes (back-to-back rear / shared side fences), the result rides with the MID result; v2city adds them as kind 'fence' only while the tile's bld-col (600 m) is live, dropping boxes that sample asphalt / paved raster cells (through-lot yards reaching a street), filtered lazily on collider load (<= 1.1 ms per tile). Fences are now double-sided (outer faces were missing: an invisible wall from the neighbour's side). Measured (Mission, dev/world2_shots.js __w2ColPerf): +7.8k colliders (33.5k -> 41.3k), collision queries 0.329 -> 0.312-0.336 ms / frame (noise), walking into a rear fence stops at the fence (7.9 m through -> 4.4 m). ?noyardcol = A/B. dev/world2_shots.js + world2_run.js: hot spot census, yard views, fence walk, collision cost.
 
 ### `src/world/facade/v2city.js`
 Buildings v2: the real 1:1 OSM city (178k footprints) drawn with the facade system (material.js procedural facades, interior mapping, night windows, one params texel block per building from v2plan.js). Tiers: FAR   whole city, merged per 2 ...
@@ -1332,6 +1644,8 @@ Buildings v2: the real 1:1 OSM city (178k footprints) drawn with the facade syst
 - 2026-10-01 `aaa9e34` changed: Buildings v5: near sun-shadow cascade on by default (high/ultra), detail-only casters + every-other-frame refresh
 - 2026-10-01 `b4b520e` changed: Buildings v5: dithered cross-fade MID <-> v3 facades / facade kit / front yards / city kit (pop fix)
 - 2026-10-01 `64aab3f` changed: Buildings v5: MID stoops, NEAR detail tiles dither in at 450 m, ?nov5 reaches the build workers
+- 2026-10-04 `6395401` changed: Yard fences + sheds collide: v6yard.js collects fence runs (both lot lines + the rear line, 0.3 m thick) and sheds as boxes while the MID tile builds (worker), mergeYardCols joins collinear touching boxes (back-to-back rear / shared side fences), the result rides with the MID result; v2city adds them as kind 'fence' only while the tile's bld-col (600 m) is live, dropping boxes that sample asphalt / paved raster cells (through-lot yards reaching a street), filtered lazily on collider load (<= 1.1 ms per tile). Fences are now double-sided (outer faces were missing: an invisible wall from the neighbour's side). Measured (Mission, dev/world2_shots.js __w2ColPerf): +7.8k colliders (33.5k -> 41.3k), collision queries 0.329 -> 0.312-0.336 ms / frame (noise), walking into a rear fence stops at the fence (7.9 m through -> 4.4 m). ?noyardcol = A/B. dev/world2_shots.js + world2_run.js: hot spot census, yard views, fence walk, collision cost.
+- 2026-10-04 `750fa36` changed: Perf r3: map streaming slices. stream.js: 2.5 ms per frame and a load only starts when its provider's typical cost (EMA per provider and load / unload) still fits; the first job of a frame always runs (6 ms budget used to start a 5-8 ms load at 5.9 ms). bld-col: a tile's building colliders + yard fences are added over a few frames (<= 1.2 ms each, nearest pending tile first; range 600 m) instead of 5-11 ms in the load. Kit cell bounds come from the build worker (v2detail pack bb; same numbers). ?nostreamslice
 
 ### `src/world/facade/v2detail.js`
 Buildings v2 silhouette detail (kills the "square box" look). Pure functions over the plan arrays, run in the build workers with v2build.js: MID  (<= 1.4 km, merged into the tile mesh): projecting cornices, storefront cornice + belt courses...
@@ -1339,6 +1653,8 @@ Buildings v2 silhouette detail (kills the "square box" look). Pure functions ove
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `a61b163` changed: Buildings v5: massing variety (lot setbacks, bay forms, corner turrets / chamfers, mansards, balconies, real eaves)
 - 2026-10-01 `64aab3f` changed: Buildings v5: MID stoops, NEAR detail tiles dither in at 450 m, ?nov5 reaches the build workers
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+- 2026-10-04 `750fa36` changed: Perf r3: map streaming slices. stream.js: 2.5 ms per frame and a load only starts when its provider's typical cost (EMA per provider and load / unload) still fits; the first job of a frame always runs (6 ms budget used to start a 5-8 ms load at 5.9 ms). bld-col: a tile's building colliders + yard fences are added over a few frames (<= 1.2 ms each, nearest pending tile first; range 600 m) instead of 5-11 ms in the load. Kit cell bounds come from the build worker (v2detail pack bb; same numbers). ?nostreamslice
 
 ### `src/world/facade/v2dress.js`
 Buildings v2 storefront dress, main-thread half: the canvas atlas (fictional district shop signs, bilingual Chinatown signs, CJK + English neon blade words, awning canvases, lanterns, glow / spill / pool gradients), the materials and
@@ -1356,6 +1672,7 @@ Buildings v2 geometry: footprint utilities (closed Douglas-Peucker, party-wall r
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `a61b163` changed: Buildings v5: massing variety (lot setbacks, bay forms, corner turrets / chamfers, mansards, balconies, real eaves)
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
 
 ### `src/world/facade/v2lots.js`
 Buildings v2 rowhouse individuation. OSM often traces a whole row of San Francisco houses as one long footprint, which then renders as one long box (one colour, one height, one flat roof). Here every residential footprint whose street
@@ -1363,6 +1680,7 @@ Buildings v2 rowhouse individuation. OSM often traces a whole row of San Francis
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `a61b163` changed: Buildings v5: massing variety (lot setbacks, bay forms, corner turrets / chamfers, mansards, balconies, real eaves)
 - 2026-10-01 `64aab3f` changed: Buildings v5: MID stoops, NEAR detail tiles dither in at 450 m, ?nov5 reaches the build workers
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
 
 ### `src/world/facade/v2plan.js`
 Buildings v2 global pass: one tight loop over every real OSM footprint (178k) -> neighbourhood zone (real lat/lon), architectural style (zone + height + kind + area + levels), oriented bounding box, street-facing walls (outward probe
@@ -1370,12 +1688,15 @@ Buildings v2 global pass: one tight loop over every real OSM footprint (178k) ->
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `fedfd56` changed: Buildings v5: Tenderloin bay stacks, per-lot window types, French doors at balconies, stoop hoods, loft parapet crests
 - 2026-10-01 `64aab3f` changed: Buildings v5: MID stoops, NEAR detail tiles dither in at 450 m, ?nov5 reaches the build workers
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
 
 ### `src/world/facade/v2worker.js`
-Buildings v2 build worker: holds a copy of the footprint + plan arrays and builds FAR chunks, MID tiles, NEAR tiles (facade detail + merged Blender kit pieces) and storefront DRESS tiles off the main thread. Geometry comes back as
+Buildings v2 build worker (v6): holds a copy of the footprint + plan arrays and builds FAR chunks, MID tiles, NEAR tiles (facade detail + merged Blender kit pieces) and storefront DRESS tiles off the main thread. Geometry comes back as
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `64aab3f` changed: Buildings v5: MID stoops, NEAR detail tiles dither in at 450 m, ?nov5 reaches the build workers
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+- 2026-10-04 `6395401` changed: Yard fences + sheds collide: v6yard.js collects fence runs (both lot lines + the rear line, 0.3 m thick) and sheds as boxes while the MID tile builds (worker), mergeYardCols joins collinear touching boxes (back-to-back rear / shared side fences), the result rides with the MID result; v2city adds them as kind 'fence' only while the tile's bld-col (600 m) is live, dropping boxes that sample asphalt / paved raster cells (through-lot yards reaching a street), filtered lazily on collider load (<= 1.1 ms per tile). Fences are now double-sided (outer faces were missing: an invisible wall from the neighbour's side). Measured (Mission, dev/world2_shots.js __w2ColPerf): +7.8k colliders (33.5k -> 41.3k), collision queries 0.329 -> 0.312-0.336 ms / frame (noise), walking into a rear fence stops at the fence (7.9 m through -> 4.4 m). ?noyardcol = A/B. dev/world2_shots.js + world2_run.js: hot spot census, yard views, fence walk, collision cost.
 
 ### `src/world/facade/v3front.js`
 Buildings v3 NEAR street facades: real geometry for the street walls of the 1:1 OSM city (runs in the build workers with v2build.js buildNearTile). Replaces the MID procedural wall of a street front (flat quad with shader windows)
@@ -1390,6 +1711,13 @@ Buildings v5 massing variety ("clean CG boxes" fix, part 2). Pure functions over
 - 2026-10-01 `a61b163` added: Buildings v5: massing variety (lot setbacks, bay forms, corner turrets / chamfers, mansards, balconies, real eaves)
 - 2026-10-01 `b4b520e` changed: Buildings v5: dithered cross-fade MID <-> v3 facades / facade kit / front yards / city kit (pop fix)
 - 2026-10-01 `fedfd56` changed: Buildings v5: Tenderloin bay stacks, per-lot window types, French doors at balconies, stoop hoods, loft parapet crests
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+
+### `src/world/facade/v6yard.js`
+Buildings v6: what a block looks like from above ("aerial reads boxy" fix). Pure functions run in the build workers with v2build.js emitMid (MID geometry, every distance up to the MID range, no LOD swap): - back yards behind houses / small ...
+
+- 2026-10-04 `b9d1ee2` added: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
+- 2026-10-04 `6395401` changed: Yard fences + sheds collide: v6yard.js collects fence runs (both lot lines + the rear line, 0.3 m thick) and sheds as boxes while the MID tile builds (worker), mergeYardCols joins collinear touching boxes (back-to-back rear / shared side fences), the result rides with the MID result; v2city adds them as kind 'fence' only while the tile's bld-col (600 m) is live, dropping boxes that sample asphalt / paved raster cells (through-lot yards reaching a street), filtered lazily on collider load (<= 1.1 ms per tile). Fences are now double-sided (outer faces were missing: an invisible wall from the neighbour's side). Measured (Mission, dev/world2_shots.js __w2ColPerf): +7.8k colliders (33.5k -> 41.3k), collision queries 0.329 -> 0.312-0.336 ms / frame (noise), walking into a rear fence stops at the fence (7.9 m through -> 4.4 m). ?noyardcol = A/B. dev/world2_shots.js + world2_run.js: hot spot census, yard views, fence walk, collision cost.
 
 ### `src/world/geo.js`
 Small geometry accumulator + 2D polygon helpers shared by the world builders.
@@ -1400,21 +1728,32 @@ Small geometry accumulator + 2D polygon helpers shared by the world builders.
 Placement data for the ground-cover shaders. GroundCapture: an orthographic top-down render of the ground meshes around the camera into a float target (R = ground height, G = blocked (road / sidewalk / building / deck), B = ground present)....
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `3c697b8` changed: Yard ground: residential back yards (surface class 9) are a lot patchwork instead of one bright green lawn. grass/yard_glsl.js (shared by the terrain material and the grass blades): every yard point falls in a 25 ft lot of its block (v2/lotframe.js: block long side + centre line from props/v2blocks.js, per-cell frame in a float lot texture beside the biome window, capture.js) and gets watered lawn / dry golden lawn / bare dirt (darker leaf litter in shaded lots) / concrete slabs / brick pavers / bark mulch / decomposed granite, mix drifting per neighbourhood, fence-line planting beds in half the lots, SF fall season (Y_SEASON 0.75: most lawns golden-brown with green survivors). Blades only grow on the lawn lots (taller unmown dry lawns, no flowers on hard / mulched lots). Terrain tiles carry aYard (yard share per vertex); far lots fade to the mean colour (no shimmer). Parks keep their lawns. ?noyardground = A/B.
 
 ### `src/world/grass/glsl.js`
 Shared GLSL for the ground-cover layers (grass, flowers, ferns, shrubs, rocks). Every object is placed procedurally in the vertex shader from (chunk, object index): a hashed position inside the chunk, the ground capture (height, blocked mas...
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `be044ba` changed: Ground cover: ice plant = closed fleshy yellow-green / glaucous mats (wider finger leaves, 1.6x density, shallow base shade, no dry-grass tip bleach: the 0.35 base AO under warm light read olive-brown), red-tinged tips + whole red-bronze mats by patch, broad magenta flowers in flowering patches; lupines = slender spindle racemes (~16 x 2 cm on a shorter stem) with whorls of small florets (dark gaps, pale banner flecks, paler buds at the tip) in a deeper purple, less backlit translucency (were solid 13 cm cones). dev/grass_shots.js: CPU port of the flower / ice noise to find patches + review views. Shots (untracked shots/): fix_{iceplant,lupine}_{before,after}.jpg (top 18:20 golden hour, bottom 12:30).
+- 2026-10-04 `3c697b8` changed: Yard ground: residential back yards (surface class 9) are a lot patchwork instead of one bright green lawn. grass/yard_glsl.js (shared by the terrain material and the grass blades): every yard point falls in a 25 ft lot of its block (v2/lotframe.js: block long side + centre line from props/v2blocks.js, per-cell frame in a float lot texture beside the biome window, capture.js) and gets watered lawn / dry golden lawn / bare dirt (darker leaf litter in shaded lots) / concrete slabs / brick pavers / bark mulch / decomposed granite, mix drifting per neighbourhood, fence-line planting beds in half the lots, SF fall season (Y_SEASON 0.75: most lawns golden-brown with green survivors). Blades only grow on the lawn lots (taller unmown dry lawns, no flowers on hard / mulched lots). Terrain tiles carry aYard (yard share per vertex); far lots fade to the mean colour (no shimmer). Parks keep their lawns. ?noyardground = A/B.
 
 ### `src/world/grass/index.js`
 GPU grass + ground cover (both maps). Ring of camera-centred, world-aligned chunks per layer; each visible chunk is one instance of a batch geometry holding N objects, placed/animated entirely in the vertex shader (glsl.js). CPU per frame:
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `3c697b8` changed: Yard ground: residential back yards (surface class 9) are a lot patchwork instead of one bright green lawn. grass/yard_glsl.js (shared by the terrain material and the grass blades): every yard point falls in a 25 ft lot of its block (v2/lotframe.js: block long side + centre line from props/v2blocks.js, per-cell frame in a float lot texture beside the biome window, capture.js) and gets watered lawn / dry golden lawn / bare dirt (darker leaf litter in shaded lots) / concrete slabs / brick pavers / bark mulch / decomposed granite, mix drifting per neighbourhood, fence-line planting beds in half the lots, SF fall season (Y_SEASON 0.75: most lawns golden-brown with green survivors). Blades only grow on the lawn lots (taller unmown dry lawns, no flowers on hard / mulched lots). Terrain tiles carry aYard (yard share per vertex); far lots fade to the mean colour (no shimmer). Parks keep their lawns. ?noyardground = A/B.
 
 ### `src/world/grass/layers.js`
 Ground-cover layers: object templates (CPU, built once), per-layer batch geometry (N copies of the template per chunk instance) and the materials (MeshStandardMaterial + onBeforeCompile; placement, wind and colour are in glsl.js).
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `be044ba` changed: Ground cover: ice plant = closed fleshy yellow-green / glaucous mats (wider finger leaves, 1.6x density, shallow base shade, no dry-grass tip bleach: the 0.35 base AO under warm light read olive-brown), red-tinged tips + whole red-bronze mats by patch, broad magenta flowers in flowering patches; lupines = slender spindle racemes (~16 x 2 cm on a shorter stem) with whorls of small florets (dark gaps, pale banner flecks, paler buds at the tip) in a deeper purple, less backlit translucency (were solid 13 cm cones). dev/grass_shots.js: CPU port of the flower / ice noise to find patches + review views. Shots (untracked shots/): fix_{iceplant,lupine}_{before,after}.jpg (top 18:20 golden hour, bottom 12:30).
+
+### `src/world/grass/yard_glsl.js`
+Residential yard ground (surface class 9) as a lot patchwork instead of one green carpet. Shared by the terrain material (render/terrainmat.js: ground albedo) and the grass blades (grass/glsl.js: blade cover + colour), so blades only grow o...
+
+- 2026-10-04 `3c697b8` added: Yard ground: residential back yards (surface class 9) are a lot patchwork instead of one bright green lawn. grass/yard_glsl.js (shared by the terrain material and the grass blades): every yard point falls in a 25 ft lot of its block (v2/lotframe.js: block long side + centre line from props/v2blocks.js, per-cell frame in a float lot texture beside the biome window, capture.js) and gets watered lawn / dry golden lawn / bare dirt (darker leaf litter in shaded lots) / concrete slabs / brick pavers / bark mulch / decomposed granite, mix drifting per neighbourhood, fence-line planting beds in half the lots, SF fall season (Y_SEASON 0.75: most lawns golden-brown with green survivors). Blades only grow on the lawn lots (taller unmown dry lawns, no flowers on hard / mulched lots). Terrain tiles carry aYard (yard share per vertex); far lots fade to the mean colour (no shimmer). Parks keep their lawns. ?noyardground = A/B.
+- 2026-10-04 `dbb6485` changed: Yard ground: fewer watered lawns (6-18 % by neighbourhood) and those a little drier in the fall; world2 yards_street view = a Richmond block from back-window height
 
 ### `src/world/interiors/arch.js`
 Architectural helpers shared by the buildings: thick walls with openings (outer face + reveals), windows with frames / sashes / glazing, exterior trims. A wall is described in its own 2D (u along the wall, v = height): W = { axis: 'z' | 'x'...
@@ -1464,6 +1803,7 @@ Walk-in interiors of the Blender-baked hero landmarks (St. Francis lobby, Neiman
 - 2026-10-01 `3d8c0be` changed: Interiors round 2 (code): per-room exposure trims from review shots + filmic roll-off + fixture white balance, dressing kit (racks, tables, mannequins, shelving, luggage carts, flowers, votives, pedestals, gates, reception), game trees in the glasshouses, Alcatraz cell clutter, real-size Legion / office lobbies / galleria, bigger crowds in busy places, de Young / Davies review fixes
 - 2026-10-01 `5dfaa4d` changed: Interiors round 2 bakes: 35 interiors rebaked with the dressing kit, refined exposure trims (v3 review shots), street-view dimming of lit interiors (Phelan lobby glowed white in the 'market' regression view)
 - 2026-10-02 `8609279` changed: Interiors round 3: Macy's/Saks cosmetics halls (lit counters, fictional brands, dark ceiling + warm downlights, darker floors, entrance review camera); Davies house lights + lit stage, hideExt (exterior roofs cut the hall); glasshouse leaves un-premultiplied + translucency glow; Alcatraz/Chase IBL + exposure raised; sheet shots/int_sheet_v4.jpg
+- 2026-10-04 `4c056cf` changed: Perf r3: hero-interior reflection probe without the compile freeze: one PMREM generator kept for every probe (warmed at install at the probe size; a new one per probe released and recompiled its shaders), the cube capture's draws go through shaderwarm (extra guarded scenes): a capture with materials still compiling is dropped and retried 250 ms later. Hobart lobby while driving FiDi: 84-112 ms frame -> 8 ms. ?nointprobe
 
 ### `src/world/interiors/hero_int_expo.js`
 GENERATED by tools/blender/int_expo.py from review shots: per-interior lightmap exposure trim (hero_int.js).
@@ -1553,6 +1893,7 @@ Landmarks v2 (1:1 real map): status 2026-09-28 evening
 - 2026-10-01 `272db80` changed: Chinatown hero set: 16 baked blocks + Dragon Gate (day/night lightmaps, BC1), lantern festoons + rain-haze halos, LOD1 night tint, pavement light pools, mirror rendered inside the wet pass (after the main render), stronger soaked sheen on the hero streets, ?noct A/B
 - 2026-10-01 `5dfaa4d` changed: Interiors round 2 bakes: 35 interiors rebaked with the dressing kit, refined exposure trims (v3 review shots), street-view dimming of lit interiors (Phelan lobby glowed white in the 'market' regression view)
 - 2026-10-02 `af8b9db` changed: Chinatown round 2: rebake (brick-heavy, a lit box sign per shop bay + neon frames, more blades, lantern rows at 2-3 heights, interior-mapped window rooms, ground strips on the road surface, stray Old St. Mary's sliver removed), night look (lightmap pow/gain + normal-map relief, dark hero ambient, zone hemi/IBL/sky/fog darkening), darker puddled asphalt + sharper hero mirror with cars in it, harness fixes (lastSafe follows teleports, prologue=0, detached chase car), sheet shots/chinatown_vs_ref_v2.jpg
+- 2026-10-04 `0ac6cf2` changed: Interiors round 3: Davies hall floor (full-width orchestra treads + floor + top landing: no ground strip under the side tiers), Alcatraz cells lit (a bulb in every cell, some out; brighter skylights), sparse halls densified with new dressing kinds library / cafe / lobby / foyer / science + 10 more Poly Haven models (library, Transamerica, Salesforce, Exploratorium, Ghirardelli, Opera, JW Marriott, Legion); 10 interiors rebaked + packed + indexed; sheet shots/int_sheet_v5.jpg
 
 ### `src/world/landmarks/bay.js`
 Alcatraz, the ballpark (Oracle-style, unbranded), Fisherman's Wharf sign.
@@ -1594,6 +1935,8 @@ Chinatown hero streets: darker, broken, puddled asphalt (a multiply decal over t
 
 - 2026-10-02 `af8b9db` added: Chinatown round 2: rebake (brick-heavy, a lit box sign per shop bay + neon frames, more blades, lantern rows at 2-3 heights, interior-mapped window rooms, ground strips on the road surface, stray Old St. Mary's sliver removed), night look (lightmap pow/gain + normal-map relief, dark hero ambient, zone hemi/IBL/sky/fog darkening), darker puddled asphalt + sharper hero mirror with cars in it, harness fixes (lastSafe follows teleports, prologue=0, detached chase car), sheet shots/chinatown_vs_ref_v2.jpg
 - 2026-10-02 `03c10d9` changed: Road 2: wet reflections = roughness-driven anisotropic streak blur (masked, half res) + full-res sharp water, no per-pixel normal jitter / time-varying SSR jitter (no sparkle), luminance knee on the rough film; Chinatown mirror 0.85x + 4x MSAA on high; asphalt: warm neutral, darker, rough dry (0.8) + street-canyon spec occlusion, block resurfacing age + slow mottle, near aggregate contrast + detail relief; full anisotropy on road textures; marking chips fade by pixel footprint; calmer hero street decal; dev/road2shots.js + road2_sheet.py
+- 2026-10-04 `fc00ce2` changed: Perf: shadow caster culling against the view (environment.js: a caster draws into the sun / nearest map only if its bounding sphere swept along the light to ~100 m below the focus touches the camera frustum; nearest map +5 m margin for its every-other-frame refresh): fixed-view A/B GPU -1.35 ms (Mission -0.7..-2.5), -100..-350 draws. Hero landmarks merged per slot material at load (Chinatown blocks ~165 -> ~60-90 draws each; ?noheromerge). Chinatown asphalt decal segments hidden past 200 m (fades to neutral by 140 m; were 40-80 draws anywhere). Water mirror re-rendered every 3rd frame while no water is within 320 m (sampled through the matrix it was rendered with). Look A/B (perf_shots s0/s1, shots/perf_shadowcull_ab.jpg): only moving peds / traffic differ. Switches: shadowcull, waterthrottle (render/perfflags.js)
+- 2026-10-04 `ef382e1` changed: Perf r3: Chinatown asphalt decal segments merged per 120 m cell (ct_street.js; multiply blend, no depth write: order-independent, same overlaps), the 200 m hiding per cell: 40-55 transparent draws -> a handful. Night-rain look A/B (shots/r3_ctmerge_ab.jpg): rows b / c mean 3.4 / 3.6 (peds, rain), row a differs by a headlight / spray pool around the car (additive light, not the decal). ?noctmerge
 
 ### `src/world/landmarks/v2/ct_zone.js`
 GENERATED by tools/blender/ct_plan.py: the Chinatown hero streets (Grant Ave Bush..Broadway, Washington / Clay / Sacramento / Jackson one block each side, Waverly Place). seg = [name, a [x, z], b [x, z], width, sidewalk].
@@ -1624,6 +1967,8 @@ Blender-baked 1:1 hero landmarks (Union Square, Market St / FiDi ...): GLB LODs 
 - 2026-10-01 `272db80` changed: Chinatown hero set: 16 baked blocks + Dragon Gate (day/night lightmaps, BC1), lantern festoons + rain-haze halos, LOD1 night tint, pavement light pools, mirror rendered inside the wet pass (after the main render), stronger soaked sheen on the hero streets, ?noct A/B
 - 2026-10-01 `0543bf1` changed: Chinatown: lantern halos toned down and kept out of the street mirror, comparison sheet (shots/chinatown_vs_ref.jpg), review views (ref / refday / drives), QUALITY note
 - 2026-10-02 `af8b9db` changed: Chinatown round 2: rebake (brick-heavy, a lit box sign per shop bay + neon frames, more blades, lantern rows at 2-3 heights, interior-mapped window rooms, ground strips on the road surface, stray Old St. Mary's sliver removed), night look (lightmap pow/gain + normal-map relief, dark hero ambient, zone hemi/IBL/sky/fog darkening), darker puddled asphalt + sharper hero mirror with cars in it, harness fixes (lastSafe follows teleports, prologue=0, detached chase car), sheet shots/chinatown_vs_ref_v2.jpg
+- 2026-10-04 `fc00ce2` changed: Perf: shadow caster culling against the view (environment.js: a caster draws into the sun / nearest map only if its bounding sphere swept along the light to ~100 m below the focus touches the camera frustum; nearest map +5 m margin for its every-other-frame refresh): fixed-view A/B GPU -1.35 ms (Mission -0.7..-2.5), -100..-350 draws. Hero landmarks merged per slot material at load (Chinatown blocks ~165 -> ~60-90 draws each; ?noheromerge). Chinatown asphalt decal segments hidden past 200 m (fades to neutral by 140 m; were 40-80 draws anywhere). Water mirror re-rendered every 3rd frame while no water is within 320 m (sampled through the matrix it was rendered with). Look A/B (perf_shots s0/s1, shots/perf_shadowcull_ab.jpg): only moving peds / traffic differ. Switches: shadowcull, waterthrottle (render/perfflags.js)
+- 2026-10-04 `0a5722a` changed: Perf: hero landmark shadow proxies: the casting slots of a hero LOD are merged into one position-only depth proxy per material side (slot meshes stop casting); the proxy's geometry bounds are parked out of every camera's view and environment.js' caster test uses userData.shadowSphere (far cascade wrapped too, no view cull). Chinatown shadow draws 434 -> 142; look A/B (shots/perf_heroshadow_ab.jpg) identical shadows. ?noheroshadow = A/B
 
 ### `src/world/landmarks/v2/hero_mats.js`
 Materials for the Blender-baked hero landmarks (tools/blender/hero_*.py -> public/assets/landmarks/<id>/*.glb). GLB nodes are named L<lod>_<slot>; every slot maps to ONE shared material here (compiled once for all heroes).
@@ -1643,6 +1988,7 @@ GENERATED by tools/blender/hero_index.py from the Blender hero builds. Do not ed
 - 2026-10-01 `4346943` changed: Interiors v2 bakes: 39 hero walk-ins rebaked (OIDN day + night lightmaps, BC1 .dds, Poly Haven props), 9 new interiors, Oracle bowl seat rows + Sutro Baths promenades; inside a room the sun/moon/sky light is replaced by the room probe; unlit interior glass; prop/detail IBL gain
 - 2026-10-01 `272db80` changed: Chinatown hero set: 16 baked blocks + Dragon Gate (day/night lightmaps, BC1), lantern festoons + rain-haze halos, LOD1 night tint, pavement light pools, mirror rendered inside the wet pass (after the main render), stronger soaked sheen on the hero streets, ?noct A/B
 - 2026-10-02 `af8b9db` changed: Chinatown round 2: rebake (brick-heavy, a lit box sign per shop bay + neon frames, more blades, lantern rows at 2-3 heights, interior-mapped window rooms, ground strips on the road surface, stray Old St. Mary's sliver removed), night look (lightmap pow/gain + normal-map relief, dark hero ambient, zone hemi/IBL/sky/fog darkening), darker puddled asphalt + sharper hero mirror with cars in it, harness fixes (lastSafe follows teleports, prologue=0, detached chase car), sheet shots/chinatown_vs_ref_v2.jpg
+- 2026-10-04 `0ac6cf2` changed: Interiors round 3: Davies hall floor (full-width orchestra treads + floor + top landing: no ground strip under the side tiers), Alcatraz cells lit (a bulb in every cell, some out; brighter skylights), sparse halls densified with new dressing kinds library / cafe / lobby / foyer / science + 10 more Poly Haven models (library, Transamerica, Salesforce, Exploratorium, Ghirardelli, Opera, JW Marriott, Legion); 10 interiors rebaked + packed + indexed; sheet shots/int_sheet_v5.jpg
 
 ### `src/world/landmarks/v2/lm2.js`
 Landmarks on the v2 (1:1 real) map. registerLandmarksV2(stream, ctx) is called by world2.js. heroes (bridges, towers, anything seen from across the city) are built once and stay loaded; their fine detail (suspenders, truss web, lamp posts) ...
@@ -1713,6 +2059,7 @@ Street dressing, city-wide (render agent): festoon string lights and red lantern
 Pier 39 boardwalk: the baked terrain models the pier as land (rock-textured slopes, bumpy top, rocky marina ridges). This lays a flat plank deck over every land cell of the pier complex, with a dark fascia + pilings down to the water,
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `490dab1` changed: Pier 39: drivable plank deck everywhere it is drawn - every run of deck cells standing above the terrain (rim, overhang over the water, dock fingers, the 1.6-2 m cells the raster flatten skipped) becomes a flat terrain deck strip (2 m, kind 'pier', 1201 strips; groundAt ~0.23 us/call at the pier). Deck cells with physics ground > 10 cm under the planks 2772 / 18327 -> 1 (576 -> 0 that dropped to the water); drive test over 12 rim cells: 12 sank under the planks (to -2.9 m) -> 0. Shots (shots/ is untracked): fix_pier39_{before,after}.jpg.
 
 ### `src/world/props/textures.js`
 Canvas-painted atlases for street props: prop faces (signs, ads, meters), street-name blades, road decals, foliage (leaf clusters, palm fronds, bark) and the far-tree impostors. No image assets.
@@ -1731,6 +2078,7 @@ Street dressing for the 1:1 map (?map=v2), streamed per 512 m tile from the real
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `b19378b` changed: Race corridors also hide parked cars that stream in after the start (they were only cleared on loaded tiles: obstacles further along, e.g. Macalla Rd)
 - 2026-10-01 `afaae5a` changed: Race corridors: world/keepout.js; props/v2 hides trees / street props + colliders inside an active race line (loaded and streamed tiles), +3 m at corners; street furniture on carriageways not placed
+- 2026-10-04 `b9d1ee2` changed: Buildings v6: district bay / roof / arched-window frequencies, neighbour repaint, mid-rise setbacks, back yards + roof decks + yard trees, FAR lite roofs
 
 ### `src/world/props/v2blocks.js`
 City blocks for the 1:1 map, in the v1 block shape the pedestrian nav understands ({ id, poly (convex curb polygon), inner (lot line), cx, cz, zone, park }). Faces of the planar street graph (decks, highways, alleys and dead ends left
@@ -1788,12 +2136,24 @@ Google Photorealistic 3D Tiles (Map Tiles API) as the mid/far city on the 1:1 ma
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `4075efc` changed: Perf/VRAM: BC1/BC3 textures, Low/Medium/High/Ultra presets, dynamic resolution, smaller tile cache, free building geometry
+- 2026-10-04 `3125624` changed: Perf: cull Google tiles lying wholly inside our near block (every fragment there was discarded by the uNear mask) before the tiles renderer refines / loads / draws them, within 340 m of the focus (cells hand over at 420 m). Tile census: Mission ~190 of ~280 tile draws, FiDi 109 of 119, Chinatown 177 of 347 were fully masked. ?nomaskcull = A/B; look A/B (dev/perf_shots.js + perf_diff.py) only moving traffic / peds differ. Dev: perf_prof.js (per-pass GPU timer sections + CPU per render / draw category), perf_prof_run.js (district drive + profile), cpuprof_cdp.mjs (V8 sampling profile in the silent harness)
+- 2026-10-04 `0c76264` changed: Perf: no first-use shader stalls (render/shaderwarm.js): with KHR_parallel_shader_compile a game-scene draw whose new program is not linked yet is skipped (status query throws a sentinel inside the draw) and retried next frame, capped at 600 ms; drive hitches from compiles (peds 404-445 ms, safehouse 783 ms, Bay Bridge tower / rooftile in the water reflection 428-481 ms) gone: Sunset max 824 -> 104 ms, Chinatown 862 -> 120 ms. Interior-site exterior shells hidden past 650 m (photogrammetry there; ~90 draws at any distance). Runtime switches render/perfflags.js (window.__perf, ?no<name>) for in-session A/B; dev/perf_ab.js (interleaved drives), perf_views_ab.js (fixed views), profiler shadow-pass categories
+- 2026-10-04 `9659fd1` changed: Perf: Google tiles traversal every other frame (3-4.5 ms CPU) on a camera widened by 8 deg per side at the same pixel scale (same LOD), tile meshes frustum-culled by three every frame; a turn > 4 deg, fov / aspect change or jump traverses at once. Fixed-view A/B CPU -2.4 ms (Mission / FiDi); pan test (240 deg/s, throttled vs forced traversal per frame) differs no more than the A/A noise (max 6 vs 9 of 14400 cells). ?notilesthrottle. perf_views_ab.js: dev-only nocars / noprobe arms (traffic cars cost -2.4 ms CPU / -1.2 GPU, car probe -1.9 / -2.5 at the same views)
+- 2026-10-04 `b1ab294` changed: Perf: tiles traversal every 3rd frame on a 10 deg-padded frustum (a ~5 ms traversal); tile content matrices static after load (no recompose of ~600 tile nodes per scene.updateMatrixWorld). Pan test 240 / 120 deg/s: max 7 / 4 differing cells of 14400 vs a forced per-frame traversal (A/A noise 9)
+- 2026-10-04 `e506c0c` changed: Perf r3: Google tiles traversal in three phases on consecutive frames (world/v2/tilesphase.js: A = markUsedTiles, B = leaves / visible / toggle, C = LRU hand-over, requests, scheduleUnload, update-after; traversal functions copied from 3d-tiles-renderer 0.5.3, the previous used set stays marked until C so no unload pass can evict on-screen tiles mid-cycle). Per-frame tiles cost 0.3-0.6 ms per phase instead of 4-12 ms every 3rd frame; a sharp turn / jump finishes the cycle at once. Look A/B (shots/r3_tilesphase_ab.jpg): only peds / signals / clouds differ. ?notilesphase. perfflags.js also registers the other round-3 switches (intprobe, simsmooth, streamslice, texwarm, intkeep)
+- 2026-10-04 `72ef212` changed: Perf r3: tiles phases start every 5th frame (A, B, C, two idle frames; was back to back): ~40 % less traversal CPU. dev/tiles_pan.js (free-camera pan, 160x90 readback per frame vs a full traversal on the real camera every frame): FiDi max / mean differing cells 115 / 51 (cycle 3) and 121 / 53 (cycle 5), A/A noise 202 / 93; Mission 584 / 332 and 1016 / 726, noise 761 / 500 and 1209 / 858 (tiles still streaming). gtiles.phCycle is runtime-tunable
+- 2026-10-04 `7fd3e16` changed: Perf r3: tiles cycle time-sliced (tilesphase.js: one generator per update, markUsedTiles and toggleTiles yield every 16 tiles once the frame's ~1 ms slice is spent; the visibility changes of a pass are queued and applied together so a parent hidden in one slice and its children shown in the next never leave a hole), a cycle starts every 5 frames or when the last ends; the tile view error runs without the library's per-tile plugin-list copies / closures (resetFrameState was the top allocation site, 8.3 MB/s). Drive FiDi / Chinatown: gtiles mean 1.5-1.7 -> 1.1-1.2 ms; a sharp turn / jump still finishes the cycle at once. Pan test 120 deg/s: FiDi 117 / 52 differing cells vs A/A noise 202 / 96. Dev: perf_rt2 slowExcess (parts of the >= p90 CPU frames minus the median ones), trace_cdp ALLOC=1 (sampling heap profiler)
 
 ### `src/world/v2/graph2.js`
 Road graph for the 1:1 real-data map, in the same node/edge shape as world/roads.js (traffic, drivers, GPS, police, events, props all consume it unchanged). Bridges, viaducts and tunnels become terrain decks.
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `fbc705c` changed: Decks: single-lane ramp decks get a shoulder (>= 3.2 m to the barrier), no barrier stubs on an at-grade ground carriageway, tunnel walls stop under the surface above
+
+### `src/world/v2/lotframe.js`
+Lot frame of a residential block on the 1:1 map, for the yard ground patchwork (terrainmat.js / grass via the biome window, grass/capture.js). SF lots are 25 ft (7.62 m) wide along the block's long side and back-to-back at its centre
+
+- 2026-10-04 `3c697b8` added: Yard ground: residential back yards (surface class 9) are a lot patchwork instead of one bright green lawn. grass/yard_glsl.js (shared by the terrain material and the grass blades): every yard point falls in a 25 ft lot of its block (v2/lotframe.js: block long side + centre line from props/v2blocks.js, per-cell frame in a float lot texture beside the biome window, capture.js) and gets watered lawn / dry golden lawn / bare dirt (darker leaf litter in shaded lots) / concrete slabs / brick pavers / bark mulch / decomposed granite, mix drifting per neighbourhood, fence-line planting beds in half the lots, SF fall season (Y_SEASON 0.75: most lawns golden-brown with green survivors). Blades only grow on the lawn lots (taller unmown dry lawns, no flowers on hard / mulched lots). Terrain tiles carry aYard (yard share per vertex); far lots fade to the mean colour (no shimmer). Parks keep their lawns. ?noyardground = A/B.
 
 ### `src/world/v2/mapdata.js`
 Loader for the baked 1:1 San Francisco (tools/map -> public/assets/map/). Decodes everything into typed arrays. Map data (c) OpenStreetMap contributors (ODbL); elevation: AWS Terrain Tiles (USGS 3DEP, NOAA). See meta.attribution.
@@ -1810,6 +2170,7 @@ Streamed road surfaces for the 1:1 map: asphalt ribbons trimmed at junctions + a
 Tile streamer for the 1:1 map. The city is cut into 512 m tiles; every content module registers a PROVIDER and the streamer loads/unloads its tiles around the focus (player/camera), nearest first, within a per-frame time budget.
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `750fa36` changed: Perf r3: map streaming slices. stream.js: 2.5 ms per frame and a load only starts when its provider's typical cost (EMA per provider and load / unload) still fits; the first job of a frame always runs (6 ms budget used to start a 5-8 ms load at 5.9 ms). bld-col: a tile's building colliders + yard fences are added over a few frames (<= 1.2 ms each, nearest pending tile first; range 600 m) instead of 5-11 ms in the load. Kit cell bounds come from the build worker (v2detail pack bb; same numbers). ?nostreamslice
 
 ### `src/world/v2/terrain2.js`
 Terrain for the 1:1 real-data map. Same query API as world/terrain.js (heightAt, groundAt, surfaceAt, deckAt, addDeck, curbAt, decks) so physics, AI and every placement module work unchanged. Heights are the baked 4 m grid (roads already
@@ -1820,11 +2181,19 @@ Terrain for the 1:1 real-data map. Same query API as world/terrain.js (heightAt,
 Streamed terrain for the 1:1 map: per 512 m tile, 3 LODs (4 m near, 8 m mid, 32 m far) chosen by distance with hysteresis; far tiles are merged into 2 km chunks (few draw calls) and rebuilt without the tiles that went finer.
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `3c697b8` changed: Yard ground: residential back yards (surface class 9) are a lot patchwork instead of one bright green lawn. grass/yard_glsl.js (shared by the terrain material and the grass blades): every yard point falls in a 25 ft lot of its block (v2/lotframe.js: block long side + centre line from props/v2blocks.js, per-cell frame in a float lot texture beside the biome window, capture.js) and gets watered lawn / dry golden lawn / bare dirt (darker leaf litter in shaded lots) / concrete slabs / brick pavers / bark mulch / decomposed granite, mix drifting per neighbourhood, fence-line planting beds in half the lots, SF fall season (Y_SEASON 0.75: most lawns golden-brown with green survivors). Blades only grow on the lawn lots (taller unmown dry lawns, no flowers on hard / mulched lots). Terrain tiles carry aYard (yard share per vertex); far lots fade to the mean colour (no shimmer). Parks keep their lawns. ?noyardground = A/B.
+
+### `src/world/v2/tilesphase.js`
+(perf r3 10/4) Google tiles update spread over frames. TilesRendererBase.update() runs the whole traversal in one call (4-12 ms on our city: markUsedTiles ~40 %, toggleTiles ~35 %, queue / LRU / plugin hooks the rest); run every 3rd
+
+- 2026-10-04 `e506c0c` added: Perf r3: Google tiles traversal in three phases on consecutive frames (world/v2/tilesphase.js: A = markUsedTiles, B = leaves / visible / toggle, C = LRU hand-over, requests, scheduleUnload, update-after; traversal functions copied from 3d-tiles-renderer 0.5.3, the previous used set stays marked until C so no unload pass can evict on-screen tiles mid-cycle). Per-frame tiles cost 0.3-0.6 ms per phase instead of 4-12 ms every 3rd frame; a sharp turn / jump finishes the cycle at once. Look A/B (shots/r3_tilesphase_ab.jpg): only peds / signals / clouds differ. ?notilesphase. perfflags.js also registers the other round-3 switches (intprobe, simsmooth, streamslice, texwarm, intkeep)
+- 2026-10-04 `7fd3e16` changed: Perf r3: tiles cycle time-sliced (tilesphase.js: one generator per update, markUsedTiles and toggleTiles yield every 16 tiles once the frame's ~1 ms slice is spent; the visibility changes of a pass are queued and applied together so a parent hidden in one slice and its children shown in the next never leave a hole), a cycle starts every 5 frames or when the last ends; the tile view error runs without the library's per-tile plugin-list copies / closures (resetFrameState was the top allocation site, 8.3 MB/s). Drive FiDi / Chinatown: gtiles mean 1.5-1.7 -> 1.1-1.2 ms; a sharp turn / jump still finishes the cycle at once. Pan test 120 deg/s: FiDi 117 / 52 differing cells vs A/A noise 202 / 96. Dev: perf_rt2 slowExcess (parts of the >= p90 CPU frames minus the median ones), trace_cdp ALLOC=1 (sampling heap profiler)
 
 ### `src/world/v2/world2.js`
 World assembly for the 1:1 real-data San Francisco (?map=v2). Same world API as world.js, content streamed by tile.
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `3c697b8` changed: Yard ground: residential back yards (surface class 9) are a lot patchwork instead of one bright green lawn. grass/yard_glsl.js (shared by the terrain material and the grass blades): every yard point falls in a 25 ft lot of its block (v2/lotframe.js: block long side + centre line from props/v2blocks.js, per-cell frame in a float lot texture beside the biome window, capture.js) and gets watered lawn / dry golden lawn / bare dirt (darker leaf litter in shaded lots) / concrete slabs / brick pavers / bark mulch / decomposed granite, mix drifting per neighbourhood, fence-line planting beds in half the lots, SF fall season (Y_SEASON 0.75: most lawns golden-brown with green survivors). Blades only grow on the lawn lots (taller unmown dry lawns, no flowers on hard / mulched lots). Terrain tiles carry aYard (yard share per vertex); far lots fade to the mean colour (no shimmer). Parks keep their lawns. ?noyardground = A/B.
 
 ### `src/world/world.js`
 World assembly: terrain -> road graph -> blocks -> meshes -> buildings -> landmarks -> props. Returns the query API.
@@ -1843,15 +2212,41 @@ Re-bake everything: projection check, rooms atlas, shops atlas, contact sheet.
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 
+### `tools/blender/car_body.py`
+HILLBOMB car body pass 3: modelled aero add-ons on the sculpted shells (called by cars.py after car_hero.detail).
+
+- 2026-10-03 `42da11e` added: Cars body pass 3: sculpted shells for the 13 hero / top-traffic cars (models.js SCULPT: arch flares + haunches, coke-bottle waist, shoulder / cove / rocker section, raked nose + tail via split end-rounding lengths, bonnet dome + fender crowns, greenhouse tumblehome + plan taper; physics spec unchanged), quarter lights + glass-wrapped slim A-pillars, Blender aero add-ons (splitter, skirts: tools/blender/car_body.py), rebuilt GLBs/AO; shape review sheet tools/blender/car_shape_sheet.py; headless silent CDP harness dev/car3cdp.mjs + dev/car3shots.js; parked geometry bbox (ct_street crash)
+
+### `tools/blender/car_door.py`
+HILLBOMB cars pass 4: hinged front doors (called by cars.py after car_hero.detail + car_body.aero, before the AO bake).
+
+- 2026-10-04 `cb8e3ac` added: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
+
+### `tools/blender/car_door_preview.py`
+Door split review (cars pass 4): import a built car GLB, swing both front doors open on their hinges, workbench renders.
+
+- 2026-10-04 `cb8e3ac` added: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
+
+### `tools/blender/car_glb_sheet.py`
+Contact sheet of built car GLBs (cars pass 4 review): per car a front 3/4 and a rear 3/4 workbench render of the top
+
+- 2026-10-04 `cb8e3ac` added: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
+
 ### `tools/blender/car_hero.py`
 HILLBOMB hero car detail pass (called by cars.py for the hero / top-traffic ids, input <id>.hero.json).
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+- 2026-10-04 `cb8e3ac` changed: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
 
 ### `tools/blender/car_hero_preview.py`
 Review renders of the hero detail pass (no bake, no export): shots/car2_blend_<id>.jpg (4 views, 2x2).
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
+
+### `tools/blender/car_shape_sheet.py`
+Body-shape review sheet (car body pass 3): one row per car, columns = side (ortho), front 3/4, rear 3/4, front (ortho).
+
+- 2026-10-03 `42da11e` added: Cars body pass 3: sculpted shells for the 13 hero / top-traffic cars (models.js SCULPT: arch flares + haunches, coke-bottle waist, shoulder / cove / rocker section, raked nose + tail via split end-rounding lengths, bonnet dome + fender crowns, greenhouse tumblehome + plan taper; physics spec unchanged), quarter lights + glass-wrapped slim A-pillars, Blender aero add-ons (splitter, skirts: tools/blender/car_body.py), rebuilt GLBs/AO; shape review sheet tools/blender/car_shape_sheet.py; headless silent CDP harness dev/car3cdp.mjs + dev/car3shots.js; parked geometry bbox (ct_street crash)
 
 ### `tools/blender/car_textures.py`
 Shared car detail textures (height fields -> tangent-space normal maps, numpy), saved through bpy.
@@ -1863,6 +2258,8 @@ HILLBOMB car assets: Blender pass over the procedural car models.
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `c750d23` changed: Cars pass 2: all 13 garage/traffic bodies rebuilt (hero detail pass), traffic-only L0 decimated to ~43k, cabin fill 3.5, perf A/B helper
+- 2026-10-03 `42da11e` changed: Cars body pass 3: sculpted shells for the 13 hero / top-traffic cars (models.js SCULPT: arch flares + haunches, coke-bottle waist, shoulder / cove / rocker section, raked nose + tail via split end-rounding lengths, bonnet dome + fender crowns, greenhouse tumblehome + plan taper; physics spec unchanged), quarter lights + glass-wrapped slim A-pillars, Blender aero add-ons (splitter, skirts: tools/blender/car_body.py), rebuilt GLBs/AO; shape review sheet tools/blender/car_shape_sheet.py; headless silent CDP harness dev/car3cdp.mjs + dev/car3shots.js; parked geometry bbox (ct_street crash)
+- 2026-10-04 `cb8e3ac` changed: Cars pass 4 (code): hinged front doors, interior trim materials, LED tail light bars, sculpt terms for the other 45 bodies
 
 ### `tools/blender/cars_export.mjs`
 Dump the procedural car models (HQ loft) for tools/blender/cars.py.  node tools/blender/cars_export.mjs [--hero] [ids...] --hero: denser loft (_hq2) + the detail-call records / per-vertex tags used by tools/blender/car_hero.py
@@ -1930,6 +2327,7 @@ Collect tools/blender/_cache/hero/<id>.json into src/world/landmarks/v2/hero_sit
 Interior dressing kit (round 2): the clutter that makes a hall read as a real place. All small parts go into 'd_*' detail slots
 
 - 2026-10-01 `3d8c0be` added: Interiors round 2 (code): per-room exposure trims from review shots + filmic roll-off + fixture white balance, dressing kit (racks, tables, mannequins, shelving, luggage carts, flowers, votives, pedestals, gates, reception), game trees in the glasshouses, Alcatraz cell clutter, real-size Legion / office lobbies / galleria, bigger crowds in busy places, de Young / Davies review fixes
+- 2026-10-04 `0ac6cf2` changed: Interiors round 3: Davies hall floor (full-width orchestra treads + floor + top landing: no ground strip under the side tiers), Alcatraz cells lit (a bulb in every cell, some out; brighter skylights), sparse halls densified with new dressing kinds library / cafe / lobby / foyer / science + 10 more Poly Haven models (library, Transamerica, Salesforce, Exploratorium, Ghirardelli, Opera, JW Marriott, Legion); 10 interiors rebaked + packed + indexed; sheet shots/int_sheet_v5.jpg
 
 ### `tools/blender/hero_int_pack.py`
 Hero interior lightmaps / sign atlases -> BC1/BC3 .dds next to the JPEG/PNG (plain python: numpy + PIL).
@@ -1976,6 +2374,7 @@ HILLBOMB hero interiors, wave 5. Run:  python hero_int_w5.py -- fortPoint alcatr
 
 - 2026-09-30 `d8a7ad5` added: Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `3d8c0be` changed: Interiors round 2 (code): per-room exposure trims from review shots + filmic roll-off + fixture white balance, dressing kit (racks, tables, mannequins, shelving, luggage carts, flowers, votives, pedestals, gates, reception), game trees in the glasshouses, Alcatraz cell clutter, real-size Legion / office lobbies / galleria, bigger crowds in busy places, de Young / Davies review fixes
+- 2026-10-04 `0ac6cf2` changed: Interiors round 3: Davies hall floor (full-width orchestra treads + floor + top landing: no ground strip under the side tiers), Alcatraz cells lit (a bulb in every cell, some out; brighter skylights), sparse halls densified with new dressing kinds library / cafe / lobby / foyer / science + 10 more Poly Haven models (library, Transamerica, Salesforce, Exploratorium, Ghirardelli, Opera, JW Marriott, Legion); 10 interiors rebaked + packed + indexed; sheet shots/int_sheet_v5.jpg
 
 ### `tools/blender/hero_int_w6.py`
 HILLBOMB hero interiors, wave 6: the landmarks that had no walk-in yet.
@@ -1986,6 +2385,7 @@ HILLBOMB hero interiors, wave 6: the landmarks that had no walk-in yet.
 - 2026-10-01 `4346943` changed: Interiors v2 bakes: 39 hero walk-ins rebaked (OIDN day + night lightmaps, BC1 .dds, Poly Haven props), 9 new interiors, Oracle bowl seat rows + Sutro Baths promenades; inside a room the sun/moon/sky light is replaced by the room probe; unlit interior glass; prop/detail IBL gain
 - 2026-10-01 `3d8c0be` changed: Interiors round 2 (code): per-room exposure trims from review shots + filmic roll-off + fixture white balance, dressing kit (racks, tables, mannequins, shelving, luggage carts, flowers, votives, pedestals, gates, reception), game trees in the glasshouses, Alcatraz cell clutter, real-size Legion / office lobbies / galleria, bigger crowds in busy places, de Young / Davies review fixes
 - 2026-10-02 `8609279` changed: Interiors round 3: Macy's/Saks cosmetics halls (lit counters, fictional brands, dark ceiling + warm downlights, darker floors, entrance review camera); Davies house lights + lit stage, hideExt (exterior roofs cut the hall); glasshouse leaves un-premultiplied + translucency glow; Alcatraz/Chase IBL + exposure raised; sheet shots/int_sheet_v4.jpg
+- 2026-10-04 `0ac6cf2` changed: Interiors round 3: Davies hall floor (full-width orchestra treads + floor + top landing: no ground strip under the side tiers), Alcatraz cells lit (a bulb in every cell, some out; brighter skylights), sparse halls densified with new dressing kinds library / cafe / lobby / foyer / science + 10 more Poly Haven models (library, Transamerica, Salesforce, Exploratorium, Ghirardelli, Opera, JW Marriott, Legion); 10 interiors rebaked + packed + indexed; sheet shots/int_sheet_v5.jpg
 
 ### `tools/blender/hero_interior.py`
 HILLBOMB hero interiors: room kit + Cycles lightmap bake + export (Blender 5.x).
@@ -2052,6 +2452,7 @@ Interior asset library: CC0 PBR materials (ambientCG, Poly Haven) + Poly Haven f
 
 - 2026-09-30 `54aafd7` added: Interiors v2 pipeline: CC0 PBR library (ambientCG/Poly Haven, BC1/BC3), Poly Haven props, OIDN-denoised bakes, box-projected probes
 - 2026-10-01 `3d8c0be` changed: Interiors round 2 (code): per-room exposure trims from review shots + filmic roll-off + fixture white balance, dressing kit (racks, tables, mannequins, shelving, luggage carts, flowers, votives, pedestals, gates, reception), game trees in the glasshouses, Alcatraz cell clutter, real-size Legion / office lobbies / galleria, bigger crowds in busy places, de Young / Davies review fixes
+- 2026-10-04 `0ac6cf2` changed: Interiors round 3: Davies hall floor (full-width orchestra treads + floor + top landing: no ground strip under the side tiers), Alcatraz cells lit (a bulb in every cell, some out; brighter skylights), sparse halls densified with new dressing kinds library / cafe / lobby / foyer / science + 10 more Poly Haven models (library, Transamerica, Salesforce, Exploratorium, Ghirardelli, Opera, JW Marriott, Legion); 10 interiors rebaked + packed + indexed; sheet shots/int_sheet_v5.jpg
 
 ### `tools/blender/int_expo.py`
 Per-interior exposure trim from review shots (plain python): mean linear luminance of shots/int_<id>_<tag>.jpg (centre 80 %,
@@ -2078,10 +2479,25 @@ Rocketbox mocap -> public/assets/peds/clips.bin + clips.json (shared 34-bone ske
 
 - 2026-09-30 `be35afd` added: Peds: realistic Rocketbox humans (MIT) for pedestrians + player on foot
 
+### `tools/blender/peds/build_clips_extra.py`
+Extra ped clips appended to public/assets/peds/clips.bin/json (idempotent: earlier extras are replaced): Rocketbox mocap (MIT) for getting in / out of a car seat: sit_down_chair_left/right, sit_stand_up_chair_left/right, try_door_outwards, ...
+
+- 2026-10-03 `b51235b` added: People 2a: mocap one-shots + ragdoll. Car entry/exit = Rocketbox sit-down / stand-up clips gliding the body door<->seat (anchored rig, side-aware); knockdowns = Verlet ragdoll (18 particles, hinge + anti-fold limits, sloped ground, follows the wall-aware tumble) then CMU get-up from back / front placed on the body (owners adopt getupRoot); jump / air / land from CMU 105_39; player jump no longer swallowed by the ground snap; avatar loads retried; tools/blender/peds/cmu.py + build_clips_extra.py; dev/peds2_shots.js
+
 ### `tools/blender/peds/build_index.py`
 public/assets/peds/index.json: avatar list + crowd tags (style pools) from the per-avatar json files.
 
 - 2026-09-30 `be35afd` added: Peds: realistic Rocketbox humans (MIT) for pedestrians + player on foot
+
+### `tools/blender/peds/build_props.py`
+Hand-held pedestrian props -> public/assets/peds/props.glb (original models, no third-party content). Objects (game space: +X right, +Y up, -Z forward; origin = the hand's grip point): phone + phone_screen (screen faces +Z, UV 0..1 for the ...
+
+- 2026-10-03 `2c844f6` added: People 2b: real hand-held props (tools/blender/peds/build_props.py -> peds/props.glb): smartphone with a lit app screen (brighter at night), 8-rib umbrella open (rain) / furled in hand (drizzle, wet streets) in 8 colours, coffee cup (right hand, drink-idle arm), shopping bag / briefcase hanging from the hand with a lagging swing (hold-bag arm at half weight; swaps hands under an open umbrella); carry assigned by crowd style; peds/props.js HeldProps
+
+### `tools/blender/peds/cmu.py`
+CMU Graphics Lab motion capture (mocap.cs.cmu.edu, free for any use incl. commercial products) ASF/AMC reader + FK. Frames: CMU world (Y up, the subject's rest pose faces +Z with its left side at +X). length unit = 1/0.45 inch.
+
+- 2026-10-03 `b51235b` added: People 2a: mocap one-shots + ragdoll. Car entry/exit = Rocketbox sit-down / stand-up clips gliding the body door<->seat (anchored rig, side-aware); knockdowns = Verlet ragdoll (18 particles, hinge + anti-fold limits, sloped ground, follows the wall-aware tumble) then CMU get-up from back / front placed on the body (owners adopt getupRoot); jump / air / land from CMU 105_39; player jump no longer swallowed by the ground snap; avatar loads retried; tools/blender/peds/cmu.py + build_clips_extra.py; dev/peds2_shots.js
 
 ### `tools/blender/peds/common.py`
 Shared helpers for the pedestrian pipeline (Rocketbox -> HILLBOMB). Run with tools/.venv-blender python (bpy module). GAME SPACE: metres, +X right, +Y up, -Z forward (character faces -Z), feet at y = 0. Blender world (after FBX import): Z u...
@@ -2134,6 +2550,11 @@ Verify the interior-mapping camera against the facade-shader contract.
 
 
 ## `tools`
+
+### `tools/crowd_bake.mjs`
+Far-crowd impostor bake driver: runs dev/crowd_bake.js inside a game page over CDP and writes public/assets/peds/crowd_alb.png, crowd_nrm.png, crowd.json. Then: python tools/texpack.py --only crowd usage: CDP_PORT=9341 node tools/crowd_bake...
+
+- 2026-10-03 `e911b3a` added: People 2c: far crowds = multi-angle impostors. 16 Rocketbox avatars baked walking (8 views x 8 gait phases, 32x64 cells, albedo + view normals; dev/crowd_bake.js + tools/crowd_bake.mjs, BC3 via texpack) drawn as one instanced draw of camera-facing quads (view sector + phase picked in the vertex shader, baked normals lit by the PBR path, mip-safe coverage, dithered 132-158 m hand-off from the real peds, fade 360-420 m). Agents walk the block sidewalk rings around the camera by district density x night x rain, budget weighted toward nearer blocks (High 2600 / Medium 1400 / Low 600, ~0.1-0.2 ms CPU); ?nocrowd = off
 
 ### `tools/devbuild.mjs`
 Orchestrator test server: rebuilds dist-dev/ on change (vite build --watch) and serves it statically on :5191. Pages never auto-reload, so long-running in-browser tests are not interrupted by other authors' edits.
@@ -2219,6 +2640,7 @@ Offline GPU texture packer: JPG/PNG/WebP -> DDS (BC1/DXT1 or BC3/DXT5) with a fu
 
 - 2026-09-30 `4075efc` added: Perf/VRAM: BC1/BC3 textures, Low/Medium/High/Ultra presets, dynamic resolution, smaller tile cache, free building geometry
 - 2026-09-30 `be35afd` changed: Peds: realistic Rocketbox humans (MIT) for pedestrians + player on foot
+- 2026-10-03 `e911b3a` changed: People 2c: far crowds = multi-angle impostors. 16 Rocketbox avatars baked walking (8 views x 8 gait phases, 32x64 cells, albedo + view normals; dev/crowd_bake.js + tools/crowd_bake.mjs, BC3 via texpack) drawn as one instanced draw of camera-facing quads (view sector + phase picked in the vertex shader, baked normals lit by the PBR path, mip-safe coverage, dithered 132-158 m hand-off from the real peds, fade 360-420 m). Agents walk the block sidewalk rings around the camera by district density x night x rain, budget weighted toward nearer blocks (High 2600 / Medium 1400 / Low 600, ~0.1-0.2 ms CPU); ?nocrowd = off
 
 ### `tools/upgrade_tex.py`
 Re-download selected ambientCG (CC0) materials at higher resolution and store them as quality JPEGs in public/assets/tex/<key>/.
@@ -2248,6 +2670,10 @@ Dev: never auto-reload pages on file changes (several authors edit src/ in paral
 - 2026-10-01 `35be7a7` Audio review: mix levels + side-chain, no traffic drone, tunnel reverb, road surfaces (rails/brick/crosswalk/wet), district street life (Chinatown night market, Market St streetcar, cable cars), footsteps, indoor walla
 - 2026-10-01 `3d8c0be` Interiors round 2 (code): per-room exposure trims from review shots + filmic roll-off + fixture white balance, dressing kit (racks, tables, mannequins, shelving, luggage carts, flowers, votives, pedestals, gates, reception), game trees in the glasshouses, Alcatraz cell clutter, real-size Legion / office lobbies / galleria, bigger crowds in busy places, de Young / Davies review fixes
 - 2026-10-01 `272db80` Chinatown hero set: 16 baked blocks + Dragon Gate (day/night lightmaps, BC1), lantern festoons + rain-haze halos, LOD1 night tint, pavement light pools, mirror rendered inside the wet pass (after the main render), stronger soaked sheen on the hero streets, ?noct A/B
+- 2026-10-03 `b51235b` People 2a: mocap one-shots + ragdoll. Car entry/exit = Rocketbox sit-down / stand-up clips gliding the body door<->seat (anchored rig, side-aware); knockdowns = Verlet ragdoll (18 particles, hinge + anti-fold limits, sloped ground, follows the wall-aware tumble) then CMU get-up from back / front placed on the body (owners adopt getupRoot); jump / air / land from CMU 105_39; player jump no longer swallowed by the ground snap; avatar loads retried; tools/blender/peds/cmu.py + build_clips_extra.py; dev/peds2_shots.js
+- 2026-10-03 `2c844f6` People 2b: real hand-held props (tools/blender/peds/build_props.py -> peds/props.glb): smartphone with a lit app screen (brighter at night), 8-rib umbrella open (rain) / furled in hand (drizzle, wet streets) in 8 colours, coffee cup (right hand, drink-idle arm), shopping bag / briefcase hanging from the hand with a lagging swing (hold-bag arm at half weight; swaps hands under an open umbrella); carry assigned by crowd style; peds/props.js HeldProps
+- 2026-10-03 `e911b3a` People 2c: far crowds = multi-angle impostors. 16 Rocketbox avatars baked walking (8 views x 8 gait phases, 32x64 cells, albedo + view normals; dev/crowd_bake.js + tools/crowd_bake.mjs, BC3 via texpack) drawn as one instanced draw of camera-facing quads (view sector + phase picked in the vertex shader, baked normals lit by the PBR path, mip-safe coverage, dithered 132-158 m hand-off from the real peds, fade 360-420 m). Agents walk the block sidewalk rings around the camera by district density x night x rain, budget weighted toward nearer blocks (High 2600 / Medium 1400 / Low 600, ~0.1-0.2 ms CPU); ?nocrowd = off
+- 2026-10-04 `0ac6cf2` Interiors round 3: Davies hall floor (full-width orchestra treads + floor + top landing: no ground strip under the side tiers), Alcatraz cells lit (a bulb in every cell, some out; brighter skylights), sparse halls densified with new dressing kinds library / cafe / lobby / foyer / science + 10 more Poly Haven models (library, Transamerica, Salesforce, Exploratorium, Ghirardelli, Opera, JW Marriott, Legion); 10 interiors rebaked + packed + indexed; sheet shots/int_sheet_v5.jpg
 
 ### `public/assets/audio/` (155 files)
 
@@ -2264,6 +2690,8 @@ Dev: never auto-reload pages on file changes (several authors edit src/ in paral
 - 2026-09-30 `d8a7ad5` Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `4075efc` Perf/VRAM: BC1/BC3 textures, Low/Medium/High/Ultra presets, dynamic resolution, smaller tile cache, free building geometry
 - 2026-10-01 `c750d23` Cars pass 2: all 13 garage/traffic bodies rebuilt (hero detail pass), traffic-only L0 decimated to ~43k, cabin fill 3.5, perf A/B helper
+- 2026-10-03 `42da11e` Cars body pass 3: sculpted shells for the 13 hero / top-traffic cars (models.js SCULPT: arch flares + haunches, coke-bottle waist, shoulder / cove / rocker section, raked nose + tail via split end-rounding lengths, bonnet dome + fender crowns, greenhouse tumblehome + plan taper; physics spec unchanged), quarter lights + glass-wrapped slim A-pillars, Blender aero add-ons (splitter, skirts: tools/blender/car_body.py), rebuilt GLBs/AO; shape review sheet tools/blender/car_shape_sheet.py; headless silent CDP harness dev/car3cdp.mjs + dev/car3shots.js; parked geometry bbox (ct_street crash)
+- 2026-10-04 `a156f3a` Cars pass 4 (assets): all 57 loft bodies rebuilt through the detail / aero / door passes (garage bodies with level H, 2K AO atlases), hinged front doors on 53 (no doors: bus, cable car, picknick, buggy, kestrel), interior material classes, LED tail light bars; cars.json carries the door hinges; AO packed (texpack --only cars/). 37 -> 81 MB on disk (lazy per id).
 
 ### `public/assets/hdri/` (9 files)
 
@@ -2274,7 +2702,7 @@ Dev: never auto-reload pages on file changes (several authors edit src/ in paral
 - 2026-09-30 `d8a7ad5` Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `4075efc` Perf/VRAM: BC1/BC3 textures, Low/Medium/High/Ultra presets, dynamic resolution, smaller tile cache, free building geometry
 
-### `public/assets/landmarks/` (723 files)
+### `public/assets/landmarks/` (780 files)
 
 - 2026-09-30 `d8a7ad5` Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-09-30 `9b6cda8` Hero interiors: BC1 .dds lightmaps, night lightmap bake + time-of-day windows, residency cap, ambient people + indoor reverb bed, landmark map markers + door labels
@@ -2284,6 +2712,7 @@ Dev: never auto-reload pages on file changes (several authors edit src/ in paral
 - 2026-10-01 `5dfaa4d` Interiors round 2 bakes: 35 interiors rebaked with the dressing kit, refined exposure trims (v3 review shots), street-view dimming of lit interiors (Phelan lobby glowed white in the 'market' regression view)
 - 2026-10-02 `af8b9db` Chinatown round 2: rebake (brick-heavy, a lit box sign per shop bay + neon frames, more blades, lantern rows at 2-3 heights, interior-mapped window rooms, ground strips on the road surface, stray Old St. Mary's sliver removed), night look (lightmap pow/gain + normal-map relief, dark hero ambient, zone hemi/IBL/sky/fog darkening), darker puddled asphalt + sharper hero mirror with cars in it, harness fixes (lastSafe follows teleports, prologue=0, detached chase car), sheet shots/chinatown_vs_ref_v2.jpg
 - 2026-10-02 `8609279` Interiors round 3: Macy's/Saks cosmetics halls (lit counters, fictional brands, dark ceiling + warm downlights, darker floors, entrance review camera); Davies house lights + lit stage, hideExt (exterior roofs cut the hall); glasshouse leaves un-premultiplied + translucency glow; Alcatraz/Chase IBL + exposure raised; sheet shots/int_sheet_v4.jpg
+- 2026-10-04 `0ac6cf2` Interiors round 3: Davies hall floor (full-width orchestra treads + floor + top landing: no ground strip under the side tiers), Alcatraz cells lit (a bulb in every cell, some out; brighter skylights), sparse halls densified with new dressing kinds library / cafe / lobby / foyer / science + 10 more Poly Haven models (library, Transamerica, Salesforce, Exploratorium, Ghirardelli, Opera, JW Marriott, Legion); 10 interiors rebaked + packed + indexed; sheet shots/int_sheet_v5.jpg
 
 ### `public/assets/manifest.json/` (1 files)
 
@@ -2294,9 +2723,12 @@ Dev: never auto-reload pages on file changes (several authors edit src/ in paral
 - 2026-09-30 `d8a7ad5` Snapshot 2026-09-30: state during lighting/flicker regression fix + perf work (baseline for bisecting)
 - 2026-10-01 `112afa9` Map bake: tunnel portal approaches straightened (YBI east portal dropped 4.6 m out of the bore); stacked I 80 deck offset moved to structure nodes (sqrt(sin) hump made 56-107 % grades on the YBI viaduct)
 
-### `public/assets/peds/` (321 files)
+### `public/assets/peds/` (327 files)
 
 - 2026-09-30 `be35afd` Peds: realistic Rocketbox humans (MIT) for pedestrians + player on foot
+- 2026-10-03 `b51235b` People 2a: mocap one-shots + ragdoll. Car entry/exit = Rocketbox sit-down / stand-up clips gliding the body door<->seat (anchored rig, side-aware); knockdowns = Verlet ragdoll (18 particles, hinge + anti-fold limits, sloped ground, follows the wall-aware tumble) then CMU get-up from back / front placed on the body (owners adopt getupRoot); jump / air / land from CMU 105_39; player jump no longer swallowed by the ground snap; avatar loads retried; tools/blender/peds/cmu.py + build_clips_extra.py; dev/peds2_shots.js
+- 2026-10-03 `2c844f6` People 2b: real hand-held props (tools/blender/peds/build_props.py -> peds/props.glb): smartphone with a lit app screen (brighter at night), 8-rib umbrella open (rain) / furled in hand (drizzle, wet streets) in 8 colours, coffee cup (right hand, drink-idle arm), shopping bag / briefcase hanging from the hand with a lagging swing (hold-bag arm at half weight; swaps hands under an open umbrella); carry assigned by crowd style; peds/props.js HeldProps
+- 2026-10-03 `e911b3a` People 2c: far crowds = multi-angle impostors. 16 Rocketbox avatars baked walking (8 views x 8 gait phases, 32x64 cells, albedo + view normals; dev/crowd_bake.js + tools/crowd_bake.mjs, BC3 via texpack) drawn as one instanced draw of camera-facing quads (view sector + phase picked in the vertex shader, baked normals lit by the PBR path, mip-safe coverage, dithered 132-158 m hand-off from the real peds, fade 360-420 m). Agents walk the block sidewalk rings around the camera by district density x night x rain, budget weighted toward nearer blocks (High 2600 / Medium 1400 / Low 600, ~0.1-0.2 ms CPU); ?nocrowd = off
 
 ### `public/assets/tex/` (164 files)
 
@@ -2307,6 +2739,7 @@ Dev: never auto-reload pages on file changes (several authors edit src/ in paral
 
 - 2026-09-30 `4075efc` Perf/VRAM: BC1/BC3 textures, Low/Medium/High/Ultra presets, dynamic resolution, smaller tile cache, free building geometry
 - 2026-09-30 `be35afd` Peds: realistic Rocketbox humans (MIT) for pedestrians + player on foot
+- 2026-10-03 `e911b3a` People 2c: far crowds = multi-angle impostors. 16 Rocketbox avatars baked walking (8 views x 8 gait phases, 32x64 cells, albedo + view normals; dev/crowd_bake.js + tools/crowd_bake.mjs, BC3 via texpack) drawn as one instanced draw of camera-facing quads (view sector + phase picked in the vertex shader, baked normals lit by the PBR path, mip-safe coverage, dithered 132-158 m hand-off from the real peds, fade 360-420 m). Agents walk the block sidewalk rings around the camera by district density x night x rain, budget weighted toward nearer blocks (High 2600 / Medium 1400 / Low 600, ~0.1-0.2 ms CPU); ?nocrowd = off
 
 ### `public/assets/trees/` (85 files)
 
